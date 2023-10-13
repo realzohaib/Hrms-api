@@ -5,8 +5,9 @@
 ![Screenshot (43)](https://github.com/realzohaib/Hrms-api/assets/116001539/adf405e2-b48a-44f2-bfe7-295431b63527)
 
 JWT Token generated
-![Screenshot (45)](https://github.com/realzohaib/Hrms-api/assets/116001539/095df314-4b8c-494e-8814-a20714419806)
+![Screenshot (44)](https://github.com/realzohaib/Hrms-api/assets/116001539/12ee00b8-5487-4dc2-aa82-f9ed17b9afd7)
 
 getById Demo
-![Screenshot (44)](https://github.com/realzohaib/Hrms-api/assets/116001539/12ee00b8-5487-4dc2-aa82-f9ed17b9afd7)
+![Screenshot (45)](https://github.com/realzohaib/Hrms-api/assets/116001539/095df314-4b8c-494e-8814-a20714419806)
+
 
