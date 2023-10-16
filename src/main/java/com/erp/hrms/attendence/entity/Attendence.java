@@ -44,6 +44,10 @@ public class Attendence {
 	@Column(name = ("working_Hours"))
 	private long workingHours;
 	
+	private boolean halfDay;
+	
+	private long overTime;
+	
 	private long employeeId;
 
 	@OneToMany(mappedBy = "attendence")
