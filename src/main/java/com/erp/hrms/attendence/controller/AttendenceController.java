@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -61,7 +62,7 @@ public class AttendenceController {
 		Attendence punchout = service.punchout(req.getId());
 		return ResponseEntity.ok(punchout);
 	}catch (Exception e) {
-		return ResponseEntity.badRequest().body(e);
+		return ResponseEntity.badRequest().body(new MessageResponse("Something went Wrong..!"));
 	}
 		
 	}
@@ -91,7 +92,23 @@ public class AttendenceController {
 	@GetMapping("/get-attendence-byDate")
 	public ResponseEntity<?>AttendenceByDate(@RequestBody AttendenceRequest req){
 		System.out.println("hello");
+		try {
 		List<Attendence> list = service.getAttendenceByDate(req.getId(), req.getStartDate(), req.getEndODate());
 		return ResponseEntity.ok(list);
+		}catch (Exception e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("invalid Data"));
+		}
+	}
+	
+	@GetMapping("/get-attendence-byMonth/{id}/{year}/{month}")
+	public ResponseEntity<?>AttendenceByMonth(@RequestParam("id") long id , @RequestParam("year") int year
+			,  @RequestParam("month") int month){
+		try {
+		List<Attendence> forMonth = service.getAttendanceForMonth(id, year, month);
+		return ResponseEntity.ok(forMonth);
+		}catch (Exception e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("invalid Data"));
+
+		}
 	}
 }

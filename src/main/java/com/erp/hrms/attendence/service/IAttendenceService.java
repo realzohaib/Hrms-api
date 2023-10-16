@@ -10,7 +10,7 @@ public interface IAttendenceService {
 	
 	public List<Attendence> getEmployeeAttendence(long employeeId);
 	
-	public Attendence punchout(long id);
+	public Attendence punchout(long id) throws AttendencenotRegistered;
 	
 	public Attendence  breakStart(long Attendenceid);
 	
@@ -18,6 +18,7 @@ public interface IAttendenceService {
 	
 	public List<Attendence> getAttendenceByDate(Long employeeId, LocalDate startDate, LocalDate endDate) ;
 
+	public List<Attendence> getAttendanceForMonth(Long employeeId, int year, int month);
 	
 
 
