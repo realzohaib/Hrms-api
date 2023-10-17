@@ -183,4 +183,29 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		    return repo.findByEmployeeIdAndDateBetween(employeeId, startDate, endDate);
 	}
 
+	@Override
+	public int calculateWorkingDays(int year, int month) {
+	    int workingDays = 0;
+	    LocalDate date = LocalDate.of(year, month, 1);
+
+	    while (date.getMonthValue() == month) {
+	        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+	        // Check if the day is a working day based on your criteria
+	        if (isWorkingDay(dayOfWeek)) {
+	            workingDays++;
+	        }
+
+	        date = date.plusDays(1);
+	    }
+
+	    return workingDays;
+	}
+
+	private boolean isWorkingDay(DayOfWeek dayOfWeek) {
+	    // Implement your organization's working day criteria here
+	    return dayOfWeek != DayOfWeek.SUNDAY;
+	}
+
+
 }

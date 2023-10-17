@@ -48,6 +48,14 @@ public class Attendence {
 	
 	private long overTime;
 	
+	private int totalWorkigDaysInMonth;
+	
+	private int totalDaysPresentInMonth;
+	
+	private int totalHalfDaysInMonth;
+	
+	private long totalOvertimeHoursInMonth;
+	
 	private long employeeId;
 
 	@OneToMany(mappedBy = "attendence")
