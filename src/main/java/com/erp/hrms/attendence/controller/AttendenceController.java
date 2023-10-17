@@ -16,6 +16,7 @@ import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.attendence.entity.Attendence;
 import com.erp.hrms.attendence.repo.IAttendencerepo;
 import com.erp.hrms.attendence.service.AttendenceRequest;
+import com.erp.hrms.attendence.service.AttendenceResponse;
 import com.erp.hrms.attendence.service.AttendenceServiceImpl;
 import com.erp.hrms.attendence.service.AttendencenotRegistered;
 import com.erp.hrms.attendence.service.DuplicateEntryException;
@@ -103,13 +104,13 @@ public class AttendenceController {
 		}
 	}
 	
-	
+		
 	@GetMapping("/get-attendence-byMonth/{id}/{year}/{month}")
 	public ResponseEntity<?>AttendenceByMonth(@PathVariable long id , @PathVariable int year
 			, @PathVariable int month){
 		try {
-		List<Attendence> forMonth = service.getAttendanceForMonth(id, year, month);
-		return ResponseEntity.ok(forMonth);
+			AttendenceResponse fullAttendence = service.fullAttendence(id, year, month);
+		return ResponseEntity.ok(fullAttendence);
 		}catch (Exception e) {
 			return ResponseEntity.badRequest().body(new MessageResponse("invalid Data"));
 
