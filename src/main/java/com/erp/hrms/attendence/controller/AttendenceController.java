@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +22,7 @@ import com.erp.hrms.attendence.service.DuplicateEntryException;
 
 @RestController
 //@RequestMapping("/api/auth")
+@CrossOrigin("*")
 public class AttendenceController {
 	
 	@Autowired
@@ -32,9 +35,9 @@ public class AttendenceController {
 	@PostMapping("/punch-In-Time")
 	public ResponseEntity<?> punchInTime(@RequestBody Attendence attendence) throws AttendencenotRegistered{
 		
-		if(repo.existsByEmployeeIdAndDate(attendence.getEmployeeId(), attendence.getDate())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error: Employee Already punched -in"));
-		}
+//		if(repo.existsByEmployeeIdAndDate(attendence.getEmployeeId(), attendence.getDate())) {
+//			return ResponseEntity.badRequest().body(new MessageResponse("Error: Employee Already punched -in"));
+//		}
 	try {
 		Attendence punchIn = service.punchIn(attendence);
 		return ResponseEntity.ok(punchIn);
@@ -100,9 +103,10 @@ public class AttendenceController {
 		}
 	}
 	
+	
 	@GetMapping("/get-attendence-byMonth/{id}/{year}/{month}")
-	public ResponseEntity<?>AttendenceByMonth(@RequestParam("id") long id , @RequestParam("year") int year
-			,  @RequestParam("month") int month){
+	public ResponseEntity<?>AttendenceByMonth(@PathVariable long id , @PathVariable int year
+			, @PathVariable int month){
 		try {
 		List<Attendence> forMonth = service.getAttendanceForMonth(id, year, month);
 		return ResponseEntity.ok(forMonth);
