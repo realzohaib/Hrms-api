@@ -70,9 +70,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 			return obj;
 		} catch (Exception e) {
-			// Handle the exception or log it
-			e.printStackTrace(); // You should replace this with proper logging
-			throw new AttendencenotRegistered("Attendence not recorded" + e);
+			throw new AttendencenotRegistered("Attendence not recorded");
 		}
 	}
 
@@ -180,45 +178,6 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	public List<Attendence> getAttendanceForMonth(Long employeeId, int year, int month) {
 		    LocalDate startDate = LocalDate.of(year, month, 1);
 		    LocalDate endDate = startDate.plusMonths(1).minusDays(1);
-		     //List<Attendence> list = repo.findByEmployeeIdAndDateBetween(employeeId, startDate, endDate);
-//		     
-//		     int workingDays = calculateWorkingDays(year, month);
-//		     int daysPresnt=0;
-//		     int halfDays=0;
-//		     long totalOvertimehrsInMont=0;
-//		     
-//		     Attendence attendence = new Attendence();
-//		     
-//		     for(Attendence singleAttendence : list) {
-//		    	 Timestamp punchInTime = singleAttendence.getPunchInTime();
-//		    	 Timestamp punchOutTime = singleAttendence.getPunchOutTime();
-//		    	 
-//	    		 if( (punchInTime != null && punchOutTime != null) ) daysPresnt++;
-//
-//		    	 if(singleAttendence.isHalfDay()) halfDays++;
-//		    	 
-//		    	 long overTime = singleAttendence.getOverTime();
-//		    	 totalOvertimehrsInMont+=overTime;
-//		    	 
-//		    	 attendence.setDate(singleAttendence.getDate());
-//		    	 attendence.setDay(singleAttendence.getDay());
-//		    	 attendence.setPunchInTime(punchInTime);
-//		    	 attendence.setPunchOutTime(punchOutTime);
-//		    	 attendence.setWorkingHours(singleAttendence.getWorkingHours());
-//		    	 if(singleAttendence.isHalfDay()) {
-//		    		 attendence.setHalfDay(true);
-//		    	 }else {
-//		    		 attendence.setHalfDay(false);
-//		    	 }
-//		    	 attendence.setOverTime(singleAttendence.getOverTime());
-//		    	
-//		     }
-//		     
-//		     attendence.setTotalWorkigDaysInMonth(workingDays);
-//	    	 attendence.setTotalDaysPresentInMonth(daysPresnt);
-//	    	 
-//		     
-//		     return null;
 		   return repo.findByEmployeeIdAndDateBetween(employeeId, startDate, endDate);
 	}
 	
