@@ -58,5 +58,9 @@ public class LeaveController {
 		return ResponseEntity.ok(new MessageResponse("Your request is approved or denied By manager"));
 	}
 
-
+//	This method for find all pending request
+	@GetMapping("/leave/request/findall/pending")
+	public ResponseEntity<List<LeaveApproval>> findAllLeaveApprovalPending() {
+		return ResponseEntity.ok(iLeaveService.findAllLeaveApprovalPending());
+	}
 }

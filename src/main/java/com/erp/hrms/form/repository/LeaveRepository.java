@@ -74,6 +74,19 @@ public class LeaveRepository implements ILeaveRepository {
 		}
 	}
 
+	@Override
+	public List<LeaveApproval> findAllLeaveApprovalPending() {
+		List<LeaveApproval> leaveApprovals = null;
+		try {
+			leaveApprovals = entityManager
+					.createQuery("SELECT l FROM LeaveApproval l WHERE l.approvalStatus = 'Pending'",
+							LeaveApproval.class)
+					.getResultList();
 
+			return leaveApprovals;
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
 }
