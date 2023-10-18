@@ -96,4 +96,14 @@ public class LeaveService implements ILeaveService {
 	}
 	
 
+//	This method for find all pending leave request 
+	@Override
+	public List<LeaveApproval> findAllLeaveApprovalPending() {
+		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalPending();
+		if (leaveApprovals.isEmpty()) {
+			throw new LeaveRequestNotFoundException("No leave request now ");
+		}
+		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
+		return leaveApprovals;
+	}
 }
