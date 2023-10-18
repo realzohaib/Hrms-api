@@ -165,7 +165,7 @@ import com.erp.hrms.entity.PersonalInfo;
  * 
  */
 
-//@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
