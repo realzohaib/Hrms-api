@@ -159,7 +159,7 @@ public class PersonalInfo {
 	private void calculateAge() {
 		if (this.dateOfBirth != null && !this.dateOfBirth.isEmpty()) {
 			
-			LocalDate dob = LocalDate.parse(this.dateOfBirth, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			LocalDate dob = LocalDate.parse(this.dateOfBirth, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 			LocalDate currentDate = LocalDate.now();
 			Period agePeriod = Period.between(dob, currentDate);
 			this.age = agePeriod.getYears();
