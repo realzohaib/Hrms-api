@@ -29,6 +29,7 @@ public class LeaveService implements ILeaveService {
 			throw new LeaveRequestApprovalException("Error while creating leave approval. " + e);
 		}
 	}
+
 //	This method for get the leave request by LeaveRequestId
 	@Override
 	public LeaveApproval getleaveRequestById(long leaveRequestId) {
@@ -46,7 +47,7 @@ public class LeaveService implements ILeaveService {
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException("This Employee ID " + employeeId + " not found.");
 		}
-		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()) ) ;
+		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
 	}
 
@@ -61,7 +62,6 @@ public class LeaveService implements ILeaveService {
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
 	}
-
 
 //	This method for update the leave request by the manager Accepted or Rejected with the help of leaveRequestId
 	@Override
@@ -94,12 +94,34 @@ public class LeaveService implements ILeaveService {
 			throw new LeaveRequestApprovalException("Error while approving leave request." + e);
 		}
 	}
-	
 
 //	This method for find all pending leave request 
 	@Override
 	public List<LeaveApproval> findAllLeaveApprovalPending() {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalPending();
+		if (leaveApprovals.isEmpty()) {
+			throw new LeaveRequestNotFoundException("No leave request now ");
+		}
+		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
+		return leaveApprovals;
+	}
+
+//	This method for find all accepted leave request 
+	@Override
+	public List<LeaveApproval> findAllLeaveApprovalAccepted() {
+		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalAccepted();
+		if (leaveApprovals.isEmpty()) {
+			throw new LeaveRequestNotFoundException("No leave request now ");
+		}
+		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
+		return leaveApprovals;
+	}
+
+//	This method for find all rejected leave request 
+	@Override
+	public List<LeaveApproval> findAllLeaveApprovalRejected() {
+
+		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalRejected();
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException("No leave request now ");
 		}

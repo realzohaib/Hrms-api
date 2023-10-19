@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ import com.erp.hrms.exception.PersonalInfoNotFoundException;
 @RestController
 @RequestMapping("/api/v1")
 
-//@CrossOrigin("*")
+@CrossOrigin("*")
 public class PersonalInfoController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PersonalInfoController.class);
@@ -79,7 +80,7 @@ public class PersonalInfoController {
 		List<PersonalInfo> findAllPersonalInfo = null;
 		try {
 			findAllPersonalInfo = personalInfoService.findAllPersonalInfo();
-			logger.debug("Error occured");
+
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("Exception occurred " + e);
 		}

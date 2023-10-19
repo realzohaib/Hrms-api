@@ -89,4 +89,36 @@ public class LeaveRepository implements ILeaveRepository {
 		}
 	}
 
+	@Override
+	public List<LeaveApproval> findAllLeaveApprovalAccepted() {
+		List<LeaveApproval> leaveApprovals = null;
+		try {
+			leaveApprovals = entityManager
+					.createQuery("SELECT l FROM LeaveApproval l WHERE l.approvalStatus = 'Accepted'",
+							LeaveApproval.class)
+					.getResultList();
+
+			return leaveApprovals;
+		} catch (NoResultException e) {
+			return null;
+		}
+
+	}
+
+	@Override
+	public List<LeaveApproval> findAllLeaveApprovalRejected() {
+
+		List<LeaveApproval> leaveApprovals = null;
+		try {
+			leaveApprovals = entityManager
+					.createQuery("SELECT l FROM LeaveApproval l WHERE l.approvalStatus = 'Rejected'",
+							LeaveApproval.class)
+					.getResultList();
+
+			return leaveApprovals;
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
 }
