@@ -243,7 +243,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
 			return personalInfoByEmployeeId;
 		} catch (Exception e) {
-			System.out.println(e);
+//			System.out.println(e);
 			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
 		}
 	}
