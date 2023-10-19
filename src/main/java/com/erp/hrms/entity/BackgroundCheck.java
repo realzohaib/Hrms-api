@@ -48,11 +48,12 @@ public class BackgroundCheck {
 	private String punishmentForImprisonmentApproval;
 
 	@Lob
-	@Column(length = 2097152)
+
+	@Column(length = 2147483647)
 	private byte[] recordsheet;
 
 	@Lob
-	@Column(length = 2097152)
+	@Column(length = 2147483647)
 	private byte[] declarationRequired;
 	
 	@ManyToOne

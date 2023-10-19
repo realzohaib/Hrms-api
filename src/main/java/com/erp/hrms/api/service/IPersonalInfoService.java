@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.entity.PersonalInfo;
+
+import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
 public interface IPersonalInfoService {
@@ -37,4 +39,9 @@ public interface IPersonalInfoService {
 			MultipartFile declarationRequired, MultipartFile[] achievementsRewardsDocs) throws IOException;
 
 	public PersonalInfo updateVisaDetails(Long employeeId, String visaIssueDate, String visaExpiryDate);
+
+
+	public List<NotificationHelper> getRequestedField();
+	
+	
 }

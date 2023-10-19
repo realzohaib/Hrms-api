@@ -43,7 +43,8 @@ public class PreviousEmployee {
 	private String previousHRContact;
 	private double lastWithdrawnSalary;
 
-	@Column(length = 2097152)
+
+	@Column(length = 2147483647)
 	@Lob
 	private byte[] payslipScan;
 

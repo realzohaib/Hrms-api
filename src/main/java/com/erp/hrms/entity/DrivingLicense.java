@@ -17,7 +17,8 @@ public class DrivingLicense {
 	
 	@Column(name = "own_vehicle")
 	private String ownvehicle;
-	@Column(name = "license_copy",length = 2097152)
+
+	@Column(name = "license_copy",length = 2147483647)
 	@Lob
 	private byte[] licensecopy;
   

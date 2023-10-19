@@ -32,7 +32,9 @@ public class Education {
 	@Column(name = "Secondary_year")
 	private String secondaryyear;
 
-	@Column(name = "secondary_supporting_document", length = 2097152)
+
+	@Column(name = "secondary_supporting_document", length = 2147483647)
+	
 	@Lob
 	private byte[] secondaryDocumentScan;
 
@@ -46,7 +48,7 @@ public class Education {
 	@Column(name = "Senior_Secondary_year")
 	private String seniorSecondaryYear;
 
-	@Column(name = "Senior_Secondary_supporting_document", length = 2097152)
+	@Column(name = "Senior_Secondary_supporting_document", length = 2147483647)
 	@Lob
 	private byte[] seniorSecondaryDocumentScan;
 
@@ -60,7 +62,8 @@ public class Education {
 	@Column(name = "Graduation_year")
 	private String graduationYear;
 
-	@Column(name = "Graduation_supporting_document", length = 2097152)
+
+	@Column(name = "Graduation_supporting_document", length = 2147483647)
 	@Lob
 	private byte[] graduationDocumentScan;
 
@@ -74,7 +77,8 @@ public class Education {
 	@Column(name = "post_Graduation_year")
 	private String postGraduationYear;
 
-	@Column(name = "post_Graduation_supporting_document", length = 2097152)
+
+	@Column(name = "post_Graduation_supporting_document", length = 2147483647)
 	@Lob
 	private byte[] postGraduationDocumentScan;
 
@@ -90,7 +94,8 @@ public class Education {
 	private String diplomaYear;
 
 	// dynamic
-	@Column(name = "diploma_document_scan", length = 2097152)
+
+	@Column(name = "diploma_document_scan", length = 2147483647)
 	@Lob
 	private byte[] diplomaDocumentScan;
 

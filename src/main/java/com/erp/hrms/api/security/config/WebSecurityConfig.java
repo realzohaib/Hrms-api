@@ -96,7 +96,9 @@ public class WebSecurityConfig {
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().authorizeRequests()
+
 				//.anyRequest().permitAll();
+
 				.antMatchers("/api/auth/**").permitAll()
 				.antMatchers("/api/v1/personal-info").hasRole("ADMIN")
 				.antMatchers("/api/v1/personal-info/find/all/active").hasRole("ADMIN")
@@ -107,9 +109,8 @@ public class WebSecurityConfig {
 				.antMatchers("/api/v1/dashboard").hasRole("ADMIN");
 		
 
+
 		//.antMatchers("/api/v1/**").authenticated();
-				
-			
 
 		http.authenticationProvider(authenticationProvider());
 

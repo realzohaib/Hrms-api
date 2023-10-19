@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.erp.hrms.entity.PersonalInfo;
 
+import com.erp.hrms.entity.notificationhelper.NotificationHelper;
+
 public interface IPersonalInfoDAO {
 
 	public boolean existsByEmail(String email);
@@ -24,17 +26,19 @@ public interface IPersonalInfoDAO {
 
 	public PersonalInfo updatePersonalInfo(String email, PersonalInfo personalInfo);
 
-	public void updateFirstVisaEmail(String email);
-
-	public void updateSecondVisaEmail(String email);
-
-	public void updatefirstContinuouslyVisaEmailSend(String email);
-
-	public void updateSecondContinuouslyVisaEmailSend(String email);
-
-	public void updateThirdContinuouslyVisaEmailSend(String email);
-
-	public void updatefourContinuouslyVisaEmailSend(String email);
-
 	public PersonalInfo updateVisaDetails(Long employeeId, String visaIssueDate, String visaExpiryDate);
+	
+	public void update20and60daysBeforeVisaEmail(String email);
+
+	public void update10and30daysBeforeVisaEmail(String email);
+
+	public void update4daysBeforeVisaEmailSend(String email);
+
+	public void update3daysBeforeVisaEmailSend(String email);
+
+	public void update2daysBeforeVisaEmailSend(String email);
+
+	public void update1dayBeforeVisaEmailSend(String email);
+	
+	public List<NotificationHelper> getNotificationFields();
 }

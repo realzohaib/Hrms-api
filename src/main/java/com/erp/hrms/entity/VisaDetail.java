@@ -31,15 +31,16 @@ public class VisaDetail {
 	@Column(name = "visa_expiry_date")
 	private String visaExpiryDate;
 
-	private boolean firstVisaEmailSend;
-	private boolean secondVisaEmailSend;
 
-	private boolean firstContinuouslyVisaEmailSend;
-	private boolean secondContinuouslyVisaEmailSend;
-	private boolean thirdContinuouslyVisaEmailSend;
-	private boolean fourContinuouslyVisaEmailSend;
+	private boolean visaEmailSend20and60daysBefore;
+	private boolean VisaEmailSend10and30daysBefore;
 
-	@Column(name = "visa_docs", length = 2097152)
+	private boolean visaEmailSend4daysBefore;
+	private boolean visaEmailSend3daysBefore;
+	private boolean visaEmailSend2daysBefore;
+	private boolean visaEmailSend1dayBefore;
+
+	@Column(name = "visa_docs", length = 2147483647)
 	@Lob
 	private byte[] visaDocs;
 

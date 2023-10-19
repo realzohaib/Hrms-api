@@ -32,7 +32,8 @@ public class ProfessionalQualification {
 
 	// dynamic
 	@Lob
-	@Column(length = 2097152)
+
+	@Column(length = 2147483647)
 	private byte[] degreeScan;
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
