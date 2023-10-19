@@ -76,39 +76,37 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	//	http.cors()
-//		.configurationSource(new CorsConfigurationSource() {
-//
-//			@Override
-//			public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-//				CorsConfiguration config = new CorsConfiguration();
-//				config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-//				config.setAllowedMethods(Collections.singletonList("*"));
-//				config.setAllowCredentials(true);
-//				config.setAllowedHeaders(Collections.singletonList("*"));
-//				config.setMaxAge(3600L);
-//				return config;
-//			}
-//			 
-//		})
-//		.and()
-		http
-		.csrf().disable()
+		http.cors()
+		.configurationSource(new CorsConfigurationSource() {
+
+			@Override
+			public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+				CorsConfiguration config = new CorsConfiguration();
+				config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+				config.setAllowedMethods(Collections.singletonList("*"));
+				config.setAllowCredentials(true);
+				config.setAllowedHeaders(Collections.singletonList("*"));
+				config.setMaxAge(3600L);
+				return config;
+			}
+			 
+		})
+		.and().csrf().disable()
 			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().authorizeRequests()
-				.anyRequest().permitAll();
-//				.antMatchers("/api/auth/**").permitAll()
-//				.antMatchers("/api/v1/personal-info").hasRole("ADMIN")
-//				.antMatchers("/api/v1/personal-info/find/all/active").hasRole("ADMIN")
-//				.antMatchers("/api/v1/personal-info/email/{email}").hasRole("ADMIN")
-//				.antMatchers("/api/v1/personal-info/employeeId/{employeeId}").hasAnyRole("ADMIN","EMPLOYEE")
-//				.antMatchers("/api/v1/personal-info/delete/{email}").hasRole("ADMIN")
-//				.antMatchers("/api/v1/personal-info/update/email/{email}").hasRole("ADMIN")
-//				.antMatchers("/api/v1/dashboard").hasRole("ADMIN");
-//		
-//
+				//.anyRequest().permitAll();
+				.antMatchers("/api/auth/**").permitAll()
+				.antMatchers("/api/v1/personal-info").hasRole("ADMIN")
+				.antMatchers("/api/v1/personal-info/find/all/active").hasRole("ADMIN")
+				.antMatchers("/api/v1/personal-info/email/{email}").hasRole("ADMIN")
+				.antMatchers("/api/v1/personal-info/employeeId/{employeeId}").hasAnyRole("ADMIN","EMPLOYEE")
+				.antMatchers("/api/v1/personal-info/delete/{email}").hasRole("ADMIN")
+				.antMatchers("/api/v1/personal-info/update/email/{email}").hasRole("ADMIN")
+				.antMatchers("/api/v1/dashboard").hasRole("ADMIN");
+		
+
 		//.antMatchers("/api/v1/**").authenticated();
 				
 			
