@@ -63,4 +63,17 @@ public class LeaveController {
 	public ResponseEntity<List<LeaveApproval>> findAllLeaveApprovalPending() {
 		return ResponseEntity.ok(iLeaveService.findAllLeaveApprovalPending());
 	}
+
+//	This method for find all accepted request
+	@GetMapping("/leave/request/findall/accepted")
+	public ResponseEntity<List<LeaveApproval>> findAllLeaveApprovalAccepted() {
+		return ResponseEntity.ok(iLeaveService.findAllLeaveApprovalAccepted());
+	}
+
+//	This method for find all rejected request
+	@GetMapping("/leave/request/findall/rejected")
+	public ResponseEntity<List<LeaveApproval>> findAllLeaveApprovalRejected() {
+		return ResponseEntity.ok(iLeaveService.findAllLeaveApprovalRejected());
+	}
+
 }

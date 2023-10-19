@@ -18,4 +18,9 @@ public interface ILeaveService {
 	public LeaveApproval approvedByManager(long leaveRequestId, String leaveApproval) throws IOException;
 
 	public List<LeaveApproval> findAllLeaveApprovalPending();
+
+	public List<LeaveApproval> findAllLeaveApprovalAccepted();
+
+	public List<LeaveApproval> findAllLeaveApprovalRejected();
+
 }
