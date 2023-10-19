@@ -39,10 +39,11 @@ public class Trainingdetails {
 	private String trainerPhoneNo;
 
 	@Lob
-	@Column(length = 2097152)
+
+	@Column(length = 2147483647)
 	private byte[] CertificateUploadedForOutsource;
 	@Lob
-	@Column(length = 2097152)
+	@Column(length = 2147483647)
 	private byte[] PaidTrainingDocumentProof;
 	
 	@ManyToOne

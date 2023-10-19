@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,11 +24,15 @@ import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.api.security.response.StatusResponse;
 import com.erp.hrms.api.service.IPersonalInfoService;
 import com.erp.hrms.entity.PersonalInfo;
+
+import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin("*")
+
+//@CrossOrigin("*")
+
 public class PersonalInfoController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PersonalInfoController.class);
@@ -94,8 +99,7 @@ public class PersonalInfoController {
 		} catch (PersonalInfoNotFoundException e) {
 //			System.out.println(e);
 			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 //			System.out.println(e);
 			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
 		}
@@ -186,4 +190,18 @@ public class PersonalInfoController {
 			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
 		}
 	}
+
+
+	@GetMapping("/visa-notification")
+	public ResponseEntity<?> getRequestFields() {
+		List<NotificationHelper> requestedField = null;
+		try {
+			requestedField = personalInfoService.getRequestedField();
+			return ResponseEntity.ok(requestedField);
+		} catch (Exception e) {
+			System.out.println(e);
+			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
+		}
+	}
+
 }

@@ -21,17 +21,10 @@ import org.hibernate.annotations.CascadeType;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 public class PersonalInfo {
 	@Id
 	@Column(name = "employee_Id")
@@ -74,7 +67,7 @@ public class PersonalInfo {
 	private String personalContactNo;
 
 	@Lob
-	@Column(name = "passport_size_photo ", length = 2097152)
+	@Column(name = "passport_size_photo ", length = 2147483647)
 	private byte[] passportSizePhoto;
 
 	@Column(name = "email_id")
@@ -83,7 +76,7 @@ public class PersonalInfo {
 	@Column(name = "citizenship")
 	private String citizenship;
 
-	@Column(name = "id_Scan", length = 2097152)
+	@Column(name = "id_Scan", length = 2147483647)
 	@Lob
 	private byte[] OtherIdProofDoc;
 
@@ -150,20 +143,24 @@ public class PersonalInfo {
 	@Cascade(CascadeType.ALL)
 	private List<Trainingdetails> training;
 
-	@JsonManagedReference
+
+
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
+	@JsonManagedReference
+
 	private List<JobDetails> jobDetails;
 
 	@PostLoad
 	private void calculateAge() {
 		if (this.dateOfBirth != null && !this.dateOfBirth.isEmpty()) {
-			
+
+
 			LocalDate dob = LocalDate.parse(this.dateOfBirth, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 			LocalDate currentDate = LocalDate.now();
 			Period agePeriod = Period.between(dob, currentDate);
 			this.age = agePeriod.getYears();
 		}
 	}
- 
+
 }

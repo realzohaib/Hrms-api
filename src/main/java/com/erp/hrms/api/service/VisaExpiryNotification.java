@@ -1,8 +1,12 @@
 package com.erp.hrms.api.service;
 
 import java.time.LocalDate;
+
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -38,38 +42,36 @@ public class VisaExpiryNotification {
 					String visaExpiryDateString = visaInfo.getVisaExpiryDate();
 
 					if (visaExpiryDateString != null && !visaExpiryDateString.isEmpty()) {
-						LocalDate visaExpiryDate = LocalDate.parse(visaExpiryDateString, DateTimeFormatter.ISO_DATE);
-						Period period = Period.between(currentDate, visaExpiryDate);
-						int daysUntilExpiry = period.getDays();
 
-						if (daysUntilExpiry <= 60 && daysUntilExpiry >= 1) {
-							if (daysUntilExpiry == 20 && visaType.equals("Visit Visa")
-									&& !personalInfo.getVisainfo().isFirstVisaEmailSend()) {
+						LocalDate visaExpiryDate = LocalDate.parse(visaExpiryDateString,
+								DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+						long daysBetween = ChronoUnit.DAYS.between(currentDate, visaExpiryDate);
+
+						if (daysBetween <= 60 && daysBetween >= 1) {
+							if (daysBetween == 20 && visaType.equals("Visit Visa")
+									&& !personalInfo.getVisainfo().isVisaEmailSend20and60daysBefore()) {
 								sendNotificationOfVisitVisaFirst(personalInfo.getEmail(), visaExpiryDate, personalInfo);
-							} else if (daysUntilExpiry == 10 && visaType.equals("Visit Visa")
-									&& !personalInfo.getVisainfo().isSecondVisaEmailSend()) {
+							} else if (daysBetween == 10 && visaType.equals("Visit Visa")
+									&& !personalInfo.getVisainfo().isVisaEmailSend10and30daysBefore()) {
 								sendNotificationOfVisitVisaSecond(personalInfo.getEmail(), visaExpiryDate,
 										personalInfo);
-							} else if (daysUntilExpiry == 60 && visaType.equals("Work Visa")
-									&& !personalInfo.getVisainfo().isFirstVisaEmailSend()) {
+							} else if (daysBetween == 60 && visaType.equals("Work Visa")
+									&& !personalInfo.getVisainfo().isVisaEmailSend20and60daysBefore()) {
 								sendNotificationOfWorkVisaFirst(personalInfo.getEmail(), visaExpiryDate, personalInfo);
-							} else if (daysUntilExpiry == 30 && visaType.equals("Work Visa")
-									&& !personalInfo.getVisainfo().isSecondVisaEmailSend()) {
+							} else if (daysBetween == 30 && visaType.equals("Work Visa")
+									&& !personalInfo.getVisainfo().isVisaEmailSend10and30daysBefore()) {
 								sendNotificationOfWorkVisaSecond(personalInfo.getEmail(), visaExpiryDate, personalInfo);
-							} else if (daysUntilExpiry == 4
-									&& !personalInfo.getVisainfo().isFirstContinuouslyVisaEmailSend()) {
+							} else if (daysBetween == 4 && !personalInfo.getVisainfo().isVisaEmailSend4daysBefore()) {
 								sendNotificationOfContinuouslyFirstEmail(personalInfo.getEmail(), visaExpiryDate,
 										personalInfo);
-							} else if (daysUntilExpiry == 3
-									&& !personalInfo.getVisainfo().isSecondContinuouslyVisaEmailSend()) {
+							} else if (daysBetween == 3 && !personalInfo.getVisainfo().isVisaEmailSend3daysBefore()) {
 								sendNotificationOfContinuouslySecondEmail(personalInfo.getEmail(), visaExpiryDate,
 										personalInfo);
-							} else if (daysUntilExpiry == 2
-									&& !personalInfo.getVisainfo().isThirdContinuouslyVisaEmailSend()) {
+							} else if (daysBetween == 2 && !personalInfo.getVisainfo().isVisaEmailSend2daysBefore()) {
 								sendNotificationOfContinuouslyThirdEmail(personalInfo.getEmail(), visaExpiryDate,
 										personalInfo);
-							} else if (daysUntilExpiry == 1
-									&& !personalInfo.getVisainfo().isFourContinuouslyVisaEmailSend()) {
+							} else if (daysBetween == 1 && !personalInfo.getVisainfo().isVisaEmailSend1dayBefore()) {
 								sendNotificationOfContinuouslyFourEmail(personalInfo.getEmail(), visaExpiryDate,
 										personalInfo);
 							}
@@ -91,9 +93,9 @@ public class VisaExpiryNotification {
 			// Send email notification to admin
 			sendEmail(adminEmail, "Visa Expiry Reminder - Employee: " + email,
 					"The visit visa of employee " + email + " will expire on this " + visaExpiryDate + " date");
-			personalInfo.getVisainfo().setFirstVisaEmailSend(true);
 
-			personalInfoDAO.updateFirstVisaEmail(email);
+			personalInfo.getVisainfo().setVisaEmailSend20and60daysBefore(true);
+			personalInfoDAO.update20and60daysBeforeVisaEmail(email);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -108,8 +110,9 @@ public class VisaExpiryNotification {
 			// Send email notification to admin
 			sendEmail(adminEmail, "Visa Expiry Reminder - Employee: " + email,
 					"The visit visa of employee " + email + " will expire on this " + visaExpiryDate + " date");
-			personalInfo.getVisainfo().setSecondVisaEmailSend(true);
-			personalInfoDAO.updateSecondVisaEmail(email);
+
+			personalInfo.getVisainfo().setVisaEmailSend10and30daysBefore(true);
+			personalInfoDAO.update10and30daysBeforeVisaEmail(email);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -124,8 +127,9 @@ public class VisaExpiryNotification {
 			// Send email notification to admin
 			sendEmail(adminEmail, "Visa Expiry Reminder - Employee: " + email,
 					"The work visa of employee " + email + " will expire on this " + visaExpiryDate + " date");
-			personalInfo.getVisainfo().setFirstVisaEmailSend(true);
-			personalInfoDAO.updateFirstVisaEmail(email);
+
+			personalInfo.getVisainfo().setVisaEmailSend20and60daysBefore(true);
+			personalInfoDAO.update20and60daysBeforeVisaEmail(email);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -140,8 +144,9 @@ public class VisaExpiryNotification {
 			// Send email notification to admin
 			sendEmail(adminEmail, "Visa Expiry Reminder - Employee: " + email,
 					"The work visa of employee " + email + " will expire on this " + visaExpiryDate + " date");
-			personalInfo.getVisainfo().setFirstVisaEmailSend(true);
-			personalInfoDAO.updateSecondVisaEmail(email);
+
+			personalInfo.getVisainfo().setVisaEmailSend10and30daysBefore(true);
+			personalInfoDAO.update10and30daysBeforeVisaEmail(email);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -156,8 +161,9 @@ public class VisaExpiryNotification {
 			// Send email notification to admin
 			sendEmail(adminEmail, "Visa Expiry Reminder - Employee: " + email,
 					"The visa of employee " + email + " will expire on this " + visaExpiryDate + " date");
-			personalInfo.getVisainfo().setFirstContinuouslyVisaEmailSend(true);
-			personalInfoDAO.updatefirstContinuouslyVisaEmailSend(email);
+
+			personalInfo.getVisainfo().setVisaEmailSend4daysBefore(true);
+			personalInfoDAO.update4daysBeforeVisaEmailSend(email);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -172,8 +178,9 @@ public class VisaExpiryNotification {
 			// Send email notification to admin
 			sendEmail(adminEmail, "Visa Expiry Reminder - Employee: " + email,
 					"The visa of employee " + email + " will expire on this " + visaExpiryDate + " date");
-			personalInfo.getVisainfo().setFirstContinuouslyVisaEmailSend(true);
-			personalInfoDAO.updateSecondContinuouslyVisaEmailSend(email);
+
+			personalInfo.getVisainfo().setVisaEmailSend3daysBefore(true);
+			personalInfoDAO.update3daysBeforeVisaEmailSend(email);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -189,8 +196,9 @@ public class VisaExpiryNotification {
 			// Send email notification to admin
 			sendEmail(adminEmail, "Visa Expiry Reminder - Employee: " + email,
 					"The visa of employee " + email + " will expire on this " + visaExpiryDate + " date");
-			personalInfo.getVisainfo().setFirstContinuouslyVisaEmailSend(true);
-			personalInfoDAO.updateThirdContinuouslyVisaEmailSend(email);
+
+			personalInfo.getVisainfo().setVisaEmailSend2daysBefore(true);
+			personalInfoDAO.update2daysBeforeVisaEmailSend(email);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -205,8 +213,9 @@ public class VisaExpiryNotification {
 			// Send email notification to admin
 			sendEmail(adminEmail, "Visa Expiry Reminder - Employee: " + email,
 					"The visa of employee " + email + " will expire on this " + visaExpiryDate + " date");
-			personalInfo.getVisainfo().setFirstContinuouslyVisaEmailSend(true);
-			personalInfoDAO.updatefourContinuouslyVisaEmailSend(email);
+
+			personalInfo.getVisainfo().setVisaEmailSend1dayBefore(true);
+			personalInfoDAO.update1dayBeforeVisaEmailSend(email);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}

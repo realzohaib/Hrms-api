@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
+
 @SpringBootApplication
 @EnableScheduling
 //@ComponentScan({"com.erp.hrms.api.controller","com.erp.hrms.api.dao","com.erp.hrms.api.dao",

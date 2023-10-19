@@ -25,7 +25,9 @@ public class EmpAchievement {
 	
 	private String achievementRewardsName;
 	
-	@Column(length = 2097152)
+
+
+	@Column(length = 2147483647)
 	@Lob
 	private byte[] achievementsRewardsDocs;
 	

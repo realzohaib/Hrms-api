@@ -22,6 +22,8 @@ import com.erp.hrms.entity.PreviousEmployee;
 import com.erp.hrms.entity.ProfessionalQualification;
 import com.erp.hrms.entity.Trainingdetails;
 import com.erp.hrms.entity.VisaDetail;
+
+import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -219,15 +221,14 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	public List<PersonalInfo> findAllPersonalInfo() {
 		List<PersonalInfo> findAllPersonalInfo = null;
 		try {
-				findAllPersonalInfo = dao.findAllPersonalInfo();
+			findAllPersonalInfo = dao.findAllPersonalInfo();
+			return findAllPersonalInfo;
 		} catch (Exception e) {
-			System.out.println(e);
+			throw new RuntimeException("Something wrong: " + e);
 		}
-		return findAllPersonalInfo;
 	}
 
-
-	@Override 
+	@Override
 	public PersonalInfo getPersonalInfoByEmail(String email) {
 		try {
 			PersonalInfo personalInfoByEmail = dao.getPersonalInfoByEmail(email);
@@ -240,7 +241,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	@Override
 	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) {
 		try {
-			 PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
+
+			PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
 			return personalInfoByEmployeeId;
 		} catch (Exception e) {
 			System.out.println(e);
@@ -285,8 +287,9 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 		PersonalInfo existingPersonalInfo = dao.getPersonalInfoByEmailForUpdate(email);
 		if (existingPersonalInfo == null) {
-			throw new PersonalInfoNotFoundException(
-					new MessageResponse("No personal information found for this email ID: " + email));
+
+			throw new PersonalInfoNotFoundException(new MessageResponse(
+					"No personal information found for this email ID: " + email + " or this eamil is inactived"));
 		}
 		try {
 			existingPersonalInfo.setNamePrefix(personalInfo.getNamePrefix());
@@ -660,5 +663,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
 		}
 
+	}
+
+	@Override
+	public List<NotificationHelper> getRequestedField() {
+		List<NotificationHelper> notificationFields = null;
+		try {
+			notificationFields = dao.getNotificationFields();
+			return notificationFields;
+		} catch (Exception e) {
+			System.out.println(e);
+			throw new RuntimeException("Something went wrong. " + e);
+		}
 	}
 }

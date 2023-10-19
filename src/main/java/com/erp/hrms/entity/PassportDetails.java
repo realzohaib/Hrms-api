@@ -17,7 +17,10 @@ public class PassportDetails {
 	private String passportNumber;
 	@Column(name = "passport_expiry_date")
 	private String passportExpiryDate;
-	@Column(name = "Passport_Docs",length = 2097152)
+
+
+	@Column(name = "Passport_Docs",length = 2147483647)
+
 	@Lob
 	private byte[] passportScan;
 

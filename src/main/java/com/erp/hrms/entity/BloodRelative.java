@@ -27,9 +27,10 @@ public class BloodRelative {
 	private String Rcontactno;
 	@Column(name = "address")
 	private String Raddress;
-	@Column(name = "relative_id", length = 2097152)
+
+	@Column(name = "relative_id", length = 2147483647)
 	private byte[] relativeid;
-	@Column(name = "adress_proof", length = 2097152)
+	@Column(name = "adress_proof", length = 2147483647)
 	private byte[] Raddressproof;
 
 

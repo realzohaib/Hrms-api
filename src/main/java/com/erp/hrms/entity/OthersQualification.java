@@ -32,7 +32,10 @@ public class OthersQualification {
 	@Column(name = "others_year")
 	private String othersYear;
 
-	@Column(name = "others_supporting_document", length = 2097152)
+
+
+	@Column(name = "others_supporting_document", length = 2147483647)
+
 	@Lob
 	private byte[] othersDocumentScan;
 
