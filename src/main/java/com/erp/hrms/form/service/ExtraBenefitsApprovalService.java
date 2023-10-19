@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.entity.form.ExtraBenefitsApproval;
 import com.erp.hrms.form.repository.IExtraBenefitsApprovalRepository;
@@ -21,15 +23,20 @@ public class ExtraBenefitsApprovalService implements IExtraBenefitsApprovalServi
 	IExtraBenefitsApprovalRepository iExtraBenefitsApprovalRepository;
 
 	@Override
-	public void createExtraBenefitsApproval(String extraBenefitsApproval, String supportingDocuments)
+	public void createExtraBenefitsApproval(String extraBenefitsApproval, MultipartFile supportingDocumentsName)
 			throws IOException {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		ExtraBenefitsApproval extraBenefitsApprovalJson = objectMapper.readValue(extraBenefitsApproval,
 				ExtraBenefitsApproval.class);
-		Path fileNameAndPath = Paths.get(uplaodDirectory, supportingDocuments);
-		Files.write(fileNameAndPath, supportingDocuments.getBytes());
-		extraBenefitsApprovalJson.setSupportingDocumentsName(supportingDocuments);
+
+		String uniqueIdentifier = UUID.randomUUID().toString();
+		String originalFileName = supportingDocumentsName.getOriginalFilename();
+		String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
+
+		Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
+		Files.write(fileNameAndPath, supportingDocumentsName.getBytes());
+		extraBenefitsApprovalJson.setSupportingDocumentsName(fileNameWithUniqueIdentifier);
 		iExtraBenefitsApprovalRepository.createExtraBenefitsApproval(extraBenefitsApprovalJson);
 
 	}

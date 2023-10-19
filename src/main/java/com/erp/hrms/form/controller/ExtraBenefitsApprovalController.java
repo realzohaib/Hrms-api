@@ -23,8 +23,7 @@ public class ExtraBenefitsApprovalController {
 	@PostMapping("/extraBenefits")
 	public ResponseEntity<?> createExtraBenefitsApproval(@RequestParam("extraBenefits") String extraBenefits,
 			@RequestParam("supportingDocumentsName") MultipartFile supportingDocumentsName) throws IOException {
-		String originalFileName = supportingDocumentsName.getOriginalFilename();
-		iExtraBenefitsApprovalService.createExtraBenefitsApproval(extraBenefits, originalFileName);
+		iExtraBenefitsApprovalService.createExtraBenefitsApproval(extraBenefits, supportingDocumentsName);
 		return ResponseEntity.ok(new MessageResponse("Your Extra benefits request send."));
 	}
 
