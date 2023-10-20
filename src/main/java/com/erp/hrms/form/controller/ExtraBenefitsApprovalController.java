@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,4 +29,14 @@ public class ExtraBenefitsApprovalController {
 		return ResponseEntity.ok(new MessageResponse("Your Extra benefits request send."));
 	}
 
+	@GetMapping("/findall/benefits/approval")
+	public ResponseEntity<?> findAllExtraBenefitsApproval() {
+		return ResponseEntity.ok(iExtraBenefitsApprovalService.findAllExtraBenefitsApproval());
+	}
+
+	@GetMapping("/get/benefit/approval/{extraBenefitsRequestId}")
+	public ResponseEntity<?> getBenefitApprovalByExtraBenefitsRequestId(@PathVariable long extraBenefitsRequestId) {
+		return ResponseEntity
+				.ok(iExtraBenefitsApprovalService.getBenefitApprovalByExtraBenefitsRequestId(extraBenefitsRequestId));
+	}
 }

@@ -13,8 +13,8 @@ public class ExtraBenefitsApproval {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long ExtraBenefitsRequestId;
-	private Long employeeId;
+	private Long extraBenefitsRequestId;
+	private Long employeeId; 
 	private String employeeName;
 	private String post;
 	private String department;

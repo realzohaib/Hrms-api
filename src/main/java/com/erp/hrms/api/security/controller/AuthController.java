@@ -165,7 +165,6 @@ import com.erp.hrms.entity.PersonalInfo;
  * 
  */
 
-
 //@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
@@ -201,8 +200,7 @@ public class AuthController {
 			UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 			Set<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 					.collect(Collectors.toSet());
-			 
-			
+
 			// Verify if the user has the required role
 			if (!roles.contains(loginRequest.getRole())) {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("You don't have access"));
@@ -212,8 +210,8 @@ public class AuthController {
 			long parseLong = Long.parseLong(username);
 
 			if (roles.contains("ROLE_EMPLOYEE")) {
-				//PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
-			     PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
+				// PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
+				PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
 				jwt.setInfo(personalInfo);
 				return ResponseEntity.ok(jwt);
 			}
@@ -243,8 +241,7 @@ public class AuthController {
 		long parseLong = Long.parseLong(username);
 		System.out.println(parseLong);
 		System.out.println(dao.existByID(parseLong));
-		
-		
+
 		if (dao.existByID(parseLong)) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Error: Invalid Employee Id"));
 
@@ -256,7 +253,7 @@ public class AuthController {
 
 		Set<String> strRoles = signUpRequest.getRole();
 		Set<RoleEntity> roles = new HashSet<>();
-		
+
 		System.out.println(strRoles);
 
 		if (strRoles == null) {
