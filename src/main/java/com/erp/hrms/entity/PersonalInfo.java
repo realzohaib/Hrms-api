@@ -77,7 +77,6 @@ public class PersonalInfo {
 	@Column(name = "citizenship")
 	private String citizenship;
 
-
 	@Column(name = "id_Scan", length = 2147483647)
 	@Lob
 	private byte[] OtherIdProofDoc;
@@ -144,7 +143,6 @@ public class PersonalInfo {
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
 	private List<Trainingdetails> training;
-
 
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)

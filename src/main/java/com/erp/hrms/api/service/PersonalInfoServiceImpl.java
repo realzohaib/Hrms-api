@@ -77,6 +77,13 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				visaDetail.setVisaIssueyDate(PersonalInfo.getVisainfo().getVisaIssueyDate());
 				visaDetail.setVisaType(PersonalInfo.getVisainfo().getVisaType());
 
+				visaDetail.setVisaEmailSend20and60daysBefore(false);
+				visaDetail.setVisaEmailSend10and30daysBefore(false);
+				visaDetail.setVisaEmailSend4daysBefore(false);
+				visaDetail.setVisaEmailSend3daysBefore(false);
+				visaDetail.setVisaEmailSend2daysBefore(false);
+				visaDetail.setVisaEmailSend1dayBefore(false);
+
 				String visaExpiryDateString = PersonalInfo.getVisainfo().getVisaExpiryDate();
 				visaDetail.setVisaExpiryDate(visaExpiryDateString);
 				if (visaDocs != null && !visaDocs.isEmpty()) {

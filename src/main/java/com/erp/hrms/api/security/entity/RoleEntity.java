@@ -2,6 +2,7 @@
  * 
  */
 package com.erp.hrms.api.security.entity;
+
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -29,26 +30,26 @@ import lombok.Setter;
 @Entity
 @Table(name = "roles")
 public class RoleEntity implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	  @Id
-	  @GeneratedValue(strategy = GenerationType.IDENTITY)
-	  private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-	  @Enumerated(EnumType.STRING)
-	  @Column(length = 20)
-	  private ERole name;
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
+	private ERole name;
 
-	  public RoleEntity() {
+	public RoleEntity() {
 
-	  }
+	}
 
-	  public RoleEntity(ERole name) {
-	    this.name = name;
-	  }
+	public RoleEntity(ERole name) {
+		this.name = name;
+	}
 
 }
