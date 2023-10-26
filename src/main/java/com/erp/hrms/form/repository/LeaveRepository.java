@@ -26,7 +26,8 @@ public class LeaveRepository implements ILeaveRepository {
 	}
 
 	@Override
-	public LeaveApproval getleaveRequestById(long leaveRequestId) {
+	public LeaveApproval getleaveRequestById(Long leaveRequestId) {
+
 		Query query = entityManager
 				.createQuery("SELECT l FROM LeaveApproval l WHERE l.leaveRequestId = :leaveRequestId");
 		query.setParameter("leaveRequestId", leaveRequestId);
@@ -35,17 +36,18 @@ public class LeaveRepository implements ILeaveRepository {
 		} catch (NoResultException e) {
 			return null;
 		}
+
 	}
 
 	@Override
-	public List<LeaveApproval> getLeaveRequestByEmployeeId(long employeeId) {
-		List<LeaveApproval> findAllRequestById = null;
+	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId) {
+		List<LeaveApproval> findAllEmployeeId = null;
 		try {
 			TypedQuery<LeaveApproval> query = entityManager
 					.createQuery("SELECT l FROM LeaveApproval l WHERE l.employeeId = :employeeId", LeaveApproval.class);
 			query.setParameter("employeeId", employeeId);
-			findAllRequestById = query.getResultList();
-			return findAllRequestById;
+			findAllEmployeeId = query.getResultList();
+			return findAllEmployeeId;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -64,7 +66,7 @@ public class LeaveRepository implements ILeaveRepository {
 	}
 
 	@Override
-	public LeaveApproval approvedByManager(long leaveRequestId, LeaveApproval leaveApproval) {
+	public LeaveApproval approvedByManager(Long leaveRequestId, LeaveApproval leaveApproval) {
 		try {
 			leaveApproval.setLeaveRequestId(leaveRequestId);
 			entityManager.merge(leaveApproval);

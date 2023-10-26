@@ -8,13 +8,13 @@ public interface ILeaveRepository {
 
 	public void createLeaveApproval(LeaveApproval leaveApproval);
 
-	public LeaveApproval approvedByManager(long leaveRequestId, LeaveApproval leaveApproval);
+	public LeaveApproval approvedByManager(Long leaveRequestId, LeaveApproval leaveApproval);
 
-	public LeaveApproval getleaveRequestById(long leaveRequestId);
+	public LeaveApproval getleaveRequestById(Long leaveRequestId);
 
 	public List<LeaveApproval> findAllLeaveApproval();
 
-	public List<LeaveApproval> getLeaveRequestByEmployeeId(long employeeId);
+	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId);
 
 	public List<LeaveApproval> findAllLeaveApprovalPending();
 	

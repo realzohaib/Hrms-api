@@ -1,6 +1,7 @@
 package com.erp.hrms.form.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.entity.form.ExtraBenefitsApproval;
 import com.erp.hrms.form.service.IExtraBenefitsApprovalService;
 
 @RestController
@@ -39,4 +41,10 @@ public class ExtraBenefitsApprovalController {
 		return ResponseEntity
 				.ok(iExtraBenefitsApprovalService.getBenefitApprovalByExtraBenefitsRequestId(extraBenefitsRequestId));
 	}
+
+	@GetMapping("/get/benefit/approval/employeeid/{employeeId}")
+	public ResponseEntity<List<ExtraBenefitsApproval>> getBenefitsApprovalByEmployeeId(@PathVariable long employeeId) {
+		return ResponseEntity.ok(iExtraBenefitsApprovalService.getBenefitApprovalByEmployeeId(employeeId));
+	}
+
 }

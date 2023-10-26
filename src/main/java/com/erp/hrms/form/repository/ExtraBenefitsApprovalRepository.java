@@ -5,12 +5,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.erp.hrms.entity.form.ExtraBenefitsApproval;
+import com.erp.hrms.entity.form.LeaveApproval;
 
 @Repository
 @Transactional
@@ -53,7 +55,17 @@ public class ExtraBenefitsApprovalRepository implements IExtraBenefitsApprovalRe
 	@Override
 	public List<ExtraBenefitsApproval> getBenefitApprovalByEmployeeId(long employeeId) {
 
+		List<ExtraBenefitsApproval> extraBenefitsApprovalsByEmployeeId=null;
+		try {
+			TypedQuery<ExtraBenefitsApproval> query=entityManager
+					.createQuery("SELECT e FROM ExtraBenefitsApproval e WHERE e.employeeId = :employeeId", ExtraBenefitsApproval.class);
+			query.setParameter("employeeId", employeeId);
+			extraBenefitsApprovalsByEmployeeId = query.getResultList();
+			return extraBenefitsApprovalsByEmployeeId;
+		}
+		catch(NoResultException e) {
 		return null;
+		}
 	}
 
 }

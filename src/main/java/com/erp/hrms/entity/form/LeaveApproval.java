@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import lombok.Data;
 
@@ -23,7 +24,9 @@ public class LeaveApproval {
 
 	private String emergencyContactNumber;
 	private String requestDate;
-	private String leaveType;
+	
+	private String medicalDocumentsName;
+	
 	private String leaveReason;
 	private String startDate;
 	private String endDate;
@@ -32,6 +35,9 @@ public class LeaveApproval {
 	private String approvingManagerName;
 	private String approvalRemarks;
 
+	@OneToOne
+	private LeaveType leaveType;
+	
 
 
 }

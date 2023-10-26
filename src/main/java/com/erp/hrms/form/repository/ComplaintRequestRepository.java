@@ -62,13 +62,13 @@ public class ComplaintRequestRepository implements IComplaintRepository {
 
 	@Override
 	public List<ComplaintForm> getComplaintRequestByEmployeeId(long employeeId) {
-		List<ComplaintForm> findAllRequestById = null;
+		List<ComplaintForm> findAllEmployeeId = null;
 		try {
 			TypedQuery<ComplaintForm> query = entityManager
 					.createQuery("SELECT c FROM ComplaintForm c WHERE c.employeeId = :employeeId", ComplaintForm.class);
 			query.setParameter("employeeId", employeeId);
-			findAllRequestById = query.getResultList();
-			return findAllRequestById;
+			findAllEmployeeId = query.getResultList();
+			return findAllEmployeeId;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

@@ -1,11 +1,17 @@
 package com.erp.hrms.form.service;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.exception.LeaveRequestApprovalException;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
@@ -15,37 +21,48 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class LeaveService implements ILeaveService {
 
+	public static String uplaodDirectory = System.getProperty("user.dir") + "/src/main/webapp/images";
+
 	@Autowired
 	ILeaveRepository iLeaveRepository;
 
 //	This method for send the leave request to manager
 	@Override
-	public void createLeaveApproval(String leaveApproval) throws IOException {
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			LeaveApproval leaveApprovaljson = mapper.readValue(leaveApproval, LeaveApproval.class);
-			iLeaveRepository.createLeaveApproval(leaveApprovaljson);
-		} catch (Exception e) {
-			throw new LeaveRequestApprovalException("Error while creating leave approval. " + e);
-		}
+	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException {
+
+		ObjectMapper mapper = new ObjectMapper();
+		LeaveApproval leaveApprovaljson = mapper.readValue(leaveApproval, LeaveApproval.class);
+
+		String uniqueIdentifier = UUID.randomUUID().toString();
+		String originalFileName = medicalDocumentsName.getOriginalFilename();
+		String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
+
+		Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
+		Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
+		leaveApprovaljson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
+
+		iLeaveRepository.createLeaveApproval(leaveApprovaljson);
+
 	}
 
 //	This method for get the leave request by LeaveRequestId
 	@Override
-	public LeaveApproval getleaveRequestById(long leaveRequestId) {
+	public LeaveApproval getleaveRequestById(Long leaveRequestId) {
 		LeaveApproval leaveApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
 		if (leaveApproval == null) {
-			throw new LeaveRequestNotFoundException("Leave request with ID " + leaveRequestId + " not found.");
+			throw new LeaveRequestNotFoundException(
+					new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
 		}
 		return leaveApproval;
 	}
 
 //	This method for find all the Leave Request by employeeId
 	@Override
-	public List<LeaveApproval> getLeaveRequestByEmployeeId(long employeeId) {
+	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId) {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.getLeaveRequestByEmployeeId(employeeId);
 		if (leaveApprovals.isEmpty()) {
-			throw new LeaveRequestNotFoundException("This Employee ID " + employeeId + " not found.");
+			throw new LeaveRequestNotFoundException(
+					new MessageResponse("This Employee ID " + employeeId + " not found."));
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -57,7 +74,7 @@ public class LeaveService implements ILeaveService {
 		List<LeaveApproval> leaveApprovals = null;
 		leaveApprovals = iLeaveRepository.findAllLeaveApproval();
 		if (leaveApprovals.isEmpty()) {
-			throw new LeaveRequestNotFoundException("No leave request now ");
+			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -65,10 +82,11 @@ public class LeaveService implements ILeaveService {
 
 //	This method for update the leave request by the manager Accepted or Rejected with the help of leaveRequestId
 	@Override
-	public LeaveApproval approvedByManager(long leaveRequestId, String leaveApproval) throws IOException {
+	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval) throws IOException {
 		LeaveApproval existingApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
 		if (existingApproval == null) {
-			throw new LeaveRequestNotFoundException("Leave request with ID " + leaveRequestId + " not found.");
+			throw new LeaveRequestNotFoundException(
+					new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
 		}
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -91,7 +109,7 @@ public class LeaveService implements ILeaveService {
 
 			return iLeaveRepository.approvedByManager(leaveRequestId, leaveApprovalJson);
 		} catch (Exception e) {
-			throw new LeaveRequestApprovalException("Error while approving leave request." + e);
+			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
 		}
 	}
 
@@ -100,7 +118,7 @@ public class LeaveService implements ILeaveService {
 	public List<LeaveApproval> findAllLeaveApprovalPending() {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalPending();
 		if (leaveApprovals.isEmpty()) {
-			throw new LeaveRequestNotFoundException("No leave request now ");
+			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -111,7 +129,7 @@ public class LeaveService implements ILeaveService {
 	public List<LeaveApproval> findAllLeaveApprovalAccepted() {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalAccepted();
 		if (leaveApprovals.isEmpty()) {
-			throw new LeaveRequestNotFoundException("No leave request now ");
+			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -123,7 +141,7 @@ public class LeaveService implements ILeaveService {
 
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalRejected();
 		if (leaveApprovals.isEmpty()) {
-			throw new LeaveRequestNotFoundException("No leave request now ");
+			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
