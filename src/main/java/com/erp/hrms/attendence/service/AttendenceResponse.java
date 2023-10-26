@@ -1,8 +1,9 @@
-package com.erp.hrms.attendence.service;
+	package com.erp.hrms.attendence.service;
 
 import java.util.List;
 
 import com.erp.hrms.attendence.entity.Attendence;
+import com.erp.hrms.shift.entity.ShiftAssignment;
 
 import lombok.Data;
 
@@ -18,6 +19,8 @@ public class AttendenceResponse {
 	private int totalHalfDaysInMonth;
 	
 	private long totalOvertimeHoursInMonth;
+	
+	private ShiftAssignment shift;
 	
 
 }

@@ -37,7 +37,7 @@ public class AttendenceController {
 	public ResponseEntity<?> punchInTime(@RequestBody Attendence attendence) throws AttendencenotRegistered{
 		
 //		if(repo.existsByEmployeeIdAndDate(attendence.getEmployeeId(), attendence.getDate())) {
-//			return ResponseEntity.badRequest().body(new MessageResponse("Error: Employee Already punched -in"));
+//		return ResponseEntity.badRequest().body(new MessageResponse("Error: Employee Already punched -in"));
 //		}
 	try {
 		Attendence punchIn = service.punchIn(attendence);

@@ -15,11 +15,16 @@ import org.springframework.stereotype.Service;
 import com.erp.hrms.attendence.entity.Attendence;
 import com.erp.hrms.attendence.entity.Breaks;
 import com.erp.hrms.attendence.repo.IAttendencerepo;
+import com.erp.hrms.shift.Dao.ShiftAssignmentDaoImpl;
 
 @Service
 public class AttendenceServiceImpl implements IAttendenceService {
 	@Autowired
-	IAttendencerepo repo;
+	 private IAttendencerepo repo;
+	
+	@Autowired
+	private ShiftAssignmentDaoImpl shift;
+	
 
 	// function to calculate time difference between two timestamp
 	public long calculateBreakDurationInMillis(Timestamp breakStart, Timestamp breakEnd) {
@@ -206,28 +211,31 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	     attendenceResponse.setTotalDaysPresentInMonth(daysPresnt);
 	     attendenceResponse.setTotalHalfDaysInMonth(halfDays);	     
 	     attendenceResponse.setTotalOvertimeHoursInMonth(totalOvertimehrsInMont);
+	     attendenceResponse.setShift(shift.currentShftById(employeeId));
 	     
 		return attendenceResponse;
 	}
-
+	
 	@Override
 	public int calculateWorkingDays(int year, int month) {
 	    int workingDays = 0;
-	    LocalDate date = LocalDate.of(year, month, 1);
+	    LocalDate currentDate = LocalDate.now();
+	    LocalDate startDate = LocalDate.of(year, month, 1);
 
-	    while (date.getMonthValue() == month) {
-	        DayOfWeek dayOfWeek = date.getDayOfWeek();
+	    while (!currentDate.isBefore(startDate) && currentDate.getMonthValue() == month) {
+	        DayOfWeek dayOfWeek = startDate.getDayOfWeek();
 
 	        // Check if the day is a working day based on your criteria
 	        if (isWorkingDay(dayOfWeek)) {
 	            workingDays++;
 	        }
 
-	        date = date.plusDays(1);
+	        startDate = startDate.plusDays(1);
 	    }
 
 	    return workingDays;
 	}
+
 
 	private boolean isWorkingDay(DayOfWeek dayOfWeek) {
 	    // Implement your organization's working day criteria here
