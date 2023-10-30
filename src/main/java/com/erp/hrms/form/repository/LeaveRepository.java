@@ -123,4 +123,27 @@ public class LeaveRepository implements ILeaveRepository {
 		}
 	}
 
+	@Override
+	public List<LeaveApproval> getLeaveApprovalByEmployeeId(Long employeeId) {
+		List<LeaveApproval> findAllEmployeeId = null;
+		try {
+			TypedQuery<LeaveApproval> query = entityManager
+					.createQuery("SELECT l FROM LeaveApproval l WHERE l.employeeId = :employeeId", LeaveApproval.class);
+			query.setParameter("employeeId", employeeId);
+			findAllEmployeeId = query.getResultList();
+			return findAllEmployeeId;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void updateLeaveApproval(LeaveApproval leaveApproval) {
+		try {
+			entityManager.merge(leaveApproval);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

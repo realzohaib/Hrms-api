@@ -17,9 +17,13 @@ public interface ILeaveRepository {
 	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId);
 
 	public List<LeaveApproval> findAllLeaveApprovalPending();
-	
+
 	public List<LeaveApproval> findAllLeaveApprovalAccepted();
-	
+
 	public List<LeaveApproval> findAllLeaveApprovalRejected();
+
+	List<LeaveApproval> getLeaveApprovalByEmployeeId(Long employeeId);
+
+	void updateLeaveApproval(LeaveApproval leaveApproval);
 
 }

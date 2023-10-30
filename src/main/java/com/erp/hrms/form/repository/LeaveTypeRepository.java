@@ -28,8 +28,7 @@ public class LeaveTypeRepository implements ILeaveTypeRepository {
 	public List<LeaveType> findAllLeaveType() {
 		List<LeaveType> leaveTypes = null;
 		try {
-			leaveTypes = entityManager.createQuery("SELECT ly FROM LeaveType ly ", LeaveType.class)
-					.getResultList();
+			leaveTypes = entityManager.createQuery("SELECT ly FROM LeaveType ly ", LeaveType.class).getResultList();
 			return leaveTypes;
 		} catch (Exception e) {
 			return null;
@@ -38,9 +37,20 @@ public class LeaveTypeRepository implements ILeaveTypeRepository {
 
 	@Override
 	public LeaveType findByLeaveTypeId(Long leaveTypeId) {
-		Query query = entityManager
-				.createQuery("SELECT ly FROM LeaveType ly WHERE ly.leaveTypeId = :leaveTypeId");
+		Query query = entityManager.createQuery("SELECT ly FROM LeaveType ly WHERE ly.leaveTypeId = :leaveTypeId");
 		query.setParameter("leaveTypeId", leaveTypeId);
+		try {
+			return (LeaveType) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public LeaveType findByLeaveName(String leaveName) {
+		Query query = entityManager.createQuery("SELECT lt FROM LeaveType lt WHERE lt.leaveName = :leaveName");
+		query.setParameter("leaveName", leaveName);
+
 		try {
 			return (LeaveType) query.getSingleResult();
 		} catch (NoResultException e) {
