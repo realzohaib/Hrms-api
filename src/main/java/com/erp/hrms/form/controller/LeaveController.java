@@ -30,7 +30,6 @@ public class LeaveController {
 			@RequestParam("medicalDocumentsName") MultipartFile medicalDocumentsName) throws IOException {
 		try {
 			iLeaveService.createLeaveApproval(leaveApproval, medicalDocumentsName);
-//		return ResponseEntity.ok(new MessageResponse("Your leave request send to your manager."));
 			return new ResponseEntity<>(new MessageResponse("Your leave request send to your manager."), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>((new MessageResponse("Error while creating leave approval. " + e)),

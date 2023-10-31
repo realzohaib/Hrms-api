@@ -258,7 +258,7 @@ public class LeaveService implements ILeaveService {
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText("Your Leave Request status :\n" + "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n"
-				+ "Leave Type: " + leaveApproval.getLeaveType() + "\n" + "Start Date: " + leaveApproval.getStartDate()
+				+ "Leave Type: " + leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: " + leaveApproval.getStartDate()
 				+ "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: " + leaveApproval.getLeaveReason()
 				+ "\n" + "Manager Name : " + leaveApproval.getApprovingManagerName() + "\n" + "Status :"
 				+ leaveApproval.getApprovalStatus() + "\n" + "Manager remark :" + leaveApproval.getApprovalRemarks()
