@@ -1,5 +1,6 @@
 package com.erp.hrms.form.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -124,26 +125,46 @@ public class LeaveRepository implements ILeaveRepository {
 	}
 
 	@Override
-	public List<LeaveApproval> getLeaveApprovalByEmployeeId(Long employeeId) {
-		List<LeaveApproval> findAllEmployeeId = null;
-		try {
-			TypedQuery<LeaveApproval> query = entityManager
-					.createQuery("SELECT l FROM LeaveApproval l WHERE l.employeeId = :employeeId", LeaveApproval.class);
-			query.setParameter("employeeId", employeeId);
-			findAllEmployeeId = query.getResultList();
-			return findAllEmployeeId;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId) {
+		String sql = "SELECT SUM(numberOfDaysRequested) FROM LeaveApproval WHERE employeeId = :employeeId";
+//		String sql = "SELECT COUNT(numberOfDaysRequested) FROM LeaveApproval WHERE employeeId = :employeeId";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter("employeeId", employeeId);
+
+		List<?> result = query.getResultList();
+		if (result != null && !result.isEmpty()) {
+			Object obj = result.get(0);
+			if (obj instanceof BigDecimal) {
+				return (BigDecimal) obj;
+			}
+			if (obj instanceof Number) {
+				return new BigDecimal(((Number) obj).doubleValue());
+			}
 		}
+
+		return BigDecimal.ZERO;
 	}
 
 	@Override
-	public void updateLeaveApproval(LeaveApproval leaveApproval) {
-		try {
-			entityManager.merge(leaveApproval);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName) {
+		String sql = "SELECT SUM(la.numberOfDaysRequested) FROM LeaveApproval la " + "JOIN la.leaveType lt "
+				+ "WHERE la.employeeId = :employeeId AND lt.leaveName = :leaveName";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter("employeeId", employeeId);
+		query.setParameter("leaveName", leaveName);
+
+		List<?> result = query.getResultList();
+		if (result != null && !result.isEmpty()) {
+			Object obj = result.get(0);
+			if (obj instanceof BigDecimal) {
+				return (BigDecimal) obj;
+			}
+			if (obj instanceof Number) {
+				return new BigDecimal(((Number) obj).doubleValue());
+			}
 		}
+
+		return BigDecimal.ZERO;
 	}
 
 }

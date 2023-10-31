@@ -1,5 +1,6 @@
 package com.erp.hrms.form.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.erp.hrms.entity.form.LeaveApproval;
@@ -22,8 +23,8 @@ public interface ILeaveRepository {
 
 	public List<LeaveApproval> findAllLeaveApprovalRejected();
 
-	List<LeaveApproval> getLeaveApprovalByEmployeeId(Long employeeId);
+	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId);
 
-	void updateLeaveApproval(LeaveApproval leaveApproval);
+	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
 
 }

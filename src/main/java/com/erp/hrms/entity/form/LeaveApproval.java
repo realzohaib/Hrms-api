@@ -1,9 +1,12 @@
 package com.erp.hrms.entity.form;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import lombok.Data;
 
@@ -41,15 +44,8 @@ public class LeaveApproval {
 	// aur ye manager name ki tarha hi kaam karega
 	private String managerEmail;
 
-	private String leaveType;
-
-	private double remaingMedicalLeavesInYear;
-	private double remaingCasualLeavesInYear;
-	private double remaingMaternityLeavesInYear;
-	private double remaingEmergencyLeaveInYear;
-
-	// @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//	@JoinColumn(name = "leaveTypeLeaveApproval", referencedColumnName = "leaveTypeId")
-//	private LeaveType leaveType;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "leaveTypeLeaveApproval", referencedColumnName = "leaveTypeId")
+	private LeaveType leaveType;
 
 }

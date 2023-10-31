@@ -1,6 +1,7 @@
 package com.erp.hrms.form.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -114,6 +115,16 @@ public class LeaveController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse("No leave request rejected "), HttpStatus.NOT_FOUND);
 		}
+	}
+
+	@GetMapping("/calculateTotalLeaveDays/{employeeId}")
+	public BigDecimal calculateTotalLeaveDays(@PathVariable Long employeeId) {
+		return iLeaveService.calculateTotalNumberOfDaysRequestedByEmployee(employeeId);
+	}
+
+	@GetMapping("/calculateTotalLeaveDays/{employeeId}/leaveName/{leaveName}")
+	public BigDecimal calculateTotalSpecificLeaveDays(@PathVariable Long employeeId, @PathVariable String leaveName) {
+		return iLeaveService.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName);
 	}
 
 }

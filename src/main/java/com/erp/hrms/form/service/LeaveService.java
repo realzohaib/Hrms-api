@@ -1,12 +1,15 @@
 package com.erp.hrms.form.service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -23,7 +26,6 @@ import com.erp.hrms.entity.form.LeaveType;
 import com.erp.hrms.exception.LeaveRequestApprovalException;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 import com.erp.hrms.form.repository.ILeaveRepository;
-import com.erp.hrms.form.repository.LeaveTypeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -41,7 +43,7 @@ public class LeaveService implements ILeaveService {
 	private UserServiceForLeaveNotification userService;
 
 	@Autowired
-	private LeaveTypeRepository leaveTypeRepository;
+	EntityManager entityManager;
 
 //	This method for send the leave request to manager and send email to manager and admin
 	@Override
@@ -49,62 +51,8 @@ public class LeaveService implements ILeaveService {
 		ObjectMapper mapper = new ObjectMapper();
 		LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
 
-		List<LeaveApproval> existingLeaveApprovals = iLeaveRepository
-				.getLeaveApprovalByEmployeeId(leaveApprovalJson.getEmployeeId());
-
-		LeaveType leaveType = leaveTypeRepository.findByLeaveName(leaveApprovalJson.getLeaveType());
-		if (!existingLeaveApprovals.isEmpty()) {
-			for (LeaveApproval existingLeaveApproval : existingLeaveApprovals) {
-				double requestedDays = leaveApprovalJson.getNumberOfDaysRequested();
-				switch (leaveType.getLeaveName()) {
-				case "Casual leaves":
-					double remainingDaysCasual = existingLeaveApproval.getRemaingCasualLeavesInYear() - requestedDays;
-					leaveApprovalJson.setRemaingCasualLeavesInYear(remainingDaysCasual);
-					break;
-
-				case "Medical leaves":
-					double remainingDaysMedical = existingLeaveApproval.getRemaingMedicalLeavesInYear() - requestedDays;
-					leaveApprovalJson.setRemaingMedicalLeavesInYear(remainingDaysMedical);
-					break;
-				case "Maternity Leave":
-					double remainingDaysMaternity = existingLeaveApproval.getRemaingMaternityLeavesInYear()
-							- requestedDays;
-					leaveApprovalJson.setRemaingMaternityLeavesInYear(remainingDaysMaternity);
-					break;
-				case "Emergency Leave":
-					double remainingDaysEmergency = existingLeaveApproval.getRemaingEmergencyLeaveInYear()
-							- requestedDays;
-					leaveApprovalJson.setRemaingEmergencyLeaveInYear(remainingDaysEmergency);
-					break;
-				}
-			}
-		} else {
-
-			if (leaveType != null) {
-				double requestedDays = leaveApprovalJson.getNumberOfDaysRequested();
-				double availableDays = leaveType.getLeaveDays();
-
-				// Check the leave type and update the corresponding field in LeaveApproval
-				switch (leaveType.getLeaveName()) {
-				case "Casual leaves":
-					double remainingDaysCasual = availableDays - requestedDays;
-					leaveApprovalJson.setRemaingCasualLeavesInYear(remainingDaysCasual);
-					break;
-				case "Medical leaves":
-					double remainingDaysMedical = availableDays - requestedDays;
-					leaveApprovalJson.setRemaingMedicalLeavesInYear(remainingDaysMedical);
-					break;
-				case "Maternity Leave":
-					double remainingDaysMaternity = availableDays - requestedDays;
-					leaveApprovalJson.setRemaingMaternityLeavesInYear(remainingDaysMaternity);
-					break;
-				case "Emergency Leave":
-					double remainingDaysEmergency = availableDays - requestedDays;
-					leaveApprovalJson.setRemaingEmergencyLeaveInYear(remainingDaysEmergency);
-					break;
-				}
-			}
-		}
+		LeaveType leaveType = entityManager.find(LeaveType.class, leaveApprovalJson.getLeaveType().getLeaveTypeId());
+		leaveApprovalJson.setLeaveType(leaveType);
 
 		// Fetch admin and manager email addresses based on roles
 		String adminEmail = null;
@@ -139,7 +87,7 @@ public class LeaveService implements ILeaveService {
 
 		iLeaveRepository.createLeaveApproval(leaveApprovalJson);
 
-//		// Send emails to admin and manager
+//		 Send emails to admin and manager
 		sendLeaveRequestEmail(adminEmail, "Leave Request from Employee", leaveApprovalJson);
 		sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
 
@@ -212,10 +160,6 @@ public class LeaveService implements ILeaveService {
 			existingApproval.setApprovingManagerName(leaveApprovalJson.getApprovingManagerName());
 			existingApproval.setApprovalRemarks(leaveApprovalJson.getApprovalRemarks());
 			existingApproval.setManagerEmail(leaveApprovalJson.getManagerEmail());
-			existingApproval.setRemaingCasualLeavesInYear(leaveApprovalJson.getRemaingCasualLeavesInYear());
-			existingApproval.setRemaingMedicalLeavesInYear(leaveApprovalJson.getRemaingMedicalLeavesInYear());
-			existingApproval.setRemaingEmergencyLeaveInYear(leaveApprovalJson.getRemaingEmergencyLeaveInYear());
-			existingApproval.setRemaingMaternityLeavesInYear(leaveApprovalJson.getRemaingMaternityLeavesInYear());
 
 			// Fetch admin and manager email addresses based on roles
 			String adminEmail = null;
@@ -281,6 +225,16 @@ public class LeaveService implements ILeaveService {
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
+	}
+
+	@Override
+	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId) {
+		return iLeaveRepository.calculateTotalNumberOfDaysRequestedByEmployee(employeeId);
+	}
+
+	@Override
+	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName) {
+		return iLeaveRepository.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName);
 	}
 
 //	This method for send email send to admin and manager and employee.
