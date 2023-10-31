@@ -1,7 +1,6 @@
 package com.erp.hrms.form.controller;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -117,16 +116,27 @@ public class LeaveController {
 		}
 	}
 
-//	This method for calculate total number of leave days with employee id 
 	@GetMapping("/calculateTotalLeaveDays/{employeeId}")
-	public BigDecimal calculateTotalLeaveDays(@PathVariable Long employeeId) {
-		return iLeaveService.calculateTotalNumberOfDaysRequestedByEmployee(employeeId);
+	public ResponseEntity<?> calculateTotalLeaveDays(@PathVariable Long employeeId) {
+		try {
+			return new ResponseEntity<>(iLeaveService.calculateTotalNumberOfDaysRequestedByEmployee(employeeId),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
+		}
 	}
 
 //	This method for calculate total number of leave days with employee id and leave name
 	@GetMapping("/calculateTotalLeaveDays/{employeeId}/leaveName/{leaveName}")
-	public BigDecimal calculateTotalSpecificLeaveDays(@PathVariable Long employeeId, @PathVariable String leaveName) {
-		return iLeaveService.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName);
+	public ResponseEntity<?> calculateTotalSpecificLeaveDays(@PathVariable Long employeeId,
+			@PathVariable String leaveName) {
+		try {
+			return new ResponseEntity<>(
+					iLeaveService.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
+		}
 	}
 
 }

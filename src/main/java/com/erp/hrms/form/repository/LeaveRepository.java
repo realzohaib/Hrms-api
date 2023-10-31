@@ -12,7 +12,9 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
+import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.LeaveApproval;
+import com.erp.hrms.exception.LeaveRequestNotFoundException;
 
 @Repository
 @Transactional
@@ -134,15 +136,11 @@ public class LeaveRepository implements ILeaveRepository {
 		List<?> result = query.getResultList();
 		if (result != null && !result.isEmpty()) {
 			Object obj = result.get(0);
-			if (obj instanceof BigDecimal) {
-				return (BigDecimal) obj;
-			}
 			if (obj instanceof Number) {
 				return new BigDecimal(((Number) obj).doubleValue());
 			}
 		}
-
-		return BigDecimal.ZERO;
+		throw new LeaveRequestNotFoundException(new MessageResponse("No data available now"));
 	}
 
 	@Override
@@ -156,15 +154,11 @@ public class LeaveRepository implements ILeaveRepository {
 		List<?> result = query.getResultList();
 		if (result != null && !result.isEmpty()) {
 			Object obj = result.get(0);
-			if (obj instanceof BigDecimal) {
-				return (BigDecimal) obj;
-			}
 			if (obj instanceof Number) {
 				return new BigDecimal(((Number) obj).doubleValue());
 			}
 		}
-
-		return BigDecimal.ZERO;
+		throw new LeaveRequestNotFoundException(new MessageResponse("No data available now"));
 	}
 
 }

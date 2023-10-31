@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -245,9 +246,9 @@ public class LeaveService implements ILeaveService {
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText("Leave Request Details:\n" + "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n"
-				+ "Leave Type: " + leaveApproval.getLeaveType() + "\n" + "Start Date: " + leaveApproval.getStartDate()
-				+ "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: " + leaveApproval.getLeaveReason()
-				+ "\n");
+				+ "Leave Name: " + leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: "
+				+ leaveApproval.getStartDate() + "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: "
+				+ leaveApproval.getLeaveReason() + "\n");
 		mailSender.send(message);
 	}
 
