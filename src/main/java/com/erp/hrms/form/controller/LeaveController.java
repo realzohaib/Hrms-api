@@ -117,11 +117,13 @@ public class LeaveController {
 		}
 	}
 
+//	This method for calculate total number of leave days with employee id 
 	@GetMapping("/calculateTotalLeaveDays/{employeeId}")
 	public BigDecimal calculateTotalLeaveDays(@PathVariable Long employeeId) {
 		return iLeaveService.calculateTotalNumberOfDaysRequestedByEmployee(employeeId);
 	}
 
+//	This method for calculate total number of leave days with employee id and leave name
 	@GetMapping("/calculateTotalLeaveDays/{employeeId}/leaveName/{leaveName}")
 	public BigDecimal calculateTotalSpecificLeaveDays(@PathVariable Long employeeId, @PathVariable String leaveName) {
 		return iLeaveService.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName);

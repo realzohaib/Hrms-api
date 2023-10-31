@@ -227,11 +227,13 @@ public class LeaveService implements ILeaveService {
 		return leaveApprovals;
 	}
 
+//	This method for calculate total number of leave days with employee id  
 	@Override
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId) {
 		return iLeaveRepository.calculateTotalNumberOfDaysRequestedByEmployee(employeeId);
 	}
 
+//	This method for calculate total number of leave days with employee id and leave name
 	@Override
 	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName) {
 		return iLeaveRepository.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName);
