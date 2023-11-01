@@ -1,7 +1,5 @@
 package com.erp.hrms.controller;
 
-import java.util.Optional;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +55,6 @@ public class DepartmentController {
 			return new ResponseEntity<>(new MessageResponse("No record found"), HttpStatus.NOT_FOUND);
 		}
 	}
-	
 
 	@GetMapping("/all/departments")
 	public ResponseEntity<?> findAllDepartments() {
@@ -76,6 +73,5 @@ public class DepartmentController {
 			return new ResponseEntity<>(new MessageResponse("No record found"), HttpStatus.NOT_FOUND);
 		}
 	}
-	
 
 }
