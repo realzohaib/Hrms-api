@@ -96,20 +96,26 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	        Timestamp punchOutTime = attendence.getPunchOutTime();
 
 	        if (punchInTime != null && punchOutTime != null) {
+// here the function name is calculateBreakDurationInMillis but we are calculating time difference between punchOut and punchIn
+// calculateTotalDurationInMillis means total working hrs from punch in to punch out i	   	
 	            long calculateTotalDurationInMillis = calculateBreakDurationInMillis(punchInTime, punchOutTime);
 	            attendence.setWorkingHours(calculateTotalDurationInMillis);
 
 	            // Constants for better readability and maintainability
 	            final long FULL_SHIFT_DURATION = 39600000; // 11 hours in milliseconds
 	            final double HALF_DAY_THRESHOLD = 0.85;
+	            final double ONE_HOUR = 3600000;
 
 	            if (calculateTotalDurationInMillis < HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION) {
 	                attendence.setHalfDay(true);
 	            }
-
+//jab tak status apptoved nahi hai tab tak emp ke portal par nahi dikheaga overtimr
 	            if (calculateTotalDurationInMillis > FULL_SHIFT_DURATION) {
 	                long overtime = calculateTotalDurationInMillis - FULL_SHIFT_DURATION;
+	                if(overtime > ONE_HOUR) {
 	                attendence.setOverTime(overtime);
+	                attendence.setOvertimeStatus("PENDING");
+	                }
 	            }
 	        }
 
@@ -201,9 +207,10 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	    	 
 	    	if(atd.getPunchInTime() != null && atd.getPunchOutTime()!= null)daysPresnt++;
 	    	
+	    	if("APPROVED".equals(atd.getOvertimeStatus()) || "UPDATED".equals(atd.getOvertimeStatus())) {
 	    	long overTime = atd.getOverTime();
 	    	totalOvertimehrsInMont+=overTime;
-	    	
+	    	}
 	     }
 	     
 	     attendenceResponse.setAttendence(attendanceForMonth);
@@ -235,12 +242,60 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 	    return workingDays;
 	}
+	
+	@Override
+	//method to fetch all employee with pending request for overtime approval
+	public List<Attendence> getEmployeeWithOverTimeStatusPending(){
+		return repo.findByOvertimeStatus("PENDING");
+		
+	}
+	
+	//this method is to approve overtime request
+	//id is not employee id , it is AttendenceId
+	@Override
+	@SuppressWarnings("deprecation")
+	public void approveOverTime(Long id) {
+		Attendence employee = repo.getById(id);
+		employee.setOvertimeStatus("APPROVED");
+		repo.save(employee);
+	}
+	
+	///this method is to deny overtime request
+	//id is not employee id , it is AttendenceId
+	@Override
+	public void denyOverTime(Long id) {
+		Attendence employee = repo.getById(id);
+		employee.setOverTime(0);
+		employee.setOvertimeStatus("DENIED");
+		repo.save(employee);		
+	}
 
 
 	private boolean isWorkingDay(DayOfWeek dayOfWeek) {
 	    // Implement your organization's working day criteria here
 	    return dayOfWeek != DayOfWeek.SUNDAY;
 	}
+
+	//this method is to update overtime 
+	//id is not employee id , it is AttendenceId
+	@Override
+	public Attendence updateOverTime(Attendence attendence) {
+	
+		long id = attendence.getAttendenceId();
+		Attendence  atd = repo.getById(id);
+		
+		//updating Information
+		atd.setOverTime(attendence.getOverTime());
+		atd.setOvertimeStatus("UPDATED");
+		//saving the object to db
+		repo.save(atd);
+		
+		return atd;
+	}
+
+	
+	
+	
 
 	
 

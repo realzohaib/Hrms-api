@@ -1,16 +1,17 @@
-	package com.erp.hrms.attendence.service;
+package com.erp.hrms.attendence.service;
 
 import java.util.List;
 
 import com.erp.hrms.attendence.entity.Attendence;
 import com.erp.hrms.shift.entity.ShiftAssignment;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-
+//this class is an response class which sends overall response of employee for the month
 @Data
 public class AttendenceResponse {
 	
-	List<Attendence> Attendence;
+	 private List<Attendence> Attendence;
 
 	private int totalWorkigDaysInMonth;
 	

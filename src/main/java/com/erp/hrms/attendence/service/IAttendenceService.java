@@ -23,6 +23,13 @@ public interface IAttendenceService {
 	public int calculateWorkingDays(int year, int month);
 	
 	public AttendenceResponse fullAttendence(Long employeeId, int year, int month);
-
+	
+	public List<Attendence> getEmployeeWithOverTimeStatusPending();
+	
+	public void approveOverTime(Long id) ;
+	
+	public void denyOverTime(Long id);
+	
+	public Attendence updateOverTime(Attendence attendence);
 
 }

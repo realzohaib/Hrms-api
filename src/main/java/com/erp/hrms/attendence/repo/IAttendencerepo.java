@@ -19,5 +19,7 @@ public interface IAttendencerepo extends JpaRepository<Attendence, Long> {
     List<Attendence> findByEmployeeIdAndDateBetween(@Param("employeeId") Long employeeId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     boolean existsByEmployeeIdAndDate(Long employeeId, LocalDate date);
+    
+    List<Attendence> findByOvertimeStatus(String overtimestatus);
 
 }
