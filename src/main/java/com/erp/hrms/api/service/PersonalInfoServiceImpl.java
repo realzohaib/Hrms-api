@@ -13,6 +13,7 @@ import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
+import com.erp.hrms.entity.Department;
 import com.erp.hrms.entity.DrivingLicense;
 import com.erp.hrms.entity.Education;
 import com.erp.hrms.entity.EmpAchievement;
@@ -65,6 +66,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
 				PersonalInfo.setOtherIdProofDoc(OtherIdProofDoc.getBytes());
 			}
+			
+			Department department=entityManager.find(Department.class, PersonalInfo.getDepartment().getDepartmentId());
+			PersonalInfo.setDepartment(department);
+			
 			PassportDetails passportDetails = new PassportDetails();
 			if (passportScan != null && !passportScan.isEmpty()) {
 				passportDetails.setPassportScan(passportScan.getBytes());

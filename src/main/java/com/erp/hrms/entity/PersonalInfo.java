@@ -10,7 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PostLoad;
@@ -148,6 +150,10 @@ public class PersonalInfo {
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
 	private List<JobDetails> jobDetails;
+	
+	@ManyToOne
+	@JoinColumn(name = "department_id")
+	private Department department;
 
 	@PostLoad
 	private void calculateAge() {
