@@ -1,5 +1,6 @@
 package com.erp.hrms.api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,10 +13,24 @@ import com.erp.hrms.entity.Department;
 @Service
 public class DepartmentService implements IDepartmentService {
 
-	
 	@Autowired
 	private DepartmentRepository idepartmentRepository;
-	
+
+	public void saveInitialDepartments() {
+		List<Department> initialDepartments = new ArrayList<>();
+		initialDepartments.add(new Department("Procurement"));
+		initialDepartments.add(new Department("Warehousing"));
+		initialDepartments.add(new Department("Logistics"));
+		initialDepartments.add(new Department("Quality Control"));
+		initialDepartments.add(new Department("Production & Operations"));
+		initialDepartments.add(new Department("Sales"));
+		initialDepartments.add(new Department("Human Resource"));
+		initialDepartments.add(new Department("Finance & Accounts"));
+		initialDepartments.add(new Department("General Administration"));
+
+		idepartmentRepository.saveAll(initialDepartments);
+	}
+
 	@Override
 	public void saveDepartment(Department department) {
 		idepartmentRepository.save(department);
@@ -23,14 +38,18 @@ public class DepartmentService implements IDepartmentService {
 
 	@Override
 	public Optional<Department> getDepartmentById(Long departmentId) {
-	
 		return idepartmentRepository.findById(departmentId);
 	}
 
 	@Override
 	public List<Department> getAllDepartment() {
-		
 		return idepartmentRepository.findAll();
+	}
+
+	@Override
+	public Optional<Department> getDepartmentByName(String departmentName) {
+		Department department = idepartmentRepository.findByNameWithPersonalInfos(departmentName);
+		return Optional.ofNullable(department);
 	}
 
 }

@@ -3,12 +3,11 @@ package com.erp.hrms.api.service;
 import java.io.IOException;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.erp.hrms.api.dao.DepartmentRepository;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.BackgroundCheck;
@@ -33,10 +32,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	@Autowired
-	IPersonalInfoDAO dao;
-	
+	private IPersonalInfoDAO dao;
+
 	@Autowired
-	EntityManager entityManager;
+	private DepartmentRepository departmentRepository;
 
 	@Override
 	public void savedata(String personalinfo, MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
@@ -51,7 +50,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
 
-		
 		String email = PersonalInfo.getEmail();
 		if (dao.existsByEmail(email)) {
 			throw new PersonalEmailExistsException(new MessageResponse("Email ID already exists"));
@@ -66,10 +64,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
 				PersonalInfo.setOtherIdProofDoc(OtherIdProofDoc.getBytes());
 			}
-			
-			Department department=entityManager.find(Department.class, PersonalInfo.getDepartment().getDepartmentId());
+
+			Department department = departmentRepository
+					.findByDepartmentName(PersonalInfo.getDepartment().getDepartmentName());
 			PersonalInfo.setDepartment(department);
-			
+
 			PassportDetails passportDetails = new PassportDetails();
 			if (passportScan != null && !passportScan.isEmpty()) {
 				passportDetails.setPassportScan(passportScan.getBytes());
@@ -626,7 +625,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 							.setElectricityAllocationAmount(updateJobDetails.getElectricityAllocationAmount());
 					existingJobDetails.setRentAllocationYesOrNo(updateJobDetails.getRentAllocationYesOrNo());
 					existingJobDetails.setRentAllocationAmount(updateJobDetails.getRentAllocationAmount());
-//					existingJobDetails.setJobdepartment(updateJobDetails.getJobdepartment());
 					existingJobDetails.setCashOrChipFacility(updateJobDetails.getCashOrChipFacility());
 					existingJobDetails.setChipNumber(updateJobDetails.getChipNumber());
 					existingJobDetails.setReferredBy(updateJobDetails.getReferredBy());

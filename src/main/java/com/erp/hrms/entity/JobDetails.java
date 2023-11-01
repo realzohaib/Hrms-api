@@ -35,13 +35,13 @@ public class JobDetails {
 	private String houseRentAmount;
 	private String foodAllowance;
 	private String foodAllowanceAmount;
-	
+
 	private String vehicleAllowance;
 	private String vehicleAllowanceAmount;
 	private String uniformAllowance;
 	private String uniformAllowanceAmount;
 	private String travellingAllowances;
-	
+
 	private String travellingAllowancesAmount;
 	private String educationalAllowance;
 	private String educationalAllowanceAmount;
@@ -59,27 +59,27 @@ public class JobDetails {
 	private String accommodationYesOrNo;
 	private String isShredOrSeparate;
 	private String isExeutiveOrLabourFacility;
-	
+
 	private String electricityAllocationYesOrNo;
 	private String electricityAllocationAmount;
 	private String rentAllocationYesOrNo;
 	private String rentAllocationAmount;
 	private String mobileIssuedOrNot;
-	
+
 	private String simIssuedOrNot;
 	private String flightFacilities;
 	private String howMuchTime;
 	private String familyTicketsAlsoProvidedOrNot;
 	private String othersAccomandation;
-	
+
 	private String healthInsuranceCoverage;
 	private String maximumAmountGiven;
 	private String familyHealthInsuranceGivenOrNot;
 	private String familyHealthInsuranceType;
 	private String punchingMachineYesOrNo;
-	
+
 	private String joiningDate;
-	private String jobdepartment;
+//	private String jobdepartment;
 	private String referredBy;
 	private String byWhom;
 

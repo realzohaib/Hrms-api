@@ -21,6 +21,7 @@ import javax.persistence.SequenceGenerator;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
@@ -31,7 +32,7 @@ public class PersonalInfo {
 	@Id
 	@Column(name = "employee_Id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdGenerator")
-	@SequenceGenerator(name = "employeeIdGenerator", sequenceName = "employee_id_seq", allocationSize = 1, initialValue = 1001)
+	@SequenceGenerator(name = "employeeIdGenerator", sequenceName = "employee_id_seq", allocationSize = 1, initialValue = 1002)
 	private Long employeeId;
 	@Column(name = "name_prefix")
 	private String namePrefix;
@@ -150,9 +151,10 @@ public class PersonalInfo {
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
 	private List<JobDetails> jobDetails;
-	
+
 	@ManyToOne
-	@JoinColumn(name = "department_id")
+	@JoinColumn(name = "department_name", referencedColumnName = "departmentName")
+	@JsonBackReference
 	private Department department;
 
 	@PostLoad
