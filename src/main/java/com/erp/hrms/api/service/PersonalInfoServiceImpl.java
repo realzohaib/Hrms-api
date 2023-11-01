@@ -3,6 +3,8 @@ package com.erp.hrms.api.service;
 import java.io.IOException;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +24,6 @@ import com.erp.hrms.entity.PreviousEmployee;
 import com.erp.hrms.entity.ProfessionalQualification;
 import com.erp.hrms.entity.Trainingdetails;
 import com.erp.hrms.entity.VisaDetail;
-
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
@@ -32,6 +33,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	@Autowired
 	IPersonalInfoDAO dao;
+	
+	@Autowired
+	EntityManager entityManager;
 
 	@Override
 	public void savedata(String personalinfo, MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
@@ -45,6 +49,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
+
+		
 		String email = PersonalInfo.getEmail();
 		if (dao.existsByEmail(email)) {
 			throw new PersonalEmailExistsException(new MessageResponse("Email ID already exists"));
@@ -615,7 +621,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 							.setElectricityAllocationAmount(updateJobDetails.getElectricityAllocationAmount());
 					existingJobDetails.setRentAllocationYesOrNo(updateJobDetails.getRentAllocationYesOrNo());
 					existingJobDetails.setRentAllocationAmount(updateJobDetails.getRentAllocationAmount());
-					existingJobDetails.setJobdepartment(updateJobDetails.getJobdepartment());
+//					existingJobDetails.setJobdepartment(updateJobDetails.getJobdepartment());
 					existingJobDetails.setCashOrChipFacility(updateJobDetails.getCashOrChipFacility());
 					existingJobDetails.setChipNumber(updateJobDetails.getChipNumber());
 					existingJobDetails.setReferredBy(updateJobDetails.getReferredBy());
