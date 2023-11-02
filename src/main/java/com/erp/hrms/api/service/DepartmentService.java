@@ -18,16 +18,16 @@ public class DepartmentService implements IDepartmentService {
 
 	public void saveInitialDepartments() {
 		List<Department> initialDepartments = new ArrayList<>();
-		initialDepartments.add(new Department("Procurement"));
-		initialDepartments.add(new Department("Warehousing"));
-		initialDepartments.add(new Department("Logistics"));
-		initialDepartments.add(new Department("Quality Control"));
-		initialDepartments.add(new Department("Production & Operations"));
-		initialDepartments.add(new Department("Sales"));
-		initialDepartments.add(new Department("Human Resource"));
-		initialDepartments.add(new Department("Finance & Accounts"));
-		initialDepartments.add(new Department("General Administration"));
-
+		initialDepartments.add(new Department( "Procurement"));
+		initialDepartments.add(new Department( "Warehousing"));
+		initialDepartments.add(new Department( "Logistics"));
+		initialDepartments.add(new Department( "Quality Control"));
+		initialDepartments.add(new Department( "Production & Operations"));
+		initialDepartments.add(new Department( "Sales"));
+		initialDepartments.add(new Department( "Human Resource"));
+		initialDepartments.add(new Department( "Finance & Accounts"));
+		initialDepartments.add(new Department( "General Administration"));
+ 
 		idepartmentRepository.saveAll(initialDepartments);
 	}
 
@@ -43,7 +43,9 @@ public class DepartmentService implements IDepartmentService {
 
 	@Override
 	public List<Department> getAllDepartment() {
-		return idepartmentRepository.findAll();
+		List<Department> findAllDepartments = idepartmentRepository.findAllDepartments();
+		findAllDepartments.sort((d1, d2) -> Long.compare(d1.getDepartmentId(), d2.getDepartmentId()));
+		return findAllDepartments;
 	}
 
 	@Override

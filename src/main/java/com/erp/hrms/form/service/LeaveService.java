@@ -5,10 +5,13 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
@@ -23,6 +26,7 @@ import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.form.LeaveApproval;
+import com.erp.hrms.entity.form.LeaveCalendarData;
 import com.erp.hrms.entity.form.LeaveType;
 import com.erp.hrms.exception.LeaveRequestApprovalException;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
@@ -258,12 +262,44 @@ public class LeaveService implements ILeaveService {
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText("Your Leave Request status :\n" + "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n"
-				+ "Leave Type: " + leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: " + leaveApproval.getStartDate()
-				+ "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: " + leaveApproval.getLeaveReason()
-				+ "\n" + "Manager Name : " + leaveApproval.getApprovingManagerName() + "\n" + "Status :"
-				+ leaveApproval.getApprovalStatus() + "\n" + "Manager remark :" + leaveApproval.getApprovalRemarks()
-				+ "\n" + "\n");
+				+ "Leave Type: " + leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: "
+				+ leaveApproval.getStartDate() + "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: "
+				+ leaveApproval.getLeaveReason() + "\n" + "Manager Name : " + leaveApproval.getApprovingManagerName()
+				+ "\n" + "Status :" + leaveApproval.getApprovalStatus() + "\n" + "Manager remark :"
+				+ leaveApproval.getApprovalRemarks() + "\n" + "\n");
 		mailSender.send(message);
 	}
 
+//	Find all accepted leaves for calendar 
+	@Override
+	public List<LeaveApproval> getAllLeaveApprovals() {
+		return iLeaveRepository.findAllLeaveApprovalAccepted();
+	}
+
+//	Find the leaves on a paticular day
+	@Override
+	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals) {
+		List<LeaveCalendarData> calendarData = new ArrayList<>();
+
+		for (LeaveApproval approval : leaveApprovals) {
+			LocalDate startDate = LocalDate.parse(approval.getStartDate());
+			LocalDate endDate = LocalDate.parse(approval.getEndDate());
+
+			List<LocalDate> leaveDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
+
+			for (LocalDate date : leaveDates) {
+				Optional<LeaveCalendarData> existingData = calendarData.stream()
+						.filter(data -> data.getDate().equals(date)).findFirst();
+
+				if (existingData.isPresent()) {
+					existingData.get().incrementEmployeeCount();
+				} else {
+					LeaveCalendarData data = new LeaveCalendarData(date);
+					calendarData.add(data);
+				}
+			}
+		}
+
+		return calendarData;
+	}
 }

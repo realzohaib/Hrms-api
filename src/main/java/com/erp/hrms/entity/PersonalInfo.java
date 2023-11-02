@@ -32,12 +32,12 @@ public class PersonalInfo {
 	@Id
 	@Column(name = "employee_Id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdGenerator")
-	@SequenceGenerator(name = "employeeIdGenerator", sequenceName = "employee_id_seq", allocationSize = 1, initialValue = 1002)
+	@SequenceGenerator(name = "employeeIdGenerator", sequenceName = "employee_id_seq", allocationSize = 1, initialValue = 1001)
 	private Long employeeId;
 	@Column(name = "name_prefix")
 	private String namePrefix;
 
-	@Column(name = "first_name")
+	@Column(name = "first_name") 
 	private String firstName;
 
 	@Column(name = "middle_name")

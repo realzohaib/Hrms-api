@@ -129,7 +129,6 @@ public class LeaveRepository implements ILeaveRepository {
 	@Override
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId) {
 		String sql = "SELECT SUM(numberOfDaysRequested) FROM LeaveApproval WHERE employeeId = :employeeId";
-//		String sql = "SELECT COUNT(numberOfDaysRequested) FROM LeaveApproval WHERE employeeId = :employeeId";
 		Query query = entityManager.createQuery(sql);
 		query.setParameter("employeeId", employeeId);
 

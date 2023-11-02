@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -27,7 +28,8 @@ public class Department implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DepartmentIdGenerator")
+	@SequenceGenerator(name = "DepartmentIdGenerator", sequenceName = "Department_Id", allocationSize = 1, initialValue = 11)
 	private Long departmentId;
 	private String departmentName;
 
@@ -36,6 +38,11 @@ public class Department implements Serializable {
 	private List<PersonalInfo> personalInfos;
 
 	public Department(String departmentName) {
+		this.departmentName = departmentName;
+	}
+
+	public Department(long departmentId, String departmentName) {
+		this.departmentId = departmentId;
 		this.departmentName = departmentName;
 	}
 

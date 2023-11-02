@@ -1,6 +1,7 @@
 package com.erp.hrms.form.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.entity.form.LeaveApproval;
+import com.erp.hrms.entity.form.LeaveCalendarData;
 import com.erp.hrms.form.service.ILeaveService;
 
 @RestController
@@ -138,4 +141,10 @@ public class LeaveController {
 		}
 	}
 
+	@GetMapping("/leave-calendar")
+	public ResponseEntity<List<LeaveCalendarData>> getLeaveCalendar() {
+		List<LeaveApproval> leaveApprovals = iLeaveService.getAllLeaveApprovals();
+		List<LeaveCalendarData> calendarData = iLeaveService.generateLeaveCalendar(leaveApprovals);
+		return new ResponseEntity<>(calendarData, HttpStatus.OK);
+	}
 }

@@ -1,5 +1,8 @@
 package com.erp.hrms.controller;
 
+import java.util.List;
+import java.util.Optional;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,43 +37,59 @@ public class DepartmentController {
 					HttpStatus.BAD_REQUEST);
 		}
 	}
-
+ 
 	@PostMapping("/save/department")
 	public ResponseEntity<?> saveDepartment(@RequestBody Department department) {
+
 		try {
 			idepartmentService.saveDepartment(department);
-			return new ResponseEntity<>(new MessageResponse("your department save."), HttpStatus.OK);
+			return new ResponseEntity<>(new MessageResponse("Your department is saved."), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>(
-					new MessageResponse("Your department is not save because is somthing went wrong"),
-					HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	@GetMapping("/departmentId/{departmentId}")
 	public ResponseEntity<?> findDepartmentById(@PathVariable Long departmentId) {
+
 		try {
-			return new ResponseEntity<>(idepartmentService.getDepartmentById(departmentId), HttpStatus.OK);
+			Optional<Department> departmentById = idepartmentService.getDepartmentById(departmentId);
+			if (departmentById.isEmpty()) {
+				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
+			} else {
+				return new ResponseEntity<>(departmentById, HttpStatus.OK);
+			}
 		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("No record found"), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	@GetMapping("/all/departments")
 	public ResponseEntity<?> findAllDepartments() {
 		try {
-			return new ResponseEntity<>(idepartmentService.getAllDepartment(), HttpStatus.OK);
+			List<Department> departments = idepartmentService.getAllDepartment();
+			if (departments.isEmpty()) {
+				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
+			} else {
+				return new ResponseEntity<>(departments, HttpStatus.OK);
+			}
 		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("No record found"), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	@GetMapping("/department/name/{departmentName}")
 	public ResponseEntity<?> findDepartmentByName(@PathVariable String departmentName) {
+
 		try {
-			return new ResponseEntity<>(idepartmentService.getDepartmentByName(departmentName), HttpStatus.OK);
+			Optional<Department> departmentByName = idepartmentService.getDepartmentByName(departmentName);
+			if (departmentByName.isEmpty()) {
+				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
+			} else {
+				return new ResponseEntity<>(departmentByName, HttpStatus.OK);
+			}
 		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("No record found"), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

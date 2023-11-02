@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.entity.form.LeaveApproval;
+import com.erp.hrms.entity.form.LeaveCalendarData;
 
 public interface ILeaveService {
 
@@ -30,4 +31,7 @@ public interface ILeaveService {
 
 	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
 
+	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals);
+	
+	public List<LeaveApproval> getAllLeaveApprovals();
 }
