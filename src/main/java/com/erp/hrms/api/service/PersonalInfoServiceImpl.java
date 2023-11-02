@@ -255,7 +255,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			}
 			dao.savePersonalInfo(PersonalInfo);
 		} catch (Exception e) {
-			System.out.println(e);
+			System.out.println(e.getMessage());
 		}
 	}
 
