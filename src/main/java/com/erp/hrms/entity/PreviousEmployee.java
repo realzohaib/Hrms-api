@@ -2,13 +2,11 @@ package com.erp.hrms.entity;
 
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -23,7 +21,6 @@ import lombok.Data;
 
 @Entity
 @Data
-//@RequiredArgsConstructor
 @Table(name = "previous_employee")
 public class PreviousEmployee {
 	@Id
@@ -43,10 +40,7 @@ public class PreviousEmployee {
 	private String previousHRContact;
 	private double lastWithdrawnSalary;
 
-
-	@Column(length = 2147483647)
-	@Lob
-	private byte[] payslipScan;
+	private String payslipScan;
 
 	@OneToMany(mappedBy = "previousEmployee")
 	@Cascade(CascadeType.ALL)

@@ -20,7 +20,7 @@ public class BloodRelative {
 	private String Rlastname;
 	@Column(name = "relationship")
 	private String relationship;
-	
+
 	@Column(name = "relative_phone_code")
 	private String RphoneCode;
 	@Column(name = "contact_no")
@@ -28,10 +28,6 @@ public class BloodRelative {
 	@Column(name = "address")
 	private String Raddress;
 
-	@Column(name = "relative_id", length = 2147483647)
-	private byte[] relativeid;
-	@Column(name = "adress_proof", length = 2147483647)
-	private byte[] Raddressproof;
-
-
+	private String relativeid;
+	private String Raddressproof;
 }

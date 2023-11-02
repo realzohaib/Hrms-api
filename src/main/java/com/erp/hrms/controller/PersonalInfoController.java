@@ -93,11 +93,9 @@ public class PersonalInfoController {
 
 			return ResponseEntity.ok(personalInfoService.getPersonalInfoByEmail(email));
 		} catch (PersonalInfoNotFoundException e) {
-//			System.out.println(e);
 			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
 
 		} catch (Exception e) {
-//			System.out.println(e);
 			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
 		}
 	}

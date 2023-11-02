@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -29,15 +28,20 @@ import lombok.Data;
 @Data
 @Entity
 public class PersonalInfo {
+
 	@Id
-	@Column(name = "employee_Id")
+	@Column(name = "Id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdGenerator")
 	@SequenceGenerator(name = "employeeIdGenerator", sequenceName = "employee_id_seq", allocationSize = 1, initialValue = 1001)
+	private Long Id;
+
+	@Column(name = "employee_Id")
 	private Long employeeId;
+
 	@Column(name = "name_prefix")
 	private String namePrefix;
 
-	@Column(name = "first_name") 
+	@Column(name = "first_name")
 	private String firstName;
 
 	@Column(name = "middle_name")
@@ -69,10 +73,7 @@ public class PersonalInfo {
 	@Column(name = "personal_contact_no")
 	private String personalContactNo;
 
-	@Lob
-
-	@Column(name = "passport_size_photo ", length = 2147483647)
-	private byte[] passportSizePhoto;
+	private String passportSizePhoto;
 
 	@Column(name = "email_id")
 	private String email;
@@ -80,9 +81,7 @@ public class PersonalInfo {
 	@Column(name = "citizenship")
 	private String citizenship;
 
-	@Column(name = "id_Scan", length = 2147483647)
-	@Lob
-	private byte[] OtherIdProofDoc;
+	private String OtherIdProofDoc;
 
 	@Column(name = "permanent_residence_country")
 	private String permanentResidenceCountry;

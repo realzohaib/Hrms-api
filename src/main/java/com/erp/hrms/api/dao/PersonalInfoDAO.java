@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.VisaDetail;
-
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
@@ -250,7 +249,6 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 		if (visaDetail != null) {
 			visaDetail.setVisaIssueyDate(visaIssueDate);
 			visaDetail.setVisaExpiryDate(visaExpiryDate);
-
 
 			visaDetail.setVisaEmailSend20and60daysBefore(false);
 			visaDetail.setVisaEmailSend10and30daysBefore(false);

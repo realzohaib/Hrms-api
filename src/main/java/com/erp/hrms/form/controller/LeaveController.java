@@ -30,7 +30,7 @@ public class LeaveController {
 //	This method for send the leave request to manager
 	@PostMapping("/leave/request")
 	public ResponseEntity<?> createLeaveApproval(@RequestParam("leaveApproval") String leaveApproval,
-			@RequestParam("medicalDocumentsName") MultipartFile medicalDocumentsName) throws IOException {
+			@RequestParam(value = "medicalDocumentsName",required = false) MultipartFile medicalDocumentsName) throws IOException {
 		try {
 			iLeaveService.createLeaveApproval(leaveApproval, medicalDocumentsName);
 			return new ResponseEntity<>(new MessageResponse("Your leave request send to your manager."), HttpStatus.OK);

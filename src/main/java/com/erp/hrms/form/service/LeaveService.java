@@ -96,7 +96,7 @@ public class LeaveService implements ILeaveService {
 		sendLeaveRequestEmail(adminEmail, "Leave Request from Employee", leaveApprovalJson);
 		sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
 
-		// Send an email to the employee who requested the leave
+//		 Send an email to the employee who requested the leave
 		String employeeEmail = leaveApprovalJson.getEmail();
 		sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
 	}

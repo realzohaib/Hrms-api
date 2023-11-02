@@ -2,8 +2,6 @@ package com.erp.hrms.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
 
 import lombok.Data;
 
@@ -18,8 +16,6 @@ public class PassportDetails {
 	@Column(name = "passport_expiry_date")
 	private String passportExpiryDate;
 
-	@Column(name = "Passport_Docs",length = 2147483647)
-	@Lob
-	private byte[] passportScan;
+	private String passportScan;
 
 }

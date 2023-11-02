@@ -6,7 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -32,11 +31,7 @@ public class Education {
 	@Column(name = "Secondary_year")
 	private String secondaryyear;
 
-
-	@Column(name = "secondary_supporting_document", length = 2147483647)
-	
-	@Lob
-	private byte[] secondaryDocumentScan;
+	private String secondaryDocumentScan;
 
 	// for 12th updated later
 	@Column(name = "Senior_Secondary_issuing_authority")
@@ -48,9 +43,7 @@ public class Education {
 	@Column(name = "Senior_Secondary_year")
 	private String seniorSecondaryYear;
 
-	@Column(name = "Senior_Secondary_supporting_document", length = 2147483647)
-	@Lob
-	private byte[] seniorSecondaryDocumentScan;
+	private String seniorSecondaryDocumentScan;
 
 	// for graduation
 	@Column(name = "Graduation_issuing_authority")
@@ -62,10 +55,7 @@ public class Education {
 	@Column(name = "Graduation_year")
 	private String graduationYear;
 
-
-	@Column(name = "Graduation_supporting_document", length = 2147483647)
-	@Lob
-	private byte[] graduationDocumentScan;
+	private String graduationDocumentScan;
 
 	// for PG
 	@Column(name = "Post_Graduation_issuing_authority")
@@ -77,11 +67,7 @@ public class Education {
 	@Column(name = "post_Graduation_year")
 	private String postGraduationYear;
 
-
-	@Column(name = "post_Graduation_supporting_document", length = 2147483647)
-	@Lob
-	private byte[] postGraduationDocumentScan;
-
+	private String postGraduationDocumentScan;
 
 // diploma certificates
 	@Column(name = "diploma_issuing_authority")
@@ -93,11 +79,7 @@ public class Education {
 	@Column(name = "diploma_year")
 	private String diplomaYear;
 
-	// dynamic
-
-	@Column(name = "diploma_document_scan", length = 2147483647)
-	@Lob
-	private byte[] diplomaDocumentScan;
+	private String diplomaDocumentScan;
 
 	@ManyToOne
 	@JoinColumn(name = "employee_id ")

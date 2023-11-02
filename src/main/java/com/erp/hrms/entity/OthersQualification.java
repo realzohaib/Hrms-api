@@ -6,7 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -32,14 +31,11 @@ public class OthersQualification {
 	@Column(name = "others_year")
 	private String othersYear;
 
-
-	@Column(name = "others_supporting_document", length = 2147483647)
-	@Lob
-	private byte[] othersDocumentScan;
+	private String othersDocumentScan;
 
 	@ManyToOne
 	@JoinColumn(name = "employee_id ")
 	@JsonBackReference
 	private PersonalInfo personalinfo;
- 
+
 }
