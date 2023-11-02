@@ -568,7 +568,7 @@ class PersonalInfoServiceTest {
 		jobDetails1.setFamilyHealthInsuranceType("Family health insurance type");
 		jobDetails1.setPunchingMachineYesOrNo("Punching machine yes or no");
 		jobDetails1.setJoiningDate("Joining date");
-		jobDetails1.setJobdepartment("Job department");
+//		jobDetails1.setJobdepartment("Job department");
 		jobDetails1.setReferredBy("Referred by");
 		jobDetails1.setByWhom("By whom");
 

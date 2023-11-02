@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.erp.hrms.api.dao.DepartmentRepository;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
+import com.erp.hrms.entity.Department;
 import com.erp.hrms.entity.DrivingLicense;
 import com.erp.hrms.entity.Education;
 import com.erp.hrms.entity.EmpAchievement;
@@ -22,7 +24,6 @@ import com.erp.hrms.entity.PreviousEmployee;
 import com.erp.hrms.entity.ProfessionalQualification;
 import com.erp.hrms.entity.Trainingdetails;
 import com.erp.hrms.entity.VisaDetail;
-
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
@@ -31,7 +32,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	@Autowired
-	IPersonalInfoDAO dao;
+	private IPersonalInfoDAO dao;
+
+	@Autowired
+	private DepartmentRepository departmentRepository;
 
 	@Override
 	public void savedata(String personalinfo, MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
@@ -45,6 +49,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
+
 		String email = PersonalInfo.getEmail();
 		if (dao.existsByEmail(email)) {
 			throw new PersonalEmailExistsException(new MessageResponse("Email ID already exists"));
@@ -59,6 +64,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
 				PersonalInfo.setOtherIdProofDoc(OtherIdProofDoc.getBytes());
 			}
+
+			Department department = departmentRepository
+					.findByDepartmentName(PersonalInfo.getDepartment().getDepartmentName());
+			PersonalInfo.setDepartment(department);
+
 			PassportDetails passportDetails = new PassportDetails();
 			if (passportScan != null && !passportScan.isEmpty()) {
 				passportDetails.setPassportScan(passportScan.getBytes());
@@ -77,6 +87,13 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				visaDetail.setVisaIssueyDate(PersonalInfo.getVisainfo().getVisaIssueyDate());
 				visaDetail.setVisaType(PersonalInfo.getVisainfo().getVisaType());
 				
+				visaDetail.setVisaEmailSend20and60daysBefore(false);
+				visaDetail.setVisaEmailSend10and30daysBefore(false);
+				visaDetail.setVisaEmailSend4daysBefore(false);
+				visaDetail.setVisaEmailSend3daysBefore(false);
+				visaDetail.setVisaEmailSend2daysBefore(false);
+				visaDetail.setVisaEmailSend1dayBefore(false);
+
 				visaDetail.setVisaEmailSend20and60daysBefore(false);
 				visaDetail.setVisaEmailSend10and30daysBefore(false);
 				visaDetail.setVisaEmailSend4daysBefore(false);
@@ -615,7 +632,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 							.setElectricityAllocationAmount(updateJobDetails.getElectricityAllocationAmount());
 					existingJobDetails.setRentAllocationYesOrNo(updateJobDetails.getRentAllocationYesOrNo());
 					existingJobDetails.setRentAllocationAmount(updateJobDetails.getRentAllocationAmount());
-					existingJobDetails.setJobdepartment(updateJobDetails.getJobdepartment());
 					existingJobDetails.setCashOrChipFacility(updateJobDetails.getCashOrChipFacility());
 					existingJobDetails.setChipNumber(updateJobDetails.getChipNumber());
 					existingJobDetails.setReferredBy(updateJobDetails.getReferredBy());

@@ -28,8 +28,7 @@ import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
 @RestController
 @RequestMapping("/api/v1")
-
-//@CrossOrigin("*")
+@CrossOrigin("*")
 public class PersonalInfoController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PersonalInfoController.class);

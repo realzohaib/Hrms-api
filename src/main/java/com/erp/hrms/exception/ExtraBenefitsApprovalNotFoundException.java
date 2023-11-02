@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class ComplaintRequestNotFoundException extends RuntimeException {
+public class ExtraBenefitsApprovalNotFoundException extends RuntimeException {
 
 	/**
 	 * 
@@ -20,13 +20,8 @@ public class ComplaintRequestNotFoundException extends RuntimeException {
 
 	MessageResponse messageResponse;
 
-	public ComplaintRequestNotFoundException(MessageResponse messageResponse) {
+	public ExtraBenefitsApprovalNotFoundException(MessageResponse messageResponse) {
 		super(messageResponse.getMessage());
 		this.messageResponse = messageResponse;
 	}
-
-//	public PersonalInfoNotFoundException(MessageResponse messageResponse) {
-//		super(messageResponse.getMessage());
-//		this.messageResponse = messageResponse;
-//	}
 }

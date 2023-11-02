@@ -10,7 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PostLoad;
@@ -19,6 +21,7 @@ import javax.persistence.SequenceGenerator;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
@@ -34,7 +37,7 @@ public class PersonalInfo {
 	@Column(name = "name_prefix")
 	private String namePrefix;
 
-	@Column(name = "first_name")
+	@Column(name = "first_name") 
 	private String firstName;
 
 	@Column(name = "middle_name")
@@ -76,7 +79,6 @@ public class PersonalInfo {
 
 	@Column(name = "citizenship")
 	private String citizenship;
-
 
 	@Column(name = "id_Scan", length = 2147483647)
 	@Lob
@@ -145,11 +147,15 @@ public class PersonalInfo {
 	@Cascade(CascadeType.ALL)
 	private List<Trainingdetails> training;
 
-
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
 	private List<JobDetails> jobDetails;
+
+	@ManyToOne
+	@JoinColumn(name = "department_name", referencedColumnName = "departmentName")
+	@JsonBackReference
+	private Department department;
 
 	@PostLoad
 	private void calculateAge() {

@@ -1,7 +1,6 @@
 package com.erp.hrms.api.service;
 
 import java.time.LocalDate;
-
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
@@ -40,8 +39,9 @@ public class VisaExpiryNotification {
 
 					if (visaExpiryDateString != null && !visaExpiryDateString.isEmpty()) {
 
-						LocalDate visaExpiryDate = LocalDate.parse(visaExpiryDateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-		
+						LocalDate visaExpiryDate = LocalDate.parse(visaExpiryDateString,
+								DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
 						long daysBetween = ChronoUnit.DAYS.between(currentDate, visaExpiryDate);
 
 						if (daysBetween <= 60 && daysBetween >= 1) {
@@ -55,23 +55,19 @@ public class VisaExpiryNotification {
 							} else if (daysBetween == 60 && visaType.equals("Work Visa")
 									&& !personalInfo.getVisainfo().isVisaEmailSend20and60daysBefore()) {
 								sendNotificationOfWorkVisaFirst(personalInfo.getEmail(), visaExpiryDate, personalInfo);
-								} else if (daysBetween == 30 && visaType.equals("Work Visa")
+							} else if (daysBetween == 30 && visaType.equals("Work Visa")
 									&& !personalInfo.getVisainfo().isVisaEmailSend10and30daysBefore()) {
 								sendNotificationOfWorkVisaSecond(personalInfo.getEmail(), visaExpiryDate, personalInfo);
-							} else if (daysBetween == 4
-									&& !personalInfo.getVisainfo().isVisaEmailSend4daysBefore()) {
+							} else if (daysBetween == 4 && !personalInfo.getVisainfo().isVisaEmailSend4daysBefore()) {
 								sendNotificationOfContinuouslyFirstEmail(personalInfo.getEmail(), visaExpiryDate,
 										personalInfo);
-							} else if (daysBetween == 3
-									&& !personalInfo.getVisainfo().isVisaEmailSend3daysBefore()) {
+							} else if (daysBetween == 3 && !personalInfo.getVisainfo().isVisaEmailSend3daysBefore()) {
 								sendNotificationOfContinuouslySecondEmail(personalInfo.getEmail(), visaExpiryDate,
 										personalInfo);
-							} else if (daysBetween == 2
-									&& !personalInfo.getVisainfo().isVisaEmailSend2daysBefore()) {
+							} else if (daysBetween == 2 && !personalInfo.getVisainfo().isVisaEmailSend2daysBefore()) {
 								sendNotificationOfContinuouslyThirdEmail(personalInfo.getEmail(), visaExpiryDate,
 										personalInfo);
-							} else if (daysBetween == 1
-									&& !personalInfo.getVisainfo().isVisaEmailSend1dayBefore()) {
+							} else if (daysBetween == 1 && !personalInfo.getVisainfo().isVisaEmailSend1dayBefore()) {
 								sendNotificationOfContinuouslyFourEmail(personalInfo.getEmail(), visaExpiryDate,
 										personalInfo);
 							}

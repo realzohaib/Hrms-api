@@ -731,7 +731,7 @@ public class Helper {
 							break;
 
 						case 156:
-							jobDetails.setJobdepartment(currentCell.getStringCellValue());
+//							jobDetails.setJobdepartment(currentCell.getStringCellValue());
 							break;
 
 						case 157:

@@ -31,7 +31,6 @@ public class VisaDetail {
 	@Column(name = "visa_expiry_date")
 	private String visaExpiryDate;
 
-
 	private boolean visaEmailSend20and60daysBefore;
 	private boolean VisaEmailSend10and30daysBefore;
 

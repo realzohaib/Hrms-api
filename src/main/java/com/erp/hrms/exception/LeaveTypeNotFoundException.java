@@ -2,7 +2,8 @@ package com.erp.hrms.exception;
 
 import com.erp.hrms.api.security.response.MessageResponse;
 
-public class LeaveRequestNotFoundException extends RuntimeException {
+public class LeaveTypeNotFoundException extends RuntimeException {
+
 	/**
 	 * 
 	 */
@@ -10,8 +11,9 @@ public class LeaveRequestNotFoundException extends RuntimeException {
 
 	MessageResponse messageResponse;
 
-	public LeaveRequestNotFoundException(MessageResponse messageResponse) {
+	public LeaveTypeNotFoundException(MessageResponse messageResponse) {
 		super(messageResponse.getMessage());
 		this.messageResponse = messageResponse;
 	}
+
 }
