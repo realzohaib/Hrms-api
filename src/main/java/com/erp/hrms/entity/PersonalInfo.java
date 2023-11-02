@@ -1,5 +1,6 @@
 package com.erp.hrms.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +29,12 @@ import lombok.Data;
 
 @Data
 @Entity
-public class PersonalInfo {
+public class PersonalInfo implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "Id")
@@ -36,7 +42,7 @@ public class PersonalInfo {
 	@SequenceGenerator(name = "employeeIdGenerator", sequenceName = "employee_id_seq", allocationSize = 1, initialValue = 1001)
 	private Long Id;
 	
-	@Column(name = "employee_Id")
+	@Column(name = "employeeId")
 	private Long employeeId;
 	
 	@Column(name = "name_prefix")
@@ -123,6 +129,7 @@ public class PersonalInfo {
 	private VisaDetail visainfo;
 
 	@OneToMany(mappedBy = "personalinfo")
+//@OneToMany
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
 	private List<Education> educations;
