@@ -29,11 +29,16 @@ import lombok.Data;
 @Data
 @Entity
 public class PersonalInfo {
-	@Id
-	@Column(name = "employee_Id")
+
+	@Column(name = "Id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdGenerator")
 	@SequenceGenerator(name = "employeeIdGenerator", sequenceName = "employee_id_seq", allocationSize = 1, initialValue = 1001)
+	private Long Id;
+	
+	@Id
+	@Column(name = "employee_Id")
 	private Long employeeId;
+	
 	@Column(name = "name_prefix")
 	private String namePrefix;
 

@@ -2,6 +2,7 @@ package com.erp.hrms.api.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PersonalInfoServiceImpl implements IPersonalInfoService {
+	
+	public static int generateRandom4DigitNumber() {
+        Random random = new Random();
+        return 1000 + random.nextInt(9000); // Generates a random 4-digit number
+    }
+
+    public static long concatenateIdWithRandomNumber(long id, int randomPart) {
+        return (id * 10000L) + randomPart;
+    }
 	@Autowired
 	private IPersonalInfoDAO dao;
 
@@ -55,6 +65,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			throw new PersonalEmailExistsException(new MessageResponse("Email ID already exists"));
 		}
 		try {
+			
+			Department department2 = PersonalInfo.getDepartment();
+			Long departmentId = department2.getDepartmentId();
+			
+			// Generate a 4-digit random number
+	        int randomPart = generateRandom4DigitNumber();
+	        
+	        long employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
+	        
+	        PersonalInfo.setEmployeeId(employeeId);
+			
 			PersonalInfo.setFathersFirstName("Mr " + PersonalInfo.getFathersFirstName());
 			PersonalInfo.setStatus("Active");
 			PersonalInfo.setEmpStatus("New employee");
