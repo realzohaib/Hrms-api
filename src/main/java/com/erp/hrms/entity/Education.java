@@ -100,8 +100,13 @@ public class Education {
 	private byte[] diplomaDocumentScan;
 
 	@ManyToOne
-	@JoinColumn(name = "employee_id ")
+	@JoinColumn(name = "employee_Id " , referencedColumnName = "employee_Id")
 	@JsonBackReference
 	private PersonalInfo personalinfo;
+	
+//	 @JoinColumn(name = "employee_Id")
+//	    @ManyToOne
+//	    @JsonBackReference
+//	    private PersonalInfo personalinfo;
 
 }

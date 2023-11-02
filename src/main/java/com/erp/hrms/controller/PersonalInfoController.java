@@ -69,7 +69,7 @@ public class PersonalInfoController {
 			return ResponseEntity.ok(new MessageResponse("Insert Personal info successfully"));
 		} catch (Exception e) {
 			System.out.println(e);
-			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
+			return ResponseEntity.badRequest().body(new Exception("error occured " + e.getMessage()));
 		}
 
 	}

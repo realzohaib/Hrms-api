@@ -65,17 +65,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			throw new PersonalEmailExistsException(new MessageResponse("Email ID already exists"));
 		}
 		try {
-			
-			Department department2 = PersonalInfo.getDepartment();
-			Long departmentId = department2.getDepartmentId();
-			
-			// Generate a 4-digit random number
-	        int randomPart = generateRandom4DigitNumber();
-	        
-	        long employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
-	        
-	        PersonalInfo.setEmployeeId(employeeId);
-			
 			PersonalInfo.setFathersFirstName("Mr " + PersonalInfo.getFathersFirstName());
 			PersonalInfo.setStatus("Active");
 			PersonalInfo.setEmpStatus("New employee");
@@ -89,6 +78,14 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			Department department = departmentRepository
 					.findByDepartmentName(PersonalInfo.getDepartment().getDepartmentName());
 			PersonalInfo.setDepartment(department);
+			Long departmentId = department.getDepartmentId();
+			
+			// Generate a 4-digit random number
+	        int randomPart = generateRandom4DigitNumber();
+	        
+	        long employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
+	        
+	        PersonalInfo.setEmployeeId(employeeId);
 
 			PassportDetails passportDetails = new PassportDetails();
 			if (passportScan != null && !passportScan.isEmpty()) {
