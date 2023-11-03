@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.erp.hrms.api.dao.DepartmentRepository;
 import com.erp.hrms.entity.Department;
+import com.erp.hrms.entity.helper.PersonalInfoDTO;
 
 @Service
 public class DepartmentService implements IDepartmentService {
@@ -17,20 +18,20 @@ public class DepartmentService implements IDepartmentService {
 	private DepartmentRepository idepartmentRepository;
 
 	public void saveInitialDepartments() {
-		if(idepartmentRepository.findAll().isEmpty()) {
-		List<Department> initialDepartments = new ArrayList<>();
-		initialDepartments.add(new Department( "Procurement"));
-		initialDepartments.add(new Department( "Warehousing"));
-		initialDepartments.add(new Department( "Logistics"));
-		initialDepartments.add(new Department( "Quality Control"));
-		initialDepartments.add(new Department( "Production & Operations"));
-		initialDepartments.add(new Department( "Sales"));
-		initialDepartments.add(new Department( "Human Resource"));
-		initialDepartments.add(new Department( "Finance & Accounts"));
-		initialDepartments.add(new Department( "General Administration"));
- 
-		idepartmentRepository.saveAll(initialDepartments);
-	}
+		if (idepartmentRepository.findAll().isEmpty()) {
+			List<Department> initialDepartments = new ArrayList<>();
+			initialDepartments.add(new Department("Procurement"));
+			initialDepartments.add(new Department("Warehousing"));
+			initialDepartments.add(new Department("Logistics"));
+			initialDepartments.add(new Department("Quality Control"));
+			initialDepartments.add(new Department("Production & Operations"));
+			initialDepartments.add(new Department("Sales"));
+			initialDepartments.add(new Department("Human Resource"));
+			initialDepartments.add(new Department("Finance & Accounts"));
+			initialDepartments.add(new Department("General Administration"));
+
+			idepartmentRepository.saveAll(initialDepartments);
+		}
 	}
 
 	@Override
@@ -51,9 +52,7 @@ public class DepartmentService implements IDepartmentService {
 	}
 
 	@Override
-	public Optional<Department> getDepartmentByName(String departmentName) {
-		Department department = idepartmentRepository.findByNameWithPersonalInfos(departmentName);
-		return Optional.ofNullable(department);
+	public List<PersonalInfoDTO> getFirstAndLastNamesByDepartmentName(String departmentName) {
+		return idepartmentRepository.findFirstAndLastNameByDepartmentName(departmentName);
 	}
-
 }

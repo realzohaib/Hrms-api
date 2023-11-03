@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.api.service.IDepartmentService;
 import com.erp.hrms.entity.Department;
+import com.erp.hrms.entity.helper.PersonalInfoDTO;
 
 @RestController
 @RequestMapping("api/v1")
@@ -37,7 +38,7 @@ public class DepartmentController {
 					HttpStatus.BAD_REQUEST);
 		}
 	}
- 
+
 	@PostMapping("/save/department")
 	public ResponseEntity<?> saveDepartment(@RequestBody Department department) {
 
@@ -78,19 +79,19 @@ public class DepartmentController {
 		}
 	}
 
-	@GetMapping("/department/name/{departmentName}")
-	public ResponseEntity<?> findDepartmentByName(@PathVariable String departmentName) {
-
+	@GetMapping("/department/name/{departmentName}/personalInfo")
+	public ResponseEntity<?> findFirstAndLastNamesByDepartmentName(@PathVariable String departmentName) {
 		try {
-			Optional<Department> departmentByName = idepartmentService.getDepartmentByName(departmentName);
-			if (departmentByName.isEmpty()) {
+			List<PersonalInfoDTO> personalInfoDTOs = idepartmentService
+					.getFirstAndLastNamesByDepartmentName(departmentName);
+
+			if (personalInfoDTOs.isEmpty()) {
 				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
 			} else {
-				return new ResponseEntity<>(departmentByName, HttpStatus.OK);
+				return new ResponseEntity<>(personalInfoDTOs, HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
 }
