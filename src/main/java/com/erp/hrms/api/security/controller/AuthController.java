@@ -1,12 +1,16 @@
 package com.erp.hrms.api.security.controller;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -166,6 +169,31 @@ public class AuthController {
 		}
 		return ResponseEntity.ok(new StatusResponse(false));
 
+	}
+	
+	@PostConstruct
+	public ResponseEntity<String> initializeDefaultRoles() {
+	    if (roleRepository.findAll().isEmpty()) {
+	        try {
+	            List<RoleEntity> roleList = Arrays.asList(
+	                new RoleEntity(ERole.ROLE_ADMIN),
+	                new RoleEntity(ERole.ROLE_EMPLOYEE),
+	                new RoleEntity(ERole.ROLE_MANAGER)
+	            );
+
+	            List<RoleEntity> savedRoles = roleRepository.saveAll(roleList);
+
+	            if (!savedRoles.isEmpty()) {
+	                return ResponseEntity.ok("Default roles have been initialized successfully.");
+	            } else {
+	                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to initialize default roles.");
+	            }
+	        } catch (DataAccessException e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while initializing default roles: " + e.getMessage());
+	        }
+	    } else {
+	        return ResponseEntity.ok("Default roles already exist. No further action required.");
+	    }
 	}
 
 }

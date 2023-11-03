@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
+import com.erp.hrms.entity.form.MarkedDate;
 
 public interface ILeaveService {
 
@@ -19,7 +20,7 @@ public interface ILeaveService {
 
 	public List<LeaveApproval> findAllLeaveApproval();
 
-	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval) throws IOException;
+	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval, MultipartFile medicalDocumentsName) throws IOException;
 
 	public List<LeaveApproval> findAllLeaveApprovalPending();
 
@@ -32,6 +33,8 @@ public interface ILeaveService {
 	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
 
 	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals);
-	
-	public List<LeaveApproval> getAllLeaveApprovals();
+
+	public List<LeaveApproval> getAllLeaveApprovalsAccepted();
+
+	public List<MarkedDate> markCalendarDates();
 }

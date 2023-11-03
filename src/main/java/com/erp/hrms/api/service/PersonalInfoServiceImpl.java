@@ -11,12 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.erp.hrms.api.dao.DepartmentRepository;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
-import com.erp.hrms.entity.Department;
 import com.erp.hrms.entity.DrivingLicense;
 import com.erp.hrms.entity.Education;
 import com.erp.hrms.entity.EmpAchievement;
@@ -50,9 +48,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	@Autowired
 	private IPersonalInfoDAO dao;
 
-	@Autowired
-	private DepartmentRepository departmentRepository;
-
 	@Override
 	public void savedata(String personalinfo, MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
 			MultipartFile passportScan, MultipartFile licensecopy, MultipartFile relativeid,
@@ -71,11 +66,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			throw new PersonalEmailExistsException(new MessageResponse("Email ID already exists"));
 		}
 		try {
+			Long departmentId = PersonalInfo.getDepartment().getDepartmentId();
 
-			Department department2 = PersonalInfo.getDepartment();
-			Long departmentId = department2.getDepartmentId();
-
-			// Generate a 4-digit random number
 			int randomPart = generateRandom4DigitNumber();
 
 			long employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
@@ -98,10 +90,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				Files.write(OtherIdProofDocName, OtherIdProofDoc.getBytes());
 				PersonalInfo.setOtherIdProofDoc(OtherIdProoforiginalFileName);
 			}
-
-			Department department = departmentRepository
-					.findByDepartmentName(PersonalInfo.getDepartment().getDepartmentName());
-			PersonalInfo.setDepartment(department);
 
 			PassportDetails passportDetails = new PassportDetails();
 
@@ -342,19 +330,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			}
 			dao.savePersonalInfo(PersonalInfo);
 		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
+			throw new RuntimeException("An error occurred while saving personal information.", e);
 		}
 	}
 
 	@Override
 	public List<PersonalInfo> findAllPersonalInfo() {
-		List<PersonalInfo> findAllPersonalInfo = null;
 		try {
-			findAllPersonalInfo = dao.findAllPersonalInfo();
+			List<PersonalInfo> findAllPersonalInfo = dao.findAllPersonalInfo();
 			return findAllPersonalInfo;
 		} catch (Exception e) {
-			throw new RuntimeException("Something wrong: " + e);
+			throw new RuntimeException("Failed to retrieve personal info: " + e.getMessage());
 		}
 	}
 
@@ -362,20 +348,29 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	public PersonalInfo getPersonalInfoByEmail(String email) {
 		try {
 			PersonalInfo personalInfoByEmail = dao.getPersonalInfoByEmail(email);
+			if (personalInfoByEmail == null) {
+				throw new PersonalInfoNotFoundException(
+						new MessageResponse("No personal information found for this email ID: " + email));
+			}
 			return personalInfoByEmail;
 		} catch (Exception e) {
-			throw new RuntimeException("No personal information found for this email ID: " + email, e);
+			throw new RuntimeException("An error occurred while retrieving personal information for email: " + email,
+					e);
 		}
 	}
 
 	@Override
 	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) {
 		try {
-
 			PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
+			if (personalInfoByEmployeeId == null) {
+				throw new PersonalInfoNotFoundException(
+						new MessageResponse("No personal information found for this employee ID: " + employeeId));
+			}
 			return personalInfoByEmployeeId;
 		} catch (Exception e) {
-			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
+			throw new RuntimeException(
+					"An error occurred while retrieving personal information for Employee Id: " + employeeId, e);
 		}
 	}
 
@@ -858,7 +853,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				existingPersonalInfo.setBgcheck(bgcheck);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException("Something went wrong: " + e.getMessage());
 		}
 		return dao.updatePersonalInfo(email, existingPersonalInfo);
 	}
@@ -869,7 +864,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			updateVisaDetails = dao.updateVisaDetails(employeeId, visaIssueDate, visaExpiryDate);
 			return updateVisaDetails;
 		} catch (Exception e) {
-			System.out.println(e);
 			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
 		}
 
@@ -882,7 +876,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			notificationFields = dao.getNotificationFields();
 			return notificationFields;
 		} catch (Exception e) {
-			System.out.println(e);
 			throw new RuntimeException("Something went wrong. " + e);
 		}
 	}

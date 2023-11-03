@@ -17,6 +17,7 @@ public class DepartmentService implements IDepartmentService {
 	private DepartmentRepository idepartmentRepository;
 
 	public void saveInitialDepartments() {
+		if(idepartmentRepository.findAll().isEmpty()) {
 		List<Department> initialDepartments = new ArrayList<>();
 		initialDepartments.add(new Department( "Procurement"));
 		initialDepartments.add(new Department( "Warehousing"));
@@ -29,6 +30,7 @@ public class DepartmentService implements IDepartmentService {
 		initialDepartments.add(new Department( "General Administration"));
  
 		idepartmentRepository.saveAll(initialDepartments);
+	}
 	}
 
 	@Override
