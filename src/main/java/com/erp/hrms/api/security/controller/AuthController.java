@@ -1,12 +1,17 @@
 package com.erp.hrms.api.security.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -61,7 +66,7 @@ public class AuthController {
 	PasswordEncoder encoder;
 
 	@Autowired
-	JwtTokenUtill jwtTokenUtill;
+	JwtTokenUtill jwtTokenUtill; 
 
 	@Autowired
 	IPersonalInfoDAO dao;
@@ -88,7 +93,6 @@ public class AuthController {
 			long parseLong = Long.parseLong(username);
 
 			if (roles.contains("ROLE_EMPLOYEE")) {
-				// PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
 				PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
 				jwt.setInfo(personalInfo);
 				return ResponseEntity.ok(jwt);
@@ -167,5 +171,33 @@ public class AuthController {
 		return ResponseEntity.ok(new StatusResponse(false));
 
 	}
+	
+	
+	@PostConstruct
+	public ResponseEntity<String> initializeDefaultRoles() {
+	    if (roleRepository.findAll().isEmpty()) {
+	        try {
+	            List<RoleEntity> roleList = Arrays.asList(
+	                new RoleEntity(ERole.ROLE_ADMIN),
+	                new RoleEntity(ERole.ROLE_EMPLOYEE),
+	                new RoleEntity(ERole.ROLE_MANAGER)
+	            );
+
+	            List<RoleEntity> savedRoles = roleRepository.saveAll(roleList);
+
+	            if (!savedRoles.isEmpty()) {
+	                return ResponseEntity.ok("Default roles have been initialized successfully.");
+	            } else {
+	                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to initialize default roles.");
+	            }
+	        } catch (DataAccessException e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while initializing default roles: " + e.getMessage());
+	        }
+	    } else {
+	        return ResponseEntity.ok("Default roles already exist. No further action required.");
+	    }
+	}
+
+
 
 }

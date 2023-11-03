@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.ThrowsAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,6 +26,8 @@ import com.erp.hrms.api.service.IPersonalInfoService;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
+
+import net.bytebuddy.implementation.bytecode.Throw;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -102,17 +105,25 @@ public class PersonalInfoController {
 		}
 	}
 
+//	@GetMapping("/personal-info/employeeId/{employeeId}")
+//	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId, HttpServletResponse response)
+//			throws IOException {
+//		try {
+//
+//			return ResponseEntity.ok(personalInfoService.getPersonalInfoByEmployeeId(employeeId));
+//		} catch (Exception e) {
+//			System.out.println(e);
+//			return ResponseEntity.badRequest().body(new Exception("error occured " + e.getMessage()));
+//		}
+//	}
+	
+	
 	@GetMapping("/personal-info/employeeId/{employeeId}")
-	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId, HttpServletResponse response)
-			throws IOException {
-		try {
-
+	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId, HttpServletResponse response){
 			return ResponseEntity.ok(personalInfoService.getPersonalInfoByEmployeeId(employeeId));
-		} catch (Exception e) {
-			System.out.println(e);
-			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
 		}
-	}
+			
+	
 
 	@PutMapping("/personal-info/delete/{email}")
 	public ResponseEntity<?> deletePersonalInfoByEmail(@PathVariable String email,

@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.api.dao.DepartmentRepository;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
+import com.erp.hrms.api.request.SignupRequest;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
@@ -46,6 +49,9 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 	@Autowired
 	private DepartmentRepository departmentRepository;
+	
+	@Autowired
+	private JavaMailSender sender;
 
 	@Override
 	public void savedata(String personalinfo, MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
@@ -64,7 +70,20 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		if (dao.existsByEmail(email)) {
 			throw new PersonalEmailExistsException(new MessageResponse("Email ID already exists"));
 		}
+		long employeeId;
 		try {
+			Long departmentId = PersonalInfo.getDepartment().getDepartmentId();
+			
+			// Generate a 4-digit random number
+	        int randomPart = generateRandom4DigitNumber();
+	      
+	        employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
+	        if(!dao.existByID(employeeId)) {
+	        	  employeeId = employeeId*10;
+	        }
+	        
+	        PersonalInfo.setEmployeeId(employeeId);
+			
 			PersonalInfo.setFathersFirstName("Mr " + PersonalInfo.getFathersFirstName());
 			PersonalInfo.setStatus("Active");
 			PersonalInfo.setEmpStatus("New employee");
@@ -74,18 +93,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
 				PersonalInfo.setOtherIdProofDoc(OtherIdProofDoc.getBytes());
 			}
-
-			Department department = departmentRepository
-					.findByDepartmentName(PersonalInfo.getDepartment().getDepartmentName());
-			PersonalInfo.setDepartment(department);
-			Long departmentId = department.getDepartmentId();
-			
-			// Generate a 4-digit random number
-	        int randomPart = generateRandom4DigitNumber();
-	        
-	        long employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
-	        
-	        PersonalInfo.setEmployeeId(employeeId);
 
 			PassportDetails passportDetails = new PassportDetails();
 			if (passportScan != null && !passportScan.isEmpty()) {
@@ -254,8 +261,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				PersonalInfo.setTraining(training);
 			}
 			dao.savePersonalInfo(PersonalInfo);
+		
+			
+			//sendOnboardingEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName());
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			throw e;
 		}
 	}
 
@@ -280,17 +290,23 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		}
 	}
 
+//	@Override
+//	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) {
+//		try {
+//
+//			PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
+//			return personalInfoByEmployeeId;
+//		} catch (Exception e) {
+////			System.out.println(e);
+//			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
+//		}
+//	}
+	
 	@Override
 	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) {
-		try {
-
 			PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
 			return personalInfoByEmployeeId;
-		} catch (Exception e) {
-
-//			System.out.println(e);
-			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
-		}
+		
 	}
 
 	@Override
@@ -717,5 +733,24 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			System.out.println(e);
 			throw new RuntimeException("Something went wrong. " + e);
 		}
+	}
+	
+	public void sendOnboardingEmail(String email, long employeeId, String name) {
+	    SimpleMailMessage mailMessage = new SimpleMailMessage();
+	    mailMessage.setTo(email);
+	    mailMessage.setSubject("Welcome to SI Global Company");
+
+	    // Create a more professional and welcoming email message
+	    String emailText = "Dear Mr. " + name + ",\n\n"
+	            + "We are pleased to welcome you to SI Global Company. Your employee ID is: " + employeeId + ".\n\n"
+	            + "As a valued member of our team, you play a vital role in our organization's success.\n\n"
+	            + "Please feel free to reach out to our HR department for any assistance during your onboarding process.\n\n"
+	            + "We look forward to working with you and wish you a successful and rewarding career with us.\n\n"
+	            + "Best regards,\n"
+	            + "The SI Global Company Team";
+
+	    mailMessage.setText(emailText);
+
+	    sender.send(mailMessage);
 	}
 }
