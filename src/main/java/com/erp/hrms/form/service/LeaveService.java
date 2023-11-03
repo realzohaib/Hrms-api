@@ -105,13 +105,13 @@ public class LeaveService implements ILeaveService {
 
 			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
 
-////		 Send emails to admin and manager
-//			sendLeaveRequestEmail(adminEmail, "Leave Request from Employee", leaveApprovalJson);
-//			sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
-//
-////		 Send an email to the employee who requested the leave
-//			String employeeEmail = leaveApprovalJson.getEmail();
-//			sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
+//		 Send emails to admin and manager
+			sendLeaveRequestEmail(adminEmail, "Leave Request from Employee", leaveApprovalJson);
+			sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
+
+//		 Send an email to the employee who requested the leave
+			String employeeEmail = leaveApprovalJson.getEmail();
+			sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
 		} catch (Exception e) {
 			throw new RuntimeException("An error occurred while send your request." + e);
 		}
@@ -210,14 +210,14 @@ public class LeaveService implements ILeaveService {
 				}
 			}
 
-//			// Send emails to admin
-//			sendLeaveRequestEmailApproved(adminEmail, "Leave Request status by the manager", leaveApprovalJson);
-////			 Send email to manager who approve or deny the leave request
-//			sendLeaveRequestEmailApproved(managerEmail, "Leave Request status by the manager", leaveApprovalJson);
-//
-//			// Send an email to the employee
-//			String employeeEmail = leaveApprovalJson.getEmail();
-//			sendLeaveRequestEmailApproved(employeeEmail, "Leave Request status by the manager", leaveApprovalJson);
+			// Send emails to admin
+			sendLeaveRequestEmailApproved(adminEmail, "Leave Request status by the manager", leaveApprovalJson);
+//			 Send email to manager who approve or deny the leave request
+			sendLeaveRequestEmailApproved(managerEmail, "Leave Request status by the manager", leaveApprovalJson);
+
+			// Send an email to the employee
+			String employeeEmail = leaveApprovalJson.getEmail();
+			sendLeaveRequestEmailApproved(employeeEmail, "Leave Request status by the manager", leaveApprovalJson);
 
 			return iLeaveRepository.approvedByManager(leaveRequestId, leaveApprovalJson);
 		} catch (Exception e) {
