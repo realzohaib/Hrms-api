@@ -58,6 +58,9 @@ public class LeaveService implements ILeaveService {
 	@Autowired
 	private IPersonalInfoDAO iPersonalInfoDAO;
 
+	@Autowired
+	private FileService fileService;
+
 //	This method for send the leave request to manager and send email to manager and admin
 	@Override
 	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException {
@@ -117,24 +120,40 @@ public class LeaveService implements ILeaveService {
 		}
 	}
 
-//	This method for get the leave request by LeaveRequestId
+//	This method for find the data of leave by leave request id
 	@Override
-	public LeaveApproval getleaveRequestById(Long leaveRequestId) {
+	public LeaveApproval getleaveRequestById(Long leaveRequestId) throws IOException {
 		LeaveApproval leaveApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
 		if (leaveApproval == null) {
 			throw new LeaveRequestNotFoundException(
 					new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
+		}
+		String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+		if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+			byte[] fileData = fileService.getFileData(medicalDocumentsName);
+			if (fileData != null) {
+				leaveApproval.setMedicalDocumentData(fileData);
+			}
 		}
 		return leaveApproval;
 	}
 
 //	This method for find all the Leave Request by employeeId
 	@Override
-	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId) {
+	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId) throws IOException {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.getLeaveRequestByEmployeeId(employeeId);
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(
 					new MessageResponse("This Employee ID " + employeeId + " not found."));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -142,11 +161,20 @@ public class LeaveService implements ILeaveService {
 
 //	This method for find all leave request
 	@Override
-	public List<LeaveApproval> findAllLeaveApproval() {
+	public List<LeaveApproval> findAllLeaveApproval() throws IOException {
 		List<LeaveApproval> leaveApprovals = null;
 		leaveApprovals = iLeaveRepository.findAllLeaveApproval();
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -227,10 +255,19 @@ public class LeaveService implements ILeaveService {
 
 //	This method for find all pending leave request 
 	@Override
-	public List<LeaveApproval> findAllLeaveApprovalPending() {
+	public List<LeaveApproval> findAllLeaveApprovalPending() throws IOException {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalPending();
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -238,10 +275,19 @@ public class LeaveService implements ILeaveService {
 
 //	This method for find all accepted leave request 
 	@Override
-	public List<LeaveApproval> findAllLeaveApprovalAccepted() {
+	public List<LeaveApproval> findAllLeaveApprovalAccepted() throws IOException {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalAccepted();
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -249,11 +295,20 @@ public class LeaveService implements ILeaveService {
 
 //	This method for find all rejected leave request 
 	@Override
-	public List<LeaveApproval> findAllLeaveApprovalRejected() {
+	public List<LeaveApproval> findAllLeaveApprovalRejected() throws IOException {
 
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalRejected();
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;

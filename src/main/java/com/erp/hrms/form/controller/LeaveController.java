@@ -44,7 +44,7 @@ public class LeaveController {
 
 //	This method for get the leave request by LeaveRequestId
 	@GetMapping("/leave/request/{leaveRequestId}")
-	public ResponseEntity<?> getleaveRequestById(@PathVariable Long leaveRequestId) throws Exception {
+	public ResponseEntity<?> getleaveRequestById(@PathVariable Long leaveRequestId) throws IOException {
 		try {
 			return new ResponseEntity<>(iLeaveService.getleaveRequestById(leaveRequestId), HttpStatus.OK);
 		} catch (Exception e) {
@@ -52,15 +52,16 @@ public class LeaveController {
 					HttpStatus.NOT_FOUND);
 		}
 	}
+	
 
 //	This method for find all the Leave Request by employeeId
 	@GetMapping("/findall/leave/request/with/employeeId/{employeeId}")
-	public ResponseEntity<?> getLeaveRequestByEmployeeId(@PathVariable Long employeeId) {
+	public ResponseEntity<?> getLeaveRequestByEmployeeId(@PathVariable Long employeeId) throws IOException {
 		try {
 			return new ResponseEntity<>(iLeaveService.getLeaveRequestByEmployeeId(employeeId), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(
-					new MessageResponse("leave request with employee ID: " + employeeId + " not foundm"),
+					new MessageResponse("leave request with employee ID: " + employeeId + " not found"),
 					HttpStatus.NOT_FOUND);
 		}
 	}

@@ -14,19 +14,19 @@ public interface ILeaveService {
 
 	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException;
 
-	public LeaveApproval getleaveRequestById(Long leaveRequestID);
+	public LeaveApproval getleaveRequestById(Long leaveRequestID) throws IOException;
 
-	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId);
+	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId) throws IOException;
 
-	public List<LeaveApproval> findAllLeaveApproval();
+	public List<LeaveApproval> findAllLeaveApproval() throws IOException;
 
 	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval, MultipartFile medicalDocumentsName) throws IOException;
 
-	public List<LeaveApproval> findAllLeaveApprovalPending();
+	public List<LeaveApproval> findAllLeaveApprovalPending() throws IOException;
 
-	public List<LeaveApproval> findAllLeaveApprovalAccepted();
+	public List<LeaveApproval> findAllLeaveApprovalAccepted() throws IOException;
 
-	public List<LeaveApproval> findAllLeaveApprovalRejected();
+	public List<LeaveApproval> findAllLeaveApprovalRejected() throws IOException;
 
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId);
 
