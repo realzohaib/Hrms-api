@@ -267,7 +267,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 							String degreeScanoriginalFileName = file.getOriginalFilename();
 							String degreeScanfileNameWithUniqueIdentifier = employeeId + "-"
 									+ degreeScanoriginalFileName;
-//							Path degreeScanNameWithData = Paths.get(uplaodDirectory, file.getOriginalFilename());
 							Path degreeScanNameWithData = Paths.get(uplaodDirectory,
 									degreeScanfileNameWithUniqueIdentifier);
 							Files.write(degreeScanNameWithData, file.getBytes());
@@ -1000,19 +999,36 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			existingPersonalInfo.setDateOfBirth(personalInfo.getDateOfBirth());
 			existingPersonalInfo.setAge(personalInfo.getAge());
 			existingPersonalInfo.setMaritalStatus(personalInfo.getMaritalStatus());
+
 			if (passportSizePhoto != null && !passportSizePhoto.isEmpty()) {
-				String passportoriginalFileName = passportSizePhoto.getOriginalFilename() + "-" + employeeId;
-				Path passportSizePhotoName = Paths.get(uplaodDirectory, passportSizePhoto.getOriginalFilename());
-				Files.write(passportSizePhotoName, passportSizePhoto.getBytes());
-				existingPersonalInfo.setPassportSizePhoto(passportoriginalFileName);
+				// Delete the old passportSizePhoto file if it exists
+				if (existingPersonalInfo.getPassportSizePhoto() != null) {
+					Path oldPassportSizePhotoPath = Paths.get(uplaodDirectory,
+							existingPersonalInfo.getPassportSizePhoto());
+					Files.deleteIfExists(oldPassportSizePhotoPath);
+				}
+				// Save the new passportSizePhoto file
+				String passportoriginalFileName = passportSizePhoto.getOriginalFilename();
+				String passportfileNameWithUniqueIdentifier = employeeId + "-" + passportoriginalFileName;
+				Path passportSizePhotoNameWithPath = Paths.get(uplaodDirectory, passportfileNameWithUniqueIdentifier);
+				Files.write(passportSizePhotoNameWithPath, passportSizePhoto.getBytes());
+				existingPersonalInfo.setPassportSizePhoto(passportfileNameWithUniqueIdentifier);
 			}
 			existingPersonalInfo.setPersonalContactNo(personalInfo.getPersonalContactNo());
 			existingPersonalInfo.setCitizenship(personalInfo.getCitizenship());
 			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
-				String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename() + "-" + employeeId;
-				Path OtherIdProofDocName = Paths.get(uplaodDirectory, OtherIdProofDoc.getOriginalFilename());
-				Files.write(OtherIdProofDocName, OtherIdProofDoc.getBytes());
-				existingPersonalInfo.setOtherIdProofDoc(OtherIdProoforiginalFileName);
+				// Delete the old OtherIdProofDoc file if it exists
+				if (existingPersonalInfo.getOtherIdProofDoc() != null) {
+					Path oldOtherIdProofDocPath = Paths.get(uplaodDirectory, existingPersonalInfo.getOtherIdProofDoc());
+					Files.deleteIfExists(oldOtherIdProofDocPath);
+				}
+				// Save the new OtherIdProofDoc file
+				String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename();
+				String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-" + OtherIdProoforiginalFileName;
+				Path OtherIdProofDocNameWithData = Paths.get(uplaodDirectory,
+						OtherIdProofDocfileNameWithUniqueIdentifier);
+				Files.write(OtherIdProofDocNameWithData, OtherIdProofDoc.getBytes());
+				existingPersonalInfo.setOtherIdProofDoc(OtherIdProofDocfileNameWithUniqueIdentifier);
 			}
 			existingPersonalInfo.setPermanentResidenceCountry(personalInfo.getPermanentResidenceCountry());
 			existingPersonalInfo.setPermanentResidentialAddress(personalInfo.getPermanentResidentialAddress());
@@ -1030,10 +1046,18 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				passportDetails.setPassportIssuingCountry(personalInfo.getPsDetail().getPassportIssuingCountry());
 				passportDetails.setPassportExpiryDate(personalInfo.getPsDetail().getPassportExpiryDate());
 				if (passportScan != null && !passportScan.isEmpty()) {
-					String passportScanoriginalFileName = passportScan.getOriginalFilename() + "-" + employeeId;
-					Path passportScanName = Paths.get(uplaodDirectory, passportScan.getOriginalFilename());
-					Files.write(passportScanName, passportScan.getBytes());
-					passportDetails.setPassportScan(passportScanoriginalFileName);
+					// Delete the old passportScan file if it exists
+					if (passportDetails.getPassportScan() != null) {
+						Path oldpassportScanPath = Paths.get(uplaodDirectory, passportDetails.getPassportScan());
+						Files.deleteIfExists(oldpassportScanPath);
+					}
+					// Save the new passportScan file
+					String passportScanoriginalFileName = passportScan.getOriginalFilename();
+					String passportScanfileNameWithUniqueIdentifier = employeeId + "-" + passportScanoriginalFileName;
+					Path passportScanNameWithData = Paths.get(uplaodDirectory,
+							passportScanfileNameWithUniqueIdentifier);
+					Files.write(passportScanNameWithData, passportScan.getBytes());
+					passportDetails.setPassportScan(passportScanfileNameWithUniqueIdentifier);
 				}
 			}
 			existingPersonalInfo.setPsDetail(passportDetails);
@@ -1043,10 +1067,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				drivingLicense.setDrivinglicense(personalInfo.getLicense().getDrivinglicense());
 				drivingLicense.setOwnvehicle(personalInfo.getLicense().getOwnvehicle());
 				if (licensecopy != null && !licensecopy.isEmpty()) {
-					String licensecopyoriginalFileName = licensecopy.getOriginalFilename() + "-" + employeeId;
-					Path licensecopyName = Paths.get(uplaodDirectory, licensecopy.getOriginalFilename());
-					Files.write(licensecopyName, licensecopy.getBytes());
-					drivingLicense.setLicensecopy(licensecopyoriginalFileName);
+					// Delete the old licensecopy file if it exists
+					if (drivingLicense.getLicensecopy() != null) {
+						Path oldlicensecopyPath = Paths.get(uplaodDirectory, drivingLicense.getLicensecopy());
+						Files.deleteIfExists(oldlicensecopyPath);
+					}
+					// Save the new licensecopy file
+					String licensecopyoriginalFileName = licensecopy.getOriginalFilename();
+					String licensecopyfileNameWithUniqueIdentifier = employeeId + "-" + licensecopyoriginalFileName;
+					Path licensecopyNameWithData = Paths.get(uplaodDirectory, licensecopyfileNameWithUniqueIdentifier);
+					Files.write(licensecopyNameWithData, licensecopy.getBytes());
+					drivingLicense.setLicensecopy(licensecopyfileNameWithUniqueIdentifier);
 				}
 			}
 			existingPersonalInfo.setLicense(drivingLicense);
@@ -1059,17 +1090,33 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				bloodRelative.setRaddress(personalInfo.getRelative().getRaddress());
 				bloodRelative.setRcontactno(personalInfo.getRelative().getRcontactno());
 				bloodRelative.setRelationship(personalInfo.getRelative().getRelationship());
+
 				if (relativeid != null && !relativeid.isEmpty()) {
-					String relativeidoriginalFileName = relativeid.getOriginalFilename() + "-" + employeeId;
-					Path relativeidName = Paths.get(uplaodDirectory, relativeid.getOriginalFilename());
-					Files.write(relativeidName, relativeid.getBytes());
-					bloodRelative.setRelativeid(relativeidoriginalFileName);
+					// Delete the old relativeid file if it exists
+					if (bloodRelative.getRelativeid() != null) {
+						Path oldrelativeidPath = Paths.get(uplaodDirectory, bloodRelative.getRelativeid());
+						Files.deleteIfExists(oldrelativeidPath);
+					}
+					// Save the new relativeid file
+					String relativeidoriginalFileName = relativeid.getOriginalFilename();
+					String relativeidfileNameWithUniqueIdentifier = employeeId + "-" + relativeidoriginalFileName;
+					Path relativeidNameWithData = Paths.get(uplaodDirectory, relativeidfileNameWithUniqueIdentifier);
+					Files.write(relativeidNameWithData, relativeid.getBytes());
+					bloodRelative.setRelativeid(relativeidfileNameWithUniqueIdentifier);
 				}
 				if (raddressproof != null && !raddressproof.isEmpty()) {
-					String raddressprooforiginalFileName = raddressproof.getOriginalFilename() + "-" + employeeId;
-					Path raddressproofName = Paths.get(uplaodDirectory, raddressproof.getOriginalFilename());
-					Files.write(raddressproofName, raddressproof.getBytes());
-					bloodRelative.setRaddressproof(raddressprooforiginalFileName);
+					// Delete the old raddressproof file if it exists
+					if (bloodRelative.getRaddressproof() != null) {
+						Path oldraddressproofPath = Paths.get(uplaodDirectory, bloodRelative.getRaddressproof());
+						Files.deleteIfExists(oldraddressproofPath);
+					}
+					// Save the new raddressproof file
+					String raddressprooforiginalFileName = raddressproof.getOriginalFilename();
+					String raddressprooffileNameWithUniqueIdentifier = employeeId + "-" + raddressprooforiginalFileName;
+					Path raddressproofNameWithData = Paths.get(uplaodDirectory,
+							raddressprooffileNameWithUniqueIdentifier);
+					Files.write(raddressproofNameWithData, raddressproof.getBytes());
+					bloodRelative.setRaddressproof(raddressprooffileNameWithUniqueIdentifier);
 				}
 			}
 			existingPersonalInfo.setRelative(bloodRelative);
@@ -1083,10 +1130,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				visaDetail.setVisaIssueyDate(personalInfo.getVisainfo().getVisaIssueyDate());
 				visaDetail.setVisaExpiryDate(personalInfo.getVisainfo().getVisaExpiryDate());
 				if (visaDocs != null && !visaDocs.isEmpty()) {
-					String visaDocsoriginalFileName = visaDocs.getOriginalFilename() + "-" + employeeId;
-					Path visaDocsName = Paths.get(uplaodDirectory, visaDocs.getOriginalFilename());
-					Files.write(visaDocsName, visaDocs.getBytes());
-					visaDetail.setVisaDocs(visaDocsoriginalFileName);
+					// Delete the old visaDocs file if it exists
+					if (visaDetail.getVisaDocs() != null) {
+						Path oldvisaDocsPath = Paths.get(uplaodDirectory, visaDetail.getVisaDocs());
+						Files.deleteIfExists(oldvisaDocsPath);
+					}
+					// Save the new visaDocs file
+					String visaDocsoriginalFileName = visaDocs.getOriginalFilename();
+					String visaDocsfileNameWithUniqueIdentifier = employeeId + "-" + visaDocsoriginalFileName;
+					Path visaDocsNameWithData = Paths.get(uplaodDirectory, visaDocsfileNameWithUniqueIdentifier);
+					Files.write(visaDocsNameWithData, visaDocs.getBytes());
+					visaDetail.setVisaDocs(visaDocsfileNameWithUniqueIdentifier);
 				}
 			}
 			existingPersonalInfo.setVisainfo(visaDetail);
@@ -1119,44 +1173,88 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					existingEducation.setDiplomaMarksOrGrade(newEducation.getDiplomaMarksOrGrade());
 					existingEducation.setDiplomaYear(newEducation.getDiplomaYear());
 					if (secondaryDocumentScan != null && !secondaryDocumentScan.isEmpty()) {
-						String secondaryDocumentScanoriginalFileName = secondaryDocumentScan.getOriginalFilename() + "-"
-								+ employeeId;
-						Path secondaryDocumentScanName = Paths.get(uplaodDirectory,
-								secondaryDocumentScan.getOriginalFilename());
-						Files.write(secondaryDocumentScanName, secondaryDocumentScan.getBytes());
-						existingEducation.setSecondaryDocumentScan(secondaryDocumentScanoriginalFileName);
+						// Delete the old secondaryDocumentScan file if it exists
+						if (existingEducation.getSecondaryDocumentScan() != null) {
+							Path oldsecondaryDocumentScanPath = Paths.get(uplaodDirectory,
+									existingEducation.getSecondaryDocumentScan());
+							Files.deleteIfExists(oldsecondaryDocumentScanPath);
+						}
+						// Save the new secondaryDocumentScan file
+						String secondaryDocumentScanoriginalFileName = secondaryDocumentScan.getOriginalFilename();
+						String secondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+								+ secondaryDocumentScanoriginalFileName;
+						Path secondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
+								secondaryDocumentScanfileNameWithUniqueIdentifier);
+						Files.write(secondaryDocumentScanNameWithData, secondaryDocumentScan.getBytes());
+						existingEducation.setSecondaryDocumentScan(secondaryDocumentScanfileNameWithUniqueIdentifier);
 					}
 					if (seniorSecondaryDocumentScan != null && !seniorSecondaryDocumentScan.isEmpty()) {
+						// Delete the old seniorSecondaryDocumentScan file if it exists
+						if (existingEducation.getSeniorSecondaryDocumentScan() != null) {
+							Path oldseniorSecondaryDocumentScanPath = Paths.get(uplaodDirectory,
+									existingEducation.getSeniorSecondaryDocumentScan());
+							Files.deleteIfExists(oldseniorSecondaryDocumentScanPath);
+						}
+						// Save the new seniorSecondaryDocumentScan file
 						String seniorSecondaryDocumentScanoriginalFileName = seniorSecondaryDocumentScan
-								.getOriginalFilename() + "-" + employeeId;
-						Path seniorSecondaryDocumentScanName = Paths.get(uplaodDirectory,
-								seniorSecondaryDocumentScan.getOriginalFilename());
-						Files.write(seniorSecondaryDocumentScanName, seniorSecondaryDocumentScan.getBytes());
-						existingEducation.setSeniorSecondaryDocumentScan(seniorSecondaryDocumentScanoriginalFileName);
+								.getOriginalFilename();
+						String seniorSecondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+								+ seniorSecondaryDocumentScanoriginalFileName;
+						Path seniorSecondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
+								seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
+						Files.write(seniorSecondaryDocumentScanNameWithData, seniorSecondaryDocumentScan.getBytes());
+						existingEducation.setSeniorSecondaryDocumentScan(
+								seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
 					}
 					if (graduationDocumentScan != null && !graduationDocumentScan.isEmpty()) {
-						String graduationDocumentScanoriginalFileName = graduationDocumentScan.getOriginalFilename()
-								+ "-" + employeeId;
-						Path graduationDocumentScanName = Paths.get(uplaodDirectory,
-								graduationDocumentScan.getOriginalFilename());
-						Files.write(graduationDocumentScanName, graduationDocumentScan.getBytes());
-						existingEducation.setGraduationDocumentScan(graduationDocumentScanoriginalFileName);
+						// Delete the old graduationDocumentScan file if it exists
+						if (existingEducation.getGraduationDocumentScan() != null) {
+							Path oldGraduationDocumentScanPath = Paths.get(uplaodDirectory,
+									existingEducation.getGraduationDocumentScan());
+							Files.deleteIfExists(oldGraduationDocumentScanPath);
+						}
+						// Save the new graduationDocumentScan file
+						String graduationDocumentScanoriginalFileName = graduationDocumentScan.getOriginalFilename();
+						String graduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+								+ graduationDocumentScanoriginalFileName;
+						Path graduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
+								graduationDocumentScanfileNameWithUniqueIdentifier);
+						Files.write(graduationDocumentScanNameWithData, graduationDocumentScan.getBytes());
+						existingEducation.setGraduationDocumentScan(graduationDocumentScanfileNameWithUniqueIdentifier);
 					}
 					if (postGraduationDocumentScan != null && !postGraduationDocumentScan.isEmpty()) {
+						// Delete the old postGraduationDocumentScan file if it exists
+						if (existingEducation.getPostGraduationDocumentScan() != null) {
+							Path oldpostGraduationDocumentScanPath = Paths.get(uplaodDirectory,
+									existingEducation.getPostGraduationDocumentScan());
+							Files.deleteIfExists(oldpostGraduationDocumentScanPath);
+						}
+						// Save the new postGraduationDocumentScan file
 						String postGraduationDocumentScanoriginalFileName = postGraduationDocumentScan
-								.getOriginalFilename() + "-" + employeeId;
-						Path postGraduationDocumentScanName = Paths.get(uplaodDirectory,
-								postGraduationDocumentScan.getOriginalFilename());
-						Files.write(postGraduationDocumentScanName, postGraduationDocumentScan.getBytes());
-						existingEducation.setPostGraduationDocumentScan(postGraduationDocumentScanoriginalFileName);
+								.getOriginalFilename();
+						String postGraduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+								+ postGraduationDocumentScanoriginalFileName;
+						Path postGraduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
+								postGraduationDocumentScanfileNameWithUniqueIdentifier);
+						Files.write(postGraduationDocumentScanNameWithData, postGraduationDocumentScan.getBytes());
+						existingEducation
+								.setPostGraduationDocumentScan(postGraduationDocumentScanfileNameWithUniqueIdentifier);
 					}
 					if (diplomaDocumentScan != null && !diplomaDocumentScan.isEmpty()) {
-						String diplomaDocumentScanoriginalFileName = diplomaDocumentScan.getOriginalFilename() + "-"
-								+ employeeId;
-						Path diplomaDocumentScanName = Paths.get(uplaodDirectory,
-								diplomaDocumentScan.getOriginalFilename());
-						Files.write(diplomaDocumentScanName, diplomaDocumentScan.getBytes());
-						existingEducation.setDiplomaDocumentScan(diplomaDocumentScanoriginalFileName);
+						// Delete the old diplomaDocumentScan file if it exists
+						if (existingEducation.getDiplomaDocumentScan() != null) {
+							Path olddiplomaDocumentScanPath = Paths.get(uplaodDirectory,
+									existingEducation.getDiplomaDocumentScan());
+							Files.deleteIfExists(olddiplomaDocumentScanPath);
+						}
+						// Save the new diplomaDocumentScan file
+						String diplomaDocumentScanoriginalFileName = diplomaDocumentScan.getOriginalFilename();
+						String diplomaDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+								+ diplomaDocumentScanoriginalFileName;
+						Path diplomaDocumentScanNameWithData = Paths.get(uplaodDirectory,
+								diplomaDocumentScanfileNameWithUniqueIdentifier);
+						Files.write(diplomaDocumentScanNameWithData, diplomaDocumentScan.getBytes());
+						existingEducation.setDiplomaDocumentScan(diplomaDocumentScanfileNameWithUniqueIdentifier);
 					}
 				}
 			}
@@ -1177,13 +1275,25 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					existingOthersQualification
 							.setOthersMarksOrGrade(updateOthersQualification.getOthersMarksOrGrade());
 					existingOthersQualification.setOthersYear(updateOthersQualification.getOthersYear());
+
 					if (othersDocumentScan != null && i < othersDocumentScan.length) {
 						MultipartFile file = othersDocumentScan[i];
 						if (file != null && !file.isEmpty()) {
-							String othersDocumentScanoriginalFileName = file.getOriginalFilename() + "-" + employeeId;
-							Path othersDocumentScanName = Paths.get(uplaodDirectory, file.getOriginalFilename());
-							Files.write(othersDocumentScanName, file.getBytes());
-							existingOthersQualification.setOthersDocumentScan(othersDocumentScanoriginalFileName);
+							// Check and delete the old others document scan file if it exists
+							if (existingOthersQualification.getOthersDocumentScan() != null) {
+								Path oldOthersDocumentScanPath = Paths.get(uplaodDirectory,
+										existingOthersQualification.getOthersDocumentScan());
+								Files.deleteIfExists(oldOthersDocumentScanPath);
+							}
+							// Save the new othersDocumentScan file
+							String othersDocumentScanoriginalFileName = file.getOriginalFilename();
+							String othersDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+									+ othersDocumentScanoriginalFileName;
+							Path othersDocumentScanNameWithData = Paths.get(uplaodDirectory,
+									othersDocumentScanfileNameWithUniqueIdentifier);
+							Files.write(othersDocumentScanNameWithData, file.getBytes());
+							existingOthersQualification
+									.setOthersDocumentScan(othersDocumentScanfileNameWithUniqueIdentifier);
 						}
 					}
 				}
@@ -1211,10 +1321,20 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					if (degreeScan != null && i < degreeScan.length) {
 						MultipartFile file = degreeScan[i];
 						if (file != null && !file.isEmpty()) {
-							String degreeScanoriginalFileName = file.getOriginalFilename() + "-" + employeeId;
-							Path degreeScanName = Paths.get(uplaodDirectory, file.getOriginalFilename());
-							Files.write(degreeScanName, file.getBytes());
-							existingProfessionalQualification.setDegreeScan(degreeScanoriginalFileName);
+							// Check and delete the old degreeScan file if it exists
+							if (existingProfessionalQualification.getDegreeScan() != null) {
+								Path olddegreeScanPath = Paths.get(uplaodDirectory,
+										existingProfessionalQualification.getDegreeScan());
+								Files.deleteIfExists(olddegreeScanPath);
+							}
+							// Save the new degreeScan file
+							String degreeScanoriginalFileName = file.getOriginalFilename();
+							String degreeScanfileNameWithUniqueIdentifier = employeeId + "-"
+									+ degreeScanoriginalFileName;
+							Path degreeScanNameWithData = Paths.get(uplaodDirectory,
+									degreeScanfileNameWithUniqueIdentifier);
+							Files.write(degreeScanNameWithData, file.getBytes());
+							existingProfessionalQualification.setDegreeScan(degreeScanfileNameWithUniqueIdentifier);
 						}
 					}
 				}
@@ -1237,11 +1357,21 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					existingPreviousEmployee.setDateFrom(newPreviousEmployee.getDateFrom());
 					existingPreviousEmployee.setDateTo(newPreviousEmployee.getDateTo());
 					if (payslipScan != null && !payslipScan.isEmpty()) {
-						String payslipScanoriginalFileName = payslipScan.getOriginalFilename() + "-" + employeeId;
-						Path payslipScanName = Paths.get(uplaodDirectory, payslipScan.getOriginalFilename());
-						Files.write(payslipScanName, payslipScan.getBytes());
-						existingPreviousEmployee.setPayslipScan(payslipScanoriginalFileName);
+						// Check and delete the old payslipScan file if it exists
+						if (existingPreviousEmployee.getPayslipScan() != null) {
+							Path oldpayslipScanPath = Paths.get(uplaodDirectory,
+									existingPreviousEmployee.getPayslipScan());
+							Files.deleteIfExists(oldpayslipScanPath);
+						}
+						// Save the new payslipScan file
+						String payslipScanoriginalFileName = payslipScan.getOriginalFilename();
+						String payslipScanfileNameWithUniqueIdentifier = employeeId + "-" + payslipScanoriginalFileName;
+						Path payslipScanNameWithData = Paths.get(uplaodDirectory,
+								payslipScanfileNameWithUniqueIdentifier);
+						Files.write(payslipScanNameWithData, payslipScan.getBytes());
+						existingPreviousEmployee.setPayslipScan(payslipScanfileNameWithUniqueIdentifier);
 					}
+
 					existingPreviousEmployee.setPreviousHRContact(newPreviousEmployee.getPreviousHRContact());
 					existingPreviousEmployee.setPreviousHRName(newPreviousEmployee.getPreviousHRName());
 					existingPreviousEmployee.setPreviousManagerContact(newPreviousEmployee.getPreviousManagerContact());
@@ -1261,13 +1391,21 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 							if (achievementsRewardsDocs != null && i < achievementsRewardsDocs.length) {
 								MultipartFile file = achievementsRewardsDocs[i];
 								if (file != null && !file.isEmpty()) {
-									String achievementsRewardsDocsoriginalFileName = file.getOriginalFilename() + "-"
-											+ employeeId;
-									Path achievementsRewardsDocsName = Paths.get(uplaodDirectory,
-											file.getOriginalFilename());
-									Files.write(achievementsRewardsDocsName, file.getBytes());
-									existingAchievement
-											.setAchievementsRewardsDocs(achievementsRewardsDocsoriginalFileName);
+									// Check and delete the old achievementsRewardsDocs file if it exists
+									if (existingAchievement.getAchievementsRewardsDocs() != null) {
+										Path oldachievementsRewardsDocsPath = Paths.get(uplaodDirectory,
+												existingAchievement.getAchievementsRewardsDocs());
+										Files.deleteIfExists(oldachievementsRewardsDocsPath);
+									}
+									// Save the new achievementsRewardsDocs file
+									String achievementsRewardsDocsoriginalFileName = file.getOriginalFilename();
+									String achievementsRewardsDocsfileNameWithUniqueIdentifier = employeeId + "-"
+											+ achievementsRewardsDocsoriginalFileName;
+									Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
+											achievementsRewardsDocsfileNameWithUniqueIdentifier);
+									Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
+									existingAchievement.setAchievementsRewardsDocs(
+											achievementsRewardsDocsfileNameWithUniqueIdentifier);
 								}
 							}
 						}
@@ -1298,21 +1436,41 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					existingTrainingdetail.setTrainingStartDate(newtrainingdetail.getTrainingStartDate());
 					existingTrainingdetail.setTrainingEndDate(newtrainingdetail.getTrainingEndDate());
 					if (CertificateUploadedForOutsource != null && !CertificateUploadedForOutsource.isEmpty()) {
+						// Check and delete the old CertificateUploadedForOutsource file if it exists
+						if (existingTrainingdetail.getCertificateUploadedForOutsource() != null) {
+							Path oldCertificateUploadedForOutsourcePath = Paths.get(uplaodDirectory,
+									existingTrainingdetail.getCertificateUploadedForOutsource());
+							Files.deleteIfExists(oldCertificateUploadedForOutsourcePath);
+						}
+						// Save the new CertificateUploadedForOutsource file
 						String CertificateUploadedForOutsourceoriginalFileName = CertificateUploadedForOutsource
-								.getOriginalFilename() + "-" + employeeId;
-						Path CertificateUploadedForOutsourceName = Paths.get(uplaodDirectory,
-								CertificateUploadedForOutsource.getOriginalFilename());
-						Files.write(CertificateUploadedForOutsourceName, CertificateUploadedForOutsource.getBytes());
-						existingTrainingdetail
-								.setCertificateUploadedForOutsource(CertificateUploadedForOutsourceoriginalFileName);
+								.getOriginalFilename();
+						String CertificateUploadedForOutsourcefileNameWithUniqueIdentifier = employeeId + "-"
+								+ CertificateUploadedForOutsourceoriginalFileName;
+						Path CertificateUploadedForOutsourceNameWithData = Paths.get(uplaodDirectory,
+								CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
+						Files.write(CertificateUploadedForOutsourceNameWithData,
+								CertificateUploadedForOutsource.getBytes());
+						existingTrainingdetail.setCertificateUploadedForOutsource(
+								CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
 					}
 					if (PaidTrainingDocumentProof != null && !PaidTrainingDocumentProof.isEmpty()) {
+						// Check and delete the old PaidTrainingDocumentProof file if it exists
+						if (existingTrainingdetail.getPaidTrainingDocumentProof() != null) {
+							Path oldPaidTrainingDocumentProofPath = Paths.get(uplaodDirectory,
+									existingTrainingdetail.getPaidTrainingDocumentProof());
+							Files.deleteIfExists(oldPaidTrainingDocumentProofPath);
+						}
+						// Save the new PaidTrainingDocumentProof file
 						String PaidTrainingDocumentProoforiginalFileName = PaidTrainingDocumentProof
-								.getOriginalFilename() + "-" + employeeId;
-						Path PaidTrainingDocumentProofName = Paths.get(uplaodDirectory,
-								PaidTrainingDocumentProof.getOriginalFilename());
-						Files.write(PaidTrainingDocumentProofName, PaidTrainingDocumentProof.getBytes());
-						existingTrainingdetail.setPaidTrainingDocumentProof(PaidTrainingDocumentProoforiginalFileName);
+								.getOriginalFilename();
+						String PaidTrainingDocumentProoffileNameWithUniqueIdentifier = employeeId + "-"
+								+ PaidTrainingDocumentProoforiginalFileName;
+						Path PaidTrainingDocumentProofNameWithData = Paths.get(uplaodDirectory,
+								PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
+						Files.write(PaidTrainingDocumentProofNameWithData, PaidTrainingDocumentProof.getBytes());
+						existingTrainingdetail
+								.setPaidTrainingDocumentProof(PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
 					}
 				}
 			}
@@ -1407,18 +1565,32 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				bgcheck.setExternalPhoneCode(personalInfo.getBgcheck().getExternalPhoneCode());
 				bgcheck.setExternalPhoneNo(personalInfo.getBgcheck().getExternalPhoneNo());
 				if (recordsheet != null && !recordsheet.isEmpty()) {
-					String recordsheetoriginalFileName = recordsheet.getOriginalFilename() + "-" + employeeId;
-					Path recordsheetName = Paths.get(uplaodDirectory, recordsheet.getOriginalFilename());
-					Files.write(recordsheetName, recordsheet.getBytes());
-					bgcheck.setRecordsheet(recordsheetoriginalFileName);
+					// Check and delete the old recordsheet file if it exists
+					if (bgcheck.getRecordsheet() != null) {
+						Path oldrecordsheetPath = Paths.get(uplaodDirectory, bgcheck.getRecordsheet());
+						Files.deleteIfExists(oldrecordsheetPath);
+					}
+					// Save the new recordsheet file
+					String recordsheetoriginalFileName = recordsheet.getOriginalFilename();
+					String recordsheetfileNameWithUniqueIdentifier = employeeId + "-" + recordsheetoriginalFileName;
+					Path recordsheetNameWithData = Paths.get(uplaodDirectory, recordsheetfileNameWithUniqueIdentifier);
+					Files.write(recordsheetNameWithData, recordsheet.getBytes());
+					bgcheck.setRecordsheet(recordsheetfileNameWithUniqueIdentifier);
 				}
 				if (declarationRequired != null && !declarationRequired.isEmpty()) {
-					String declarationRequiredoriginalFileName = declarationRequired.getOriginalFilename() + "-"
-							+ employeeId;
-					Path declarationRequiredName = Paths.get(uplaodDirectory,
-							declarationRequired.getOriginalFilename());
-					Files.write(declarationRequiredName, declarationRequired.getBytes());
-					bgcheck.setDeclarationRequired(declarationRequiredoriginalFileName);
+					// Check and delete the old declarationRequired file if it exists
+					if (bgcheck.getDeclarationRequired() != null) {
+						Path olddeclarationRequiredPath = Paths.get(uplaodDirectory, bgcheck.getDeclarationRequired());
+						Files.deleteIfExists(olddeclarationRequiredPath);
+					}
+					// Save the new declarationRequired file
+					String declarationRequiredoriginalFileName = declarationRequired.getOriginalFilename();
+					String declarationRequiredfileNameWithUniqueIdentifier = employeeId + "-"
+							+ declarationRequiredoriginalFileName;
+					Path declarationRequiredNameWithData = Paths.get(uplaodDirectory,
+							declarationRequiredfileNameWithUniqueIdentifier);
+					Files.write(declarationRequiredNameWithData, declarationRequired.getBytes());
+					bgcheck.setDeclarationRequired(declarationRequiredfileNameWithUniqueIdentifier);
 				}
 				existingPersonalInfo.setBgcheck(bgcheck);
 			}
