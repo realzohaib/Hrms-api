@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -17,6 +18,7 @@ import lombok.Data;
 @Table(name = "professional_qualifications")
 @Data
 public class ProfessionalQualification {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "p_id")
@@ -28,6 +30,9 @@ public class ProfessionalQualification {
 	private String grade;
 
 	private String degreeScan;
+
+	@Transient
+	private byte[] degreeScanData;
 
 	@ManyToOne
 	@JoinColumn(name = "employee_id")

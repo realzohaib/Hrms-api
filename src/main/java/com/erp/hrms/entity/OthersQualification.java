@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -32,6 +33,9 @@ public class OthersQualification {
 	private String othersYear;
 
 	private String othersDocumentScan;
+	
+	@Transient
+	private byte[] othersDocumentScanData;
 
 	@ManyToOne
 	@JoinColumn(name = "employee_id ")

@@ -25,7 +25,7 @@ public interface IPersonalInfoService {
 
 	PersonalInfo getPersonalInfoByEmail(String email);
 
-	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId);
+	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) throws IOException;
 
 	public PersonalInfo deletePersonalInfoByEmail(String email, String PersonalInfo) throws PersonalInfoNotFoundException;
 

@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -18,6 +19,7 @@ import lombok.Data;
 @Table(name = "background_check")
 @Data
 public class BackgroundCheck {
+
 	@Id
 	@Column(name = "background_check.personal_info_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,8 +46,16 @@ public class BackgroundCheck {
 	private String educationalQualificationVerified;
 	private String criminalRecords;
 	private String punishmentForImprisonmentApproval;
+
 	private String recordsheet;
+
+	@Transient
+	private byte[] recordSheetData;
+
 	private String declarationRequired;
+
+	@Transient
+	private byte[] declarationRequiredData;
 
 	@ManyToOne
 	@JoinColumn(name = "employee_id")

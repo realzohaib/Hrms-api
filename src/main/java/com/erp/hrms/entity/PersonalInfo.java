@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PostLoad;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -74,6 +75,9 @@ public class PersonalInfo {
 
 	private String passportSizePhoto;
 
+	@Transient
+	private byte[] passportSizePhotoData;
+
 	@Column(name = "email_id")
 	private String email;
 
@@ -81,6 +85,9 @@ public class PersonalInfo {
 	private String citizenship;
 
 	private String OtherIdProofDoc;
+
+	@Transient
+	private byte[] otherIdProofDocData;
 
 	@Column(name = "permanent_residence_country")
 	private String permanentResidenceCountry;

@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -23,11 +24,10 @@ public class EmpAchievement {
 
 	private String achievementRewardsName;
 
-//	@Column(length = 2147483647)
-//	@Lob
-//	private byte[] achievementsRewardsDocs;
-
 	private String achievementsRewardsDocs;
+	
+	@Transient
+	private byte[] achievementsRewardsDocsData;
 
 	@ManyToOne
 	@JoinColumn(name = "previous_id")

@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -32,6 +33,9 @@ public class Education {
 	private String secondaryyear;
 
 	private String secondaryDocumentScan;
+	
+	@Transient
+	private byte[] secondaryDocumentScanData;
 
 	// for 12th updated later
 	@Column(name = "Senior_Secondary_issuing_authority")
@@ -44,6 +48,9 @@ public class Education {
 	private String seniorSecondaryYear;
 
 	private String seniorSecondaryDocumentScan;
+	
+	@Transient
+	private byte[] seniorSecondaryDocumentScanData;
 
 	// for graduation
 	@Column(name = "Graduation_issuing_authority")
@@ -56,6 +63,9 @@ public class Education {
 	private String graduationYear;
 
 	private String graduationDocumentScan;
+	
+	@Transient
+	private byte[] graduationDocumentScanData;
 
 	// for PG
 	@Column(name = "Post_Graduation_issuing_authority")
@@ -68,6 +78,9 @@ public class Education {
 	private String postGraduationYear;
 
 	private String postGraduationDocumentScan;
+	
+	@Transient
+	private byte[] postGraduationDocumentScanData;
 
 // diploma certificates
 	@Column(name = "diploma_issuing_authority")
@@ -80,6 +93,9 @@ public class Education {
 	private String diplomaYear;
 
 	private String diplomaDocumentScan;
+	
+	@Transient
+	private byte[] diplomaDocumentScanData;
 
 	@ManyToOne
 	@JoinColumn(name = "employee_id ")

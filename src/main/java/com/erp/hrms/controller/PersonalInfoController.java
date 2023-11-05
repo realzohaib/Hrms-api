@@ -99,7 +99,7 @@ public class PersonalInfoController {
 	}
 
 	@GetMapping("/personal-info/employeeId/{employeeId}")
-	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId, HttpServletResponse response)
+	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId)
 			throws IOException {
 		try {
 			PersonalInfo personalInfo = personalInfoService.getPersonalInfoByEmployeeId(employeeId);

@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -23,6 +24,7 @@ import lombok.Data;
 @Data
 @Table(name = "previous_employee")
 public class PreviousEmployee {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long previousId;
@@ -41,6 +43,9 @@ public class PreviousEmployee {
 	private double lastWithdrawnSalary;
 
 	private String payslipScan;
+	
+	@Transient
+	private byte[] payslipScanData;
 
 	@OneToMany(mappedBy = "previousEmployee")
 	@Cascade(CascadeType.ALL)

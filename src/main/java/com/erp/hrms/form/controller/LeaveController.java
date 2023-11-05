@@ -19,6 +19,7 @@ import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
 import com.erp.hrms.entity.form.MarkedDate;
+import com.erp.hrms.exception.LeaveRequestNotFoundException;
 import com.erp.hrms.form.service.ILeaveService;
 
 @RestController
@@ -45,14 +46,16 @@ public class LeaveController {
 //	This method for get the leave request by LeaveRequestId
 	@GetMapping("/leave/request/{leaveRequestId}")
 	public ResponseEntity<?> getleaveRequestById(@PathVariable Long leaveRequestId) throws IOException {
+
 		try {
-			return new ResponseEntity<>(iLeaveService.getleaveRequestById(leaveRequestId), HttpStatus.OK);
+			LeaveApproval getleaveRequestById = iLeaveService.getleaveRequestById(leaveRequestId);
+			return ResponseEntity.ok(getleaveRequestById);
+		} catch (LeaveRequestNotFoundException e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
 		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("Leave Request with ID: " + leaveRequestId + " not found "),
-					HttpStatus.NOT_FOUND);
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
 		}
 	}
-	
 
 //	This method for find all the Leave Request by employeeId
 	@GetMapping("/findall/leave/request/with/employeeId/{employeeId}")

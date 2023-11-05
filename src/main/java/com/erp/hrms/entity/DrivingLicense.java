@@ -2,6 +2,7 @@ package com.erp.hrms.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -19,5 +20,8 @@ public class DrivingLicense {
 	private String ownvehicle;
 
 	private String licensecopy;
+	
+	@Transient
+	private byte[] licenseCopyData;
 
 }

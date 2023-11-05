@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -36,7 +37,14 @@ public class Trainingdetails {
 	private String trainerPhoneNo;
 
 	private String PaidTrainingDocumentProof;
+	
+	@Transient
+	private byte[] PaidTrainingDocumentProofData;
+	
 	private String CertificateUploadedForOutsource;
+	
+	@Transient
+	private byte[] CertificateUploadedForOutsourceData;
 
 	@ManyToOne
 	@JoinColumn(name = "employee_id")

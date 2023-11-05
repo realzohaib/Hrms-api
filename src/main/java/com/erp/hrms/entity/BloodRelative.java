@@ -2,6 +2,7 @@ package com.erp.hrms.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -29,5 +30,12 @@ public class BloodRelative {
 	private String Raddress;
 
 	private String relativeid;
+	
+	@Transient
+	private byte[] relativeIdData;
+	
 	private String Raddressproof;
+	
+	@Transient
+	private byte[] raddressProofData;
 }

@@ -5,6 +5,7 @@ package com.erp.hrms.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -39,5 +40,8 @@ public class VisaDetail {
 	private boolean visaEmailSend1dayBefore;
 
 	private String visaDocs;
+	
+	@Transient
+	private byte[] visaDocsData;
 
 }
