@@ -5,7 +5,9 @@ import java.util.Set;
 
 import javax.validation.constraints.*;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
@@ -17,6 +19,8 @@ import lombok.Setter;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignupRequest  implements Serializable {
 	
  private static final long serialVersionUID = 1L;

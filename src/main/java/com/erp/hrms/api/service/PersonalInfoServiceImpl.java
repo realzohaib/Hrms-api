@@ -1,8 +1,11 @@
 package com.erp.hrms.api.service;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -12,11 +15,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.api.dao.DepartmentRepository;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
+import com.erp.hrms.api.repo.IRoleRepository;
 import com.erp.hrms.api.request.SignupRequest;
+import com.erp.hrms.api.security.controller.AuthController;
+import com.erp.hrms.api.security.entity.RoleEntity;
+import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
-import com.erp.hrms.entity.Department;
 import com.erp.hrms.entity.DrivingLicense;
 import com.erp.hrms.entity.Education;
 import com.erp.hrms.entity.EmpAchievement;
@@ -44,6 +51,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
     public static long concatenateIdWithRandomNumber(long id, int randomPart) {
         return (id * 10000L) + randomPart;
     }
+    
+
+	@Autowired
+	IRoleRepository roleRepository;
+	
 	@Autowired
 	private IPersonalInfoDAO dao;
 
@@ -52,9 +64,12 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	
 	@Autowired
 	private JavaMailSender sender;
+	
+	@Autowired
+	private AuthController security;
 
 	@Override
-	public void savedata(String personalinfo, MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
+	public void savedata(String personalinfo,String SignupRequest,String url ,MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
 			MultipartFile passportScan, MultipartFile licensecopy, MultipartFile relativeid,
 			MultipartFile raddressproof, MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
 			MultipartFile graduationDocumentScan, MultipartFile postGraduationDocumentScan,
@@ -65,6 +80,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
+		SignupRequest Signuprequest = mapper.readValue(SignupRequest, SignupRequest.class);
 
 		String email = PersonalInfo.getEmail();
 		if (dao.existsByEmail(email)) {
@@ -260,10 +276,66 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 				PersonalInfo.setTraining(training);
 			}
-			dao.savePersonalInfo(PersonalInfo);
-		
+								
+			if(PersonalInfo != null) {
+				UserEntity userentity = PersonalInfo.getUserentity();
+				System.out.println(userentity);
+				if(userentity != null) {
+					Set<RoleEntity> roles = userentity.getRoles();
+					System.out.println(roles);
+				}
+			}
 			
+			Set<String> strRoles = Signuprequest.getRole();
+			Set<RoleEntity> roles = new HashSet<>();
+
+			System.out.println(strRoles);
+
+			if (strRoles == null) {
+				RoleEntity userRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
+						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(userRole);
+			} else {
+				strRoles.forEach(role -> {
+					switch (role) {
+					case "admin":
+						RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(adminRole);
+						break;
+					case "employee":
+						RoleEntity empRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(empRole);
+						break;
+					case "manager":
+						RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MANAGER)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(modRole);
+					}
+				});
+			}
+
+			UserEntity user = new UserEntity();
+			
+			user.setEmail(PersonalInfo.getEmail());
+			user.setUsername(String.valueOf(employeeId));
+			user.setPersonalinfo(PersonalInfo);
+			user.setRoles(roles);
+			user.setEnabled(false);
+			
+	        String activationToken = UUID.randomUUID().toString();	        
+	        user.setActivationToken(activationToken);
+
+			PersonalInfo.setUserentity(user);
+			
+			dao.savePersonalInfo(PersonalInfo);	
+			
+			
+	        String activationLink = url+ "/activate?token=" + activationToken;
+
 			//sendOnboardingEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName());
+	        sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), activationLink);
 		} catch (Exception e) {
 			throw e;
 		}
@@ -735,17 +807,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		}
 	}
 	
-	public void sendOnboardingEmail(String email, long employeeId, String name) {
+	public void sendAccountActivationEmail(String email, long employeeId, String name, String activationLink) {
 	    SimpleMailMessage mailMessage = new SimpleMailMessage();
 	    mailMessage.setTo(email);
-	    mailMessage.setSubject("Welcome to SI Global Company");
+	    mailMessage.setSubject("Account Activation");
 
-	    // Create a more professional and welcoming email message
+	    // Create the account activation email message
 	    String emailText = "Dear Mr. " + name + ",\n\n"
-	            + "We are pleased to welcome you to SI Global Company. Your employee ID is: " + employeeId + ".\n\n"
-	            + "As a valued member of our team, you play a vital role in our organization's success.\n\n"
-	            + "Please feel free to reach out to our HR department for any assistance during your onboarding process.\n\n"
-	            + "We look forward to working with you and wish you a successful and rewarding career with us.\n\n"
+	            + "Welcome to our platform. Your employee ID is: " + employeeId + ".\n\n"
+	            + "To activate your account, please click on the following link:\n"
+	            + activationLink + "\n\n"
+	            + "If you have any questions or need assistance, please contact our support team.\n\n"
 	            + "Best regards,\n"
 	            + "The SI Global Company Team";
 
@@ -753,4 +825,5 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 	    sender.send(mailMessage);
 	}
+
 }

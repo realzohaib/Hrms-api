@@ -22,6 +22,7 @@ import javax.persistence.SequenceGenerator;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import com.erp.hrms.api.security.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -168,6 +169,10 @@ public class PersonalInfo implements Serializable{
 	@JoinColumn(name = "department_name", referencedColumnName = "departmentName")
 	@JsonBackReference
 	private Department department;
+	
+	@OneToOne(mappedBy = "personalinfo")
+	@Cascade(CascadeType.ALL)
+	private UserEntity userentity;
 
 	@PostLoad
 	private void calculateAge() {

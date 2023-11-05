@@ -3,6 +3,7 @@ package com.erp.hrms.controller;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class PersonalInfoController {
 
 	@PostMapping("/personal-info")
 	public ResponseEntity<?> savePersonalInfo(@RequestParam("PersonalInfo") String personalinfo,
+			@RequestParam("SignupRequest") String SignupRequest,
 			@RequestParam(value = "passportSizePhoto", required = false) MultipartFile passportSizePhoto,
 			@RequestParam(value = "OtherIdProofDoc", required = false) MultipartFile OtherIdProofDoc,
 			@RequestParam(value = "passportScan", required = false) MultipartFile passportScan,
@@ -60,11 +62,15 @@ public class PersonalInfoController {
 			@RequestParam(value = "PaidTrainingDocumentProof", required = false) MultipartFile PaidTrainingDocumentProof,
 			@RequestParam(value = "diplomaDocumentScan", required = false) MultipartFile diplomaDocumentScan,
 			@RequestParam(value = "declarationRequired", required = false) MultipartFile declarationRequired,
-			@RequestParam(value = "achievementsRewardsDocs", required = false) MultipartFile[] achievementsRewardsDocs)
+			@RequestParam(value = "achievementsRewardsDocs", required = false) MultipartFile[] achievementsRewardsDocs , HttpServletRequest req)
 			throws IOException {
+		
+		String url= req.getRequestURL().toString();
+		url = url.replace(req.getServletPath(),"");
+		System.out.println(url);
+		
 		try {
-
-			personalInfoService.savedata(personalinfo, passportSizePhoto, OtherIdProofDoc, passportScan, licensecopy,
+			personalInfoService.savedata(personalinfo,SignupRequest,url, passportSizePhoto, OtherIdProofDoc, passportScan, licensecopy,
 					relativeid, raddressproof, secondaryDocumentScan, seniorSecondaryDocumentScan,
 					graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan, degreeScan, payslipScan,
 					recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource, visaDocs,
