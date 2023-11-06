@@ -49,6 +49,9 @@ public class AccountActivationController {
 	        long parseLong = Long.parseLong(username);
 
 	        UserEntity user = repo.getByUsername(username);
+	        if(user.getActivationToken() != null) {
+		        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Invalid user identifier. Password update failed."));
+	        }
 
 	        if (user != null) {
 	            user.setPassword(encoder.encode(request.getPassword()));

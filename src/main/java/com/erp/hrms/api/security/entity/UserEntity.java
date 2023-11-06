@@ -63,7 +63,7 @@ public class UserEntity implements Serializable {
 	private boolean isEnabled;
 	
 	@OneToOne
-	@JoinColumn(name = "employeeId")
+	@JoinColumn(name = "PId")
 	@JsonBackReference
 	private PersonalInfo personalinfo;
 	

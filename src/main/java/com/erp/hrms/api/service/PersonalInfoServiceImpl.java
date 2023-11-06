@@ -17,7 +17,6 @@ import com.erp.hrms.api.dao.DepartmentRepository;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.repo.IRoleRepository;
 import com.erp.hrms.api.request.SignupRequest;
-import com.erp.hrms.api.security.controller.AuthController;
 import com.erp.hrms.api.security.entity.RoleEntity;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -63,9 +62,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 	@Autowired
 	private JavaMailSender sender;
-
-	@Autowired
-	private AuthController security;
 
 	@Override
 	public void savedata(String personalinfo, String SignupRequest, String url, MultipartFile passportSizePhoto,
@@ -350,18 +346,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			throw new RuntimeException("No personal information found for this email ID: " + email, e);
 		}
 	}
-
-//	@Override
-//	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) {
-//		try {
-//
-//			PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
-//			return personalInfoByEmployeeId;
-//		} catch (Exception e) {
-////			System.out.println(e);
-//			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
-//		}
-//	}
 
 	@Override
 	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) {

@@ -62,19 +62,18 @@ public class PersonalInfoController {
 			@RequestParam(value = "PaidTrainingDocumentProof", required = false) MultipartFile PaidTrainingDocumentProof,
 			@RequestParam(value = "diplomaDocumentScan", required = false) MultipartFile diplomaDocumentScan,
 			@RequestParam(value = "declarationRequired", required = false) MultipartFile declarationRequired,
-			@RequestParam(value = "achievementsRewardsDocs", required = false) MultipartFile[] achievementsRewardsDocs , HttpServletRequest req)
-			throws IOException {
-		
-		String url= req.getRequestURL().toString();
-		url = url.replace(req.getServletPath(),"");
-		System.out.println(url);
-		
+			@RequestParam(value = "achievementsRewardsDocs", required = false) MultipartFile[] achievementsRewardsDocs,
+			HttpServletRequest req) throws IOException {
+
+		String url = req.getRequestURL().toString();
+		url = url.replace(req.getServletPath(), "");
+
 		try {
-			personalInfoService.savedata(personalinfo,SignupRequest,url, passportSizePhoto, OtherIdProofDoc, passportScan, licensecopy,
-					relativeid, raddressproof, secondaryDocumentScan, seniorSecondaryDocumentScan,
-					graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan, degreeScan, payslipScan,
-					recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource, visaDocs,
-					diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
+			personalInfoService.savedata(personalinfo, SignupRequest, url, passportSizePhoto, OtherIdProofDoc,
+					passportScan, licensecopy, relativeid, raddressproof, secondaryDocumentScan,
+					seniorSecondaryDocumentScan, graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan,
+					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,
+					visaDocs, diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
 			return ResponseEntity.ok(new MessageResponse("Insert Personal info successfully"));
 		} catch (Exception e) {
 			System.out.println(e);
@@ -111,25 +110,10 @@ public class PersonalInfoController {
 		}
 	}
 
-//	@GetMapping("/personal-info/employeeId/{employeeId}")
-//	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId, HttpServletResponse response)
-//			throws IOException {
-//		try {
-//
-//			return ResponseEntity.ok(personalInfoService.getPersonalInfoByEmployeeId(employeeId));
-//		} catch (Exception e) {
-//			System.out.println(e);
-//			return ResponseEntity.badRequest().body(new Exception("error occured " + e.getMessage()));
-//		}
-//	}
-	
-	
 	@GetMapping("/personal-info/employeeId/{employeeId}")
-	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId, HttpServletResponse response){
-			return ResponseEntity.ok(personalInfoService.getPersonalInfoByEmployeeId(employeeId));
-		}
-			
-	
+	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId, HttpServletResponse response) {
+		return ResponseEntity.ok(personalInfoService.getPersonalInfoByEmployeeId(employeeId));
+	}
 
 	@PutMapping("/personal-info/delete/{email}")
 	public ResponseEntity<?> deletePersonalInfoByEmail(@PathVariable String email,
