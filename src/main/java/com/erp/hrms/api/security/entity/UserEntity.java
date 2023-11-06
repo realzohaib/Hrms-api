@@ -17,7 +17,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.erp.hrms.entity.PersonalInfo;
@@ -45,28 +44,28 @@ public class UserEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	//@NotBlank
+	// @NotBlank
 	@Size(max = 20)
 	private String username;
 
-	//@NotBlank
+	// @NotBlank
 	@Size(max = 50)
 	@Email
 	private String email;
 
-	//@NotBlank
+	// @NotBlank
 	@Size(max = 120)
 	private String password;
-	
+
 	private String activationToken;
-	
+
 	private boolean isEnabled;
-	
+
 	@OneToOne
-	@JoinColumn(name = "employeeId")
+	@JoinColumn(name = "PId")
 	@JsonBackReference
 	private PersonalInfo personalinfo;
-	
+
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<RoleEntity> roles = new HashSet<>();
@@ -74,7 +73,7 @@ public class UserEntity implements Serializable {
 	public UserEntity() {
 	}
 
-	public UserEntity(String username, String email, String password ,boolean isEnabled ) {
+	public UserEntity(String username, String email, String password, boolean isEnabled) {
 		this.username = username;
 		this.email = email;
 		this.password = password;
