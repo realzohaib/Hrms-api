@@ -1,5 +1,6 @@
 package com.erp.hrms.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -21,13 +22,19 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import com.erp.hrms.api.security.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
 
 @Data
 @Entity
-public class PersonalInfo {
+public class PersonalInfo implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "Id")
@@ -123,6 +130,7 @@ public class PersonalInfo {
 	private VisaDetail visainfo;
 
 	@OneToMany(mappedBy = "personalinfo")
+//@OneToMany
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
 	private List<Education> educations;
@@ -160,6 +168,10 @@ public class PersonalInfo {
 	@ManyToOne
 	@JoinColumn(name = "department_name", referencedColumnName = "departmentName")
 	private Department department;
+
+	@OneToOne(mappedBy = "personalinfo")
+	@Cascade(CascadeType.ALL)
+	private UserEntity userentity;
 
 	@PostLoad
 	private void calculateAge() {

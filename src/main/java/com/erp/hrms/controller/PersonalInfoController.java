@@ -3,6 +3,7 @@ package com.erp.hrms.controller;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class PersonalInfoController {
 
 	@PostMapping("/personal-info")
 	public ResponseEntity<?> savePersonalInfo(@RequestParam("PersonalInfo") String personalinfo,
+			@RequestParam("SignupRequest") String SignupRequest,
 			@RequestParam(value = "passportSizePhoto", required = false) MultipartFile passportSizePhoto,
 			@RequestParam(value = "OtherIdProofDoc", required = false) MultipartFile OtherIdProofDoc,
 			@RequestParam(value = "passportScan", required = false) MultipartFile passportScan,
@@ -55,15 +57,18 @@ public class PersonalInfoController {
 			@RequestParam(value = "PaidTrainingDocumentProof", required = false) MultipartFile PaidTrainingDocumentProof,
 			@RequestParam(value = "diplomaDocumentScan", required = false) MultipartFile diplomaDocumentScan,
 			@RequestParam(value = "declarationRequired", required = false) MultipartFile declarationRequired,
-			@RequestParam(value = "achievementsRewardsDocs", required = false) MultipartFile[] achievementsRewardsDocs)
-			throws IOException {
-		try {
+			@RequestParam(value = "achievementsRewardsDocs", required = false) MultipartFile[] achievementsRewardsDocs,
+			HttpServletRequest req) throws IOException {
 
-			personalInfoService.savedata(personalinfo, passportSizePhoto, OtherIdProofDoc, passportScan, licensecopy,
-					relativeid, raddressproof, secondaryDocumentScan, seniorSecondaryDocumentScan,
-					graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan, degreeScan, payslipScan,
-					recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource, visaDocs,
-					diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
+		String url = req.getRequestURL().toString();
+		url = url.replace(req.getServletPath(), "");
+
+		try {
+			personalInfoService.savedata(personalinfo, SignupRequest, url, passportSizePhoto, OtherIdProofDoc,
+					passportScan, licensecopy, relativeid, raddressproof, secondaryDocumentScan,
+					seniorSecondaryDocumentScan, graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan,
+					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,
+					visaDocs, diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
 			return ResponseEntity.ok(new MessageResponse("Insert Personal info successfully"));
 		} catch (PersonalEmailExistsException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Email ID already exists"));
@@ -71,7 +76,6 @@ public class PersonalInfoController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new MessageResponse("An error occurred: " + e.getMessage()));
 		}
-
 	}
 
 	@GetMapping("/personal-info/find/all/active")
@@ -99,8 +103,7 @@ public class PersonalInfoController {
 	}
 
 	@GetMapping("/personal-info/employeeId/{employeeId}")
-	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId)
-			throws IOException {
+	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId) throws IOException {
 		try {
 			PersonalInfo personalInfo = personalInfoService.getPersonalInfoByEmployeeId(employeeId);
 			return ResponseEntity.ok(personalInfo);

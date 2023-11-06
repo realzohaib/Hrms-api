@@ -4,15 +4,25 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
+import com.erp.hrms.api.repo.IRoleRepository;
+import com.erp.hrms.api.request.SignupRequest;
+import com.erp.hrms.api.security.entity.RoleEntity;
+import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
 import com.erp.hrms.entity.DrivingLicense;
@@ -46,34 +56,46 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	}
 
 	@Autowired
+	IRoleRepository roleRepository;
+
+	@Autowired
 	private IPersonalInfoDAO dao;
 
 	@Autowired
 	private PersonalInfoFileService personalInfoFileService;
 
+	@Autowired
+	private JavaMailSender sender;
+
 	@Override
-	public void savedata(String personalinfo, MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
-			MultipartFile passportScan, MultipartFile licensecopy, MultipartFile relativeid,
-			MultipartFile raddressproof, MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
-			MultipartFile graduationDocumentScan, MultipartFile postGraduationDocumentScan,
-			MultipartFile[] othersDocumentScan, MultipartFile[] degreeScan, MultipartFile payslipScan,
-			MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
+	public void savedata(String personalinfo, String SignupRequest, String url, MultipartFile passportSizePhoto,
+			MultipartFile OtherIdProofDoc, MultipartFile passportScan, MultipartFile licensecopy,
+			MultipartFile relativeid, MultipartFile raddressproof, MultipartFile secondaryDocumentScan,
+			MultipartFile seniorSecondaryDocumentScan, MultipartFile graduationDocumentScan,
+			MultipartFile postGraduationDocumentScan, MultipartFile[] othersDocumentScan, MultipartFile[] degreeScan,
+			MultipartFile payslipScan, MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
 			MultipartFile CertificateUploadedForOutsource, MultipartFile visaDocs, MultipartFile diplomaDocumentScan,
 			MultipartFile declarationRequired, MultipartFile[] achievementsRewardsDocs) throws IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
+		SignupRequest Signuprequest = mapper.readValue(SignupRequest, SignupRequest.class);
 
 		String email = PersonalInfo.getEmail();
 		if (dao.existsByEmail(email)) {
 			throw new PersonalEmailExistsException(new MessageResponse("Email ID already exists"));
 		}
+		long employeeId;
 		try {
 			Long departmentId = PersonalInfo.getDepartment().getDepartmentId();
 
+			// Generate a 4-digit random number
 			int randomPart = generateRandom4DigitNumber();
 
-			long employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
+			employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
+			if (!dao.existByID(employeeId)) {
+				employeeId = employeeId * 10;
+			}
 
 			PersonalInfo.setEmployeeId(employeeId);
 
@@ -120,6 +142,13 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				visaDetail.setSiGlobalWorkVisaCompany(PersonalInfo.getVisainfo().getSiGlobalWorkVisaCompany());
 				visaDetail.setVisaIssueyDate(PersonalInfo.getVisainfo().getVisaIssueyDate());
 				visaDetail.setVisaType(PersonalInfo.getVisainfo().getVisaType());
+
+				visaDetail.setVisaEmailSend20and60daysBefore(false);
+				visaDetail.setVisaEmailSend10and30daysBefore(false);
+				visaDetail.setVisaEmailSend4daysBefore(false);
+				visaDetail.setVisaEmailSend3daysBefore(false);
+				visaDetail.setVisaEmailSend2daysBefore(false);
+				visaDetail.setVisaEmailSend1dayBefore(false);
 
 				visaDetail.setVisaEmailSend20and60daysBefore(false);
 				visaDetail.setVisaEmailSend10and30daysBefore(false);
@@ -365,7 +394,56 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 				PersonalInfo.setTraining(training);
 			}
+
+			Set<String> strRoles = Signuprequest.getRole();
+			Set<RoleEntity> roles = new HashSet<>();
+
+			System.out.println(strRoles);
+
+			if (strRoles == null) {
+				RoleEntity userRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
+						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(userRole);
+			} else {
+				strRoles.forEach(role -> {
+					switch (role) {
+					case "admin":
+						RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(adminRole);
+						break;
+					case "employee":
+						RoleEntity empRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(empRole);
+						break;
+					case "manager":
+						RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MANAGER)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(modRole);
+					}
+				});
+			}
+
+			UserEntity user = new UserEntity();
+
+			user.setEmail(PersonalInfo.getEmail());
+			user.setUsername(String.valueOf(employeeId));
+			user.setPersonalinfo(PersonalInfo);
+			user.setRoles(roles);
+			user.setEnabled(false);
+
+			String activationToken = UUID.randomUUID().toString();
+			user.setActivationToken(activationToken);
+
+			PersonalInfo.setUserentity(user);
+
 			dao.savePersonalInfo(PersonalInfo);
+
+			String activationLink = url + "/activate?token=" + activationToken;
+
+			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(),
+					activationLink);
 		} catch (Exception e) {
 			throw new RuntimeException("An error occurred while saving personal information.", e);
 		}
@@ -558,11 +636,12 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			return findAllPersonalInfo;
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to retrieve personal info: " + e.getMessage());
+
 		}
 	}
 
 	@Override
-	public PersonalInfo getPersonalInfoByEmail(String email) {
+	public PersonalInfo getPersonalInfoByEmail(String email) throws IOException {
 		try {
 			PersonalInfo personalInfoByEmail = dao.getPersonalInfoByEmail(email);
 			if (personalInfoByEmail == null) {
@@ -1621,4 +1700,21 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			throw new RuntimeException("Something went wrong. " + e);
 		}
 	}
+
+	public void sendAccountActivationEmail(String email, long employeeId, String name, String activationLink) {
+		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setTo(email);
+		mailMessage.setSubject("Account Activation");
+
+		// Create the account activation email message
+		String emailText = "Dear Mr. " + name + ",\n\n" + "Welcome to our platform. Your employee ID is: " + employeeId
+				+ ".\n\n" + "To activate your account, please click on the following link:\n" + activationLink + "\n\n"
+				+ "If you have any questions or need assistance, please contact our support team.\n\n"
+				+ "Best regards,\n" + "The SI Global Company Team";
+
+		mailMessage.setText(emailText);
+
+		sender.send(mailMessage);
+	}
+
 }

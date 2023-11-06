@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 import com.erp.hrms.api.utill.ERole;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

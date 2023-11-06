@@ -38,21 +38,46 @@ public class JwtTokenUtill {
 	@Value("${hrms.api.jwtExpirationMs}")
 	private int jwtExpirationMs;
 
+//	public JwtResponse generateJwtToken(Authentication authentication) {
+//		JwtResponse jwtResponse = new JwtResponse();
+//
+//		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+//
+//	    long expirationTime = System.currentTimeMillis() + jwtExpirationMs;
+//
+//		String token = Jwts.builder()
+//				.setSubject((userPrincipal.getUsername())).setIssuedAt(new Date())
+//				//.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+//		        .setExpiration(new Date(expirationTime))
+//				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+//
+//		jwtResponse.setToken(token);	
+//		jwtResponse
+//				.setExpieryTime(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getExpiration());
+//		jwtResponse.setType("Bearer");
+//
+//		return jwtResponse;
+//	}
+	
 	public JwtResponse generateJwtToken(Authentication authentication) {
-		JwtResponse jwtResponse = new JwtResponse();
+	    JwtResponse jwtResponse = new JwtResponse();
 
-		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+	    UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
-		String token = Jwts.builder().setSubject((userPrincipal.getUsername())).setIssuedAt(new Date())
-				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+	    long expirationTime = System.currentTimeMillis() + jwtExpirationMs;
 
-		jwtResponse.setToken(token);	
-		jwtResponse
-				.setExpieryTime(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getExpiration());
-		jwtResponse.setType("Bearer");
+	    String token = Jwts.builder()
+	        .setSubject(userPrincipal.getUsername())
+	        .setIssuedAt(new Date())
+	        .setExpiration(new Date(expirationTime))
+	        .signWith(SignatureAlgorithm.HS512, jwtSecret)
+	        .compact();
 
-		return jwtResponse;
+	    jwtResponse.setToken(token);
+	    jwtResponse.setExpieryTime(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getExpiration());
+	    jwtResponse.setType("Bearer");
+
+	    return jwtResponse;
 	}
 
 	public String getUserNameFromJwtToken(String token) {

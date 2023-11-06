@@ -91,7 +91,6 @@ public class AuthController {
 			long parseLong = Long.parseLong(username);
 
 			if (roles.contains("ROLE_EMPLOYEE")) {
-				// PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
 				PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
 				jwt.setInfo(personalInfo);
 				return ResponseEntity.ok(jwt);
@@ -116,9 +115,7 @@ public class AuthController {
 		}
 
 		String username = signUpRequest.getUsername();
-//		if(username instanceof String){
-//			return ResponseEntity.badRequest().body(new MessageResponse("Employee Id must be numerals"));
-//		}
+
 		long parseLong = Long.parseLong(username);
 		System.out.println(parseLong);
 		System.out.println(dao.existByID(parseLong));
@@ -130,7 +127,7 @@ public class AuthController {
 
 		// Create new user's account
 		UserEntity user = new UserEntity(signUpRequest.getUsername(), signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()));
+				encoder.encode(signUpRequest.getPassword()), false);
 
 		Set<String> strRoles = signUpRequest.getRole();
 		Set<RoleEntity> roles = new HashSet<>();
@@ -170,30 +167,29 @@ public class AuthController {
 		return ResponseEntity.ok(new StatusResponse(false));
 
 	}
-	
+
 	@PostConstruct
 	public ResponseEntity<String> initializeDefaultRoles() {
-	    if (roleRepository.findAll().isEmpty()) {
-	        try {
-	            List<RoleEntity> roleList = Arrays.asList(
-	                new RoleEntity(ERole.ROLE_ADMIN),
-	                new RoleEntity(ERole.ROLE_EMPLOYEE),
-	                new RoleEntity(ERole.ROLE_MANAGER)
-	            );
+		if (roleRepository.findAll().isEmpty()) {
+			try {
+				List<RoleEntity> roleList = Arrays.asList(new RoleEntity(ERole.ROLE_ADMIN),
+						new RoleEntity(ERole.ROLE_EMPLOYEE), new RoleEntity(ERole.ROLE_MANAGER));
 
-	            List<RoleEntity> savedRoles = roleRepository.saveAll(roleList);
+				List<RoleEntity> savedRoles = roleRepository.saveAll(roleList);
 
-	            if (!savedRoles.isEmpty()) {
-	                return ResponseEntity.ok("Default roles have been initialized successfully.");
-	            } else {
-	                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to initialize default roles.");
-	            }
-	        } catch (DataAccessException e) {
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while initializing default roles: " + e.getMessage());
-	        }
-	    } else {
-	        return ResponseEntity.ok("Default roles already exist. No further action required.");
-	    }
+				if (!savedRoles.isEmpty()) {
+					return ResponseEntity.ok("Default roles have been initialized successfully.");
+				} else {
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+							.body("Failed to initialize default roles.");
+				}
+			} catch (DataAccessException e) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("An error occurred while initializing default roles: " + e.getMessage());
+			}
+		} else {
+			return ResponseEntity.ok("Default roles already exist. No further action required.");
+		}
 	}
 
 }

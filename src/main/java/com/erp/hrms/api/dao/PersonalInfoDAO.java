@@ -123,8 +123,7 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 	@Override
 	public boolean existByID(long employeeId) {
 		String query = "SELECT COUNT(p) FROM PersonalInfo p WHERE p.employeeId = :employeeId";
-		Long count = entityManager.createQuery(query, Long.class).setParameter("employeeId", employeeId)
-				.getSingleResult();
+		Long count = entityManager.createQuery(query, Long.class).setParameter("employeeId", employeeId).getSingleResult();
 		return count == 0;
 	}
 
