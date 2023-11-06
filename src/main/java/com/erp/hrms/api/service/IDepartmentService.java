@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.erp.hrms.entity.Department;
+import com.erp.hrms.entity.helper.PersonalInfoDTO;
 
 public interface IDepartmentService {
 
@@ -13,7 +14,7 @@ public interface IDepartmentService {
 
 	public Optional<Department> getDepartmentById(Long departmentId);
 
-	public Optional<Department> getDepartmentByName(String departmentName);
-
 	public List<Department> getAllDepartment();
+
+	public List<PersonalInfoDTO> getFirstAndLastNamesByDepartmentName(String departmentName);
 }

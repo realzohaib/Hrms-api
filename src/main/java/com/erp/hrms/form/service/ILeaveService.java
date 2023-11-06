@@ -8,30 +8,33 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
+import com.erp.hrms.entity.form.MarkedDate;
 
 public interface ILeaveService {
 
 	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException;
 
-	public LeaveApproval getleaveRequestById(Long leaveRequestID);
+	public LeaveApproval getleaveRequestById(Long leaveRequestID) throws IOException;
 
-	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId);
+	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId) throws IOException;
 
-	public List<LeaveApproval> findAllLeaveApproval();
+	public List<LeaveApproval> findAllLeaveApproval() throws IOException;
 
-	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval) throws IOException;
+	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval, MultipartFile medicalDocumentsName) throws IOException;
 
-	public List<LeaveApproval> findAllLeaveApprovalPending();
+	public List<LeaveApproval> findAllLeaveApprovalPending() throws IOException;
 
-	public List<LeaveApproval> findAllLeaveApprovalAccepted();
+	public List<LeaveApproval> findAllLeaveApprovalAccepted() throws IOException;
 
-	public List<LeaveApproval> findAllLeaveApprovalRejected();
+	public List<LeaveApproval> findAllLeaveApprovalRejected() throws IOException;
 
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId);
 
 	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
 
 	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals);
-	
-	public List<LeaveApproval> getAllLeaveApprovals();
+
+	public List<LeaveApproval> getAllLeaveApprovalsAccepted();
+
+	public List<MarkedDate> markCalendarDates();
 }

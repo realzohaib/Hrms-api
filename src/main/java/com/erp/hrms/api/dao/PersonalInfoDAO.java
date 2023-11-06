@@ -3,6 +3,7 @@ package com.erp.hrms.api.dao;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.VisaDetail;
-
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
@@ -41,13 +41,12 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 
 	@Override
 	public List<PersonalInfo> findAllPersonalInfo() {
-		List<PersonalInfo> resultList = null;
 		try {
-			resultList = entityManager.createQuery("Select p from PersonalInfo p ", PersonalInfo.class).getResultList();
+			List<PersonalInfo> resultList = entityManager
+					.createQuery("Select p from PersonalInfo p ", PersonalInfo.class).getResultList();
 			return resultList;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
-
+			throw new RuntimeException("Failed to retrieve personal info: " + e.getMessage());
 		}
 	}
 
@@ -57,10 +56,12 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 			Query query = entityManager.createQuery("SELECT p FROM PersonalInfo p WHERE p.email = :email");
 			query.setParameter("email", email);
 			return (PersonalInfo) query.getSingleResult();
-		} catch (Exception ex) {
+		} catch (NoResultException ex) {
 			throw new PersonalInfoNotFoundException(
-
-					new MessageResponse("No personal information found for this email ID: " + email + " or " + ex));
+					new MessageResponse("No personal information found for this email ID: " + email));
+		} catch (Exception ex) {
+			throw new RuntimeException("An error occurred while retrieving personal information for email: " + email,
+					ex);
 		}
 	}
 
@@ -71,11 +72,13 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 					.createQuery("SELECT p FROM PersonalInfo p WHERE p.email = :email and p.status = 'Active'");
 			query.setParameter("email", email);
 			return (PersonalInfo) query.getSingleResult();
-		} catch (Exception ex) {
-
+		} catch (NoResultException ex) {
 			throw new PersonalInfoNotFoundException(
 					new MessageResponse("No personal information found for this email ID: " + email
-							+ " or this eamil is inactived or " + ex));
+							+ " or this eamil is inactived." ));
+		} catch (Exception ex) {
+			throw new RuntimeException("An error occurred while retrieving personal information for email: " + email,
+					ex);
 		}
 	}
 
@@ -85,10 +88,12 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 			Query query = entityManager.createQuery("SELECT p FROM PersonalInfo p WHERE p.employeeId = :employeeId");
 			query.setParameter("employeeId", employeeId);
 			return (PersonalInfo) query.getSingleResult();
-		} catch (Exception ex) {
+		} catch (NoResultException ex) {
 			throw new PersonalInfoNotFoundException(
-
 					new MessageResponse("No personal information found for employee ID: " + employeeId + " or " + ex));
+		} catch (Exception ex) {
+			throw new RuntimeException(
+					"An error occurred while retrieving personal information for employee ID: " + employeeId, ex);
 		}
 	}
 
@@ -250,7 +255,6 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 		if (visaDetail != null) {
 			visaDetail.setVisaIssueyDate(visaIssueDate);
 			visaDetail.setVisaExpiryDate(visaExpiryDate);
-
 
 			visaDetail.setVisaEmailSend20and60daysBefore(false);
 			visaDetail.setVisaEmailSend10and30daysBefore(false);

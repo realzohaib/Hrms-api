@@ -30,7 +30,7 @@ public class AttendenceController {
 	@Autowired
 	private IAttendencerepo repo;
 
-	//this method will need employee id
+	// this method will need employee id
 	@PostMapping("/punch-In-Time")
 	public ResponseEntity<?> punchInTime(@RequestBody Attendence attendence) throws AttendencenotRegistered {
 
@@ -46,7 +46,7 @@ public class AttendenceController {
 
 	}
 
-	//needs Employee Id
+	// needs Employee Id
 	@GetMapping("/get-attendence")
 	public ResponseEntity<?> getAttendenceById(@RequestBody AttendenceRequest req) throws AttendencenotRegistered {
 		try {
@@ -58,7 +58,7 @@ public class AttendenceController {
 
 	}
 
-	//needs AttendenceId 
+	// needs AttendenceId
 	@PostMapping("/punch-out")
 	public ResponseEntity<?> punchOut(@RequestBody AttendenceRequest req) throws AttendencenotRegistered {
 		try {
@@ -70,7 +70,7 @@ public class AttendenceController {
 
 	}
 
-	//needs AttendenceId
+	// needs AttendenceId
 	@PostMapping("/break-start")
 	public ResponseEntity<?> breakStart(@RequestBody AttendenceRequest req) throws AttendencenotRegistered {
 		try {
@@ -82,7 +82,7 @@ public class AttendenceController {
 
 	}
 
-	//needs Attendence Id
+	// needs Attendence Id
 	@PostMapping("/break-end")
 	public ResponseEntity<?> breakEnd(@RequestBody AttendenceRequest req) throws AttendencenotRegistered {
 		try {
@@ -94,7 +94,7 @@ public class AttendenceController {
 
 	}
 
-	//needs Employee Id
+	// needs Employee Id
 	@GetMapping("/get-attendence-byDate")
 	public ResponseEntity<?> AttendenceByDate(@RequestBody AttendenceRequest req) {
 		System.out.println("hello");
@@ -109,7 +109,7 @@ public class AttendenceController {
 		}
 	}
 
-	//needs Employee Id
+	// needs Employee Id
 	@GetMapping("/get-attendence-byMonth/{id}/{year}/{month}")
 	public ResponseEntity<?> AttendenceByMonth(@PathVariable long id, @PathVariable int year, @PathVariable int month) {
 		try {
@@ -121,7 +121,6 @@ public class AttendenceController {
 		}
 	}
 
-	
 	@GetMapping("/get-OvertimeRequest")
 	public ResponseEntity<?> getEmployeeWithOverTimeStatusPending() {
 		try {
@@ -135,33 +134,34 @@ public class AttendenceController {
 
 		}
 	}
-	
-	//need AttendenceId
+
+	// need AttendenceId
 	@GetMapping("/approve-OvertimeRequest/{id}")
-	public ResponseEntity<?>ApproveOverTime(@PathVariable long id){
+	public ResponseEntity<?> ApproveOverTime(@PathVariable long id) {
 		try {
 			service.approveOverTime(id);
 			return ResponseEntity.ok(new MessageResponse("Overtime Approved"));
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e);
 
 		}
 	}
-	
-	//need AttendenceId
+
+	// need AttendenceId
 	@GetMapping("/deny-OvertimeRequest/{id}")
-	public ResponseEntity<?>DenyeOverTime(@PathVariable long id){
+	public ResponseEntity<?> DenyeOverTime(@PathVariable long id) {
 		try {
 			service.denyOverTime(id);
 			return ResponseEntity.ok(new MessageResponse("Overtime Denied"));
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e);
 
 		}
 	}
-	//need AttendenceId from Attendence Object
+
+	// need AttendenceId from Attendence Object
 	@PostMapping("/update-overtime")
-	public ResponseEntity<?> updateOvertime(@RequestBody Attendence attendence){
+	public ResponseEntity<?> updateOvertime(@RequestBody Attendence attendence) {
 		try {
 			Attendence updateOverTime = service.updateOverTime(attendence);
 			return ResponseEntity.ok(updateOverTime);
@@ -170,6 +170,5 @@ public class AttendenceController {
 		}
 
 	}
-	
 
 }

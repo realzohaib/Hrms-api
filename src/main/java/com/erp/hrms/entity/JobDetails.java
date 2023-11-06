@@ -79,7 +79,6 @@ public class JobDetails {
 	private String punchingMachineYesOrNo;
 
 	private String joiningDate;
-//	private String jobdepartment;
 	private String referredBy;
 	private String byWhom;
 

@@ -6,8 +6,8 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class AttendenceRequest implements Serializable{
-	
+public class AttendenceRequest implements Serializable {
+
 	/**
 	 * 
 	 */
@@ -15,7 +15,5 @@ public class AttendenceRequest implements Serializable{
 	private long id;
 	private LocalDate startDate;
 	private LocalDate endODate;
-
-	
 
 }

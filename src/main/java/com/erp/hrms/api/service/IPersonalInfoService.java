@@ -21,11 +21,11 @@ public interface IPersonalInfoService {
 			MultipartFile CertificateUploadedForOutsource, MultipartFile visaDocs, MultipartFile diplomaDocumentScan,
 			MultipartFile declarationRequired, MultipartFile[] achievementsRewardsDocs) throws IOException;
 
-	List<PersonalInfo> findAllPersonalInfo();
+	List<PersonalInfo> findAllPersonalInfo() throws IOException;
 
-	PersonalInfo getPersonalInfoByEmail(String email);
+	PersonalInfo getPersonalInfoByEmail(String email) throws IOException;
 
-	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId);
+	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) throws IOException;
 
 	public PersonalInfo deletePersonalInfoByEmail(String email, String PersonalInfo) throws PersonalInfoNotFoundException;
 

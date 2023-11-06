@@ -13,7 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.Data;
 
@@ -34,7 +34,7 @@ public class Department implements Serializable {
 	private String departmentName;
 
 	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
-	@JsonManagedReference
+	@JsonBackReference
 	private List<PersonalInfo> personalInfos;
 
 	public Department(String departmentName) {

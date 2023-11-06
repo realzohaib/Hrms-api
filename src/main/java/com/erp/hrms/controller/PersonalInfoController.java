@@ -6,10 +6,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aop.ThrowsAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,16 +24,13 @@ import com.erp.hrms.api.security.response.StatusResponse;
 import com.erp.hrms.api.service.IPersonalInfoService;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
+import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
-
-import net.bytebuddy.implementation.bytecode.Throw;
 
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin("*")
 public class PersonalInfoController {
-
-	private static final Logger logger = LoggerFactory.getLogger(PersonalInfoController.class);
 
 	@Autowired
 	private IPersonalInfoService personalInfoService;
@@ -75,57 +70,69 @@ public class PersonalInfoController {
 					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,
 					visaDocs, diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
 			return ResponseEntity.ok(new MessageResponse("Insert Personal info successfully"));
+		} catch (PersonalEmailExistsException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Email ID already exists"));
 		} catch (Exception e) {
-			System.out.println(e);
-			return ResponseEntity.badRequest().body(new Exception("error occured " + e.getMessage()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new MessageResponse("An error occurred: " + e.getMessage()));
 		}
-
 	}
 
 	@GetMapping("/personal-info/find/all/active")
 	public ResponseEntity<?> findAllPersonalInfo() {
-		List<PersonalInfo> findAllPersonalInfo = null;
 		try {
-			findAllPersonalInfo = personalInfoService.findAllPersonalInfo();
-
+			List<PersonalInfo> findAllPersonalInfo = personalInfoService.findAllPersonalInfo();
+			return ResponseEntity.ok(findAllPersonalInfo);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("Exception occurred " + e);
+			return ResponseEntity.badRequest().body("Exception occurred: " + e.getMessage());
 		}
-		return ResponseEntity.ok(findAllPersonalInfo);
 	}
 
 	@GetMapping("/personal-info/email/{email}")
 	public ResponseEntity<?> getPersonalInfoByEmail(@PathVariable String email, HttpServletResponse response)
 			throws IOException {
 		try {
-
-			return ResponseEntity.ok(personalInfoService.getPersonalInfoByEmail(email));
+			PersonalInfo personalInfo = personalInfoService.getPersonalInfoByEmail(email);
+			return ResponseEntity.ok(personalInfo);
 		} catch (PersonalInfoNotFoundException e) {
-//			System.out.println(e);
-			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
-
+			return ResponseEntity.badRequest()
+					.body(new MessageResponse("Personal information not found: " + e.getMessage()));
 		} catch (Exception e) {
-//			System.out.println(e);
-			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
 		}
 	}
 
 	@GetMapping("/personal-info/employeeId/{employeeId}")
-	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId, HttpServletResponse response) {
-		return ResponseEntity.ok(personalInfoService.getPersonalInfoByEmployeeId(employeeId));
+
+	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId) throws IOException {
+		try {
+			PersonalInfo personalInfo = personalInfoService.getPersonalInfoByEmployeeId(employeeId);
+			return ResponseEntity.ok(personalInfo);
+		} catch (PersonalInfoNotFoundException e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
+		}
 	}
 
 	@PutMapping("/personal-info/delete/{email}")
 	public ResponseEntity<?> deletePersonalInfoByEmail(@PathVariable String email,
-			@RequestParam("PersonalInfo") String personalinfo) throws IOException {
+			@RequestParam("PersonalInfo") String personalInfo) throws IOException {
 		try {
-			personalInfoService.deletePersonalInfoByEmail(email, personalinfo);
-			return ResponseEntity.ok(new MessageResponse("Record delete successfully"));
+			PersonalInfo deletedInfo = personalInfoService.deletePersonalInfoByEmail(email, personalInfo);
+			if (deletedInfo != null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body(new MessageResponse("No personal information found for this email ID: " + email
+								+ " or this email is inactive ---"));
+			} else {
 
+				return ResponseEntity.ok(new MessageResponse("Record deleted successfully"));
+			}
 		} catch (Exception e) {
-			System.out.println(e);
-			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new MessageResponse("An error occurred: " + e.getMessage()));
 		}
+
 	}
 
 	@PutMapping("/personal-info/update/email/{email}")
@@ -153,26 +160,30 @@ public class PersonalInfoController {
 			@RequestParam(value = "achievementsRewardsDocs", required = false) MultipartFile[] achievementsRewardsDocs)
 			throws IOException {
 		try {
-			personalInfoService.updatePersonalInfo(email, personalinfo, passportSizePhoto, OtherIdProofDoc,
-					passportScan, licensecopy, relativeid, raddressproof, secondaryDocumentScan,
-					seniorSecondaryDocumentScan, graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan,
-					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,
-					visaDocs, diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
+			PersonalInfo updatedPersonalInfo = personalInfoService.updatePersonalInfo(email, personalinfo,
+					passportSizePhoto, OtherIdProofDoc, passportScan, licensecopy, relativeid, raddressproof,
+					secondaryDocumentScan, seniorSecondaryDocumentScan, graduationDocumentScan,
+					postGraduationDocumentScan, othersDocumentScan, degreeScan, payslipScan, recordsheet,
+					PaidTrainingDocumentProof, CertificateUploadedForOutsource, visaDocs, diplomaDocumentScan,
+					declarationRequired, achievementsRewardsDocs);
 
-			return ResponseEntity.ok(new MessageResponse("Record update successfully"));
+			if (updatedPersonalInfo != null) {
+				return ResponseEntity.ok(new MessageResponse("Record updated successfully"));
+			} else {
+				return ResponseEntity.notFound().build();
+			}
+		} catch (PersonalInfoNotFoundException e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
 		} catch (Exception e) {
-			System.out.println(e);
-			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
 		}
 	}
 
 	@GetMapping("/dashboard")
 	public ResponseEntity<?> dashbord() {
 		try {
-			logger.debug("Error occured");
 			return ResponseEntity.ok(new StatusResponse(true));
 		} catch (Exception e) {
-			System.out.println(e);
 			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
 		}
 	}
@@ -184,7 +195,6 @@ public class PersonalInfoController {
 			personalInfoService.updateVisaDetails(employeeId, visaIssueDate, visaExpiryDate);
 			return ResponseEntity.ok(new MessageResponse("Visa details updated successfully."));
 		} catch (Exception e) {
-			System.out.println(e);
 			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
 		}
 	}
@@ -196,7 +206,6 @@ public class PersonalInfoController {
 			requestedField = personalInfoService.getRequestedField();
 			return ResponseEntity.ok(requestedField);
 		} catch (Exception e) {
-			System.out.println(e);
 			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
 		}
 	}

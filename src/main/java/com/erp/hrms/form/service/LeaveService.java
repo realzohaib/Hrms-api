@@ -7,7 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -21,13 +23,16 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.security.entity.RoleEntity;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.api.utill.ERole;
+import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
 import com.erp.hrms.entity.form.LeaveType;
+import com.erp.hrms.entity.form.MarkedDate;
 import com.erp.hrms.exception.LeaveRequestApprovalException;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 import com.erp.hrms.form.repository.ILeaveRepository;
@@ -48,77 +53,113 @@ public class LeaveService implements ILeaveService {
 	private UserServiceForLeaveNotification userService;
 
 	@Autowired
-	EntityManager entityManager;
+	private EntityManager entityManager;
+
+	@Autowired
+	private IPersonalInfoDAO iPersonalInfoDAO;
+
+	@Autowired
+	private FileService fileService;
 
 //	This method for send the leave request to manager and send email to manager and admin
 	@Override
 	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
 
-		LeaveType leaveType = entityManager.find(LeaveType.class, leaveApprovalJson.getLeaveType().getLeaveTypeId());
-		leaveApprovalJson.setLeaveType(leaveType);
+			LeaveType leaveType = entityManager.find(LeaveType.class,
+					leaveApprovalJson.getLeaveType().getLeaveTypeId());
+			leaveApprovalJson.setLeaveType(leaveType);
 
-		// Fetch admin and manager email addresses based on roles
-		String adminEmail = null;
-		String managerEmail = null;
+			// Fetch admin and manager email addresses based on roles
+			String adminEmail = null;
+			String managerEmail = null;
 
-		List<UserEntity> userList = userService.getUsers();
-		for (UserEntity user : userList) {
-			Set<RoleEntity> roles = user.getRoles();
-			for (RoleEntity role : roles) {
-				if (role.getName() == ERole.ROLE_ADMIN) {
-					adminEmail = user.getEmail();
-				} else if (role.getName() == ERole.ROLE_MANAGER) {
-					managerEmail = user.getEmail();
+			List<UserEntity> userList = userService.getUsers();
+			for (UserEntity user : userList) {
+				Set<RoleEntity> roles = user.getRoles();
+				for (RoleEntity role : roles) {
+					if (role.getName() == ERole.ROLE_ADMIN) {
+						adminEmail = user.getEmail();
+					} else if (role.getName() == ERole.ROLE_MANAGER) {
+						managerEmail = user.getEmail();
+					}
+					// If both adminEmail and managerEmail are found, you can break out of the loop.
+					if (adminEmail != null && managerEmail != null) {
+						break;
+					}
 				}
-				// If both adminEmail and managerEmail are found, you can break out of the loop.
 				if (adminEmail != null && managerEmail != null) {
 					break;
 				}
+
 			}
-			if (adminEmail != null && managerEmail != null) {
-				break;
+
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				String uniqueIdentifier = UUID.randomUUID().toString();
+				String originalFileName = medicalDocumentsName.getOriginalFilename();
+				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
+
+				Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
+				Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
+				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
 			}
-		}
 
-		String uniqueIdentifier = UUID.randomUUID().toString();
-		String originalFileName = medicalDocumentsName.getOriginalFilename();
-		String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
-
-		Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
-		Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
-		leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
-
-		iLeaveRepository.createLeaveApproval(leaveApprovalJson);
+			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
 
 //		 Send emails to admin and manager
-		sendLeaveRequestEmail(adminEmail, "Leave Request from Employee", leaveApprovalJson);
-		sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
+			sendLeaveRequestEmail(adminEmail, "Leave Request from Employee", leaveApprovalJson);
+			sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
 
-		// Send an email to the employee who requested the leave
-		String employeeEmail = leaveApprovalJson.getEmail();
-		sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
+//		 Send an email to the employee who requested the leave
+			String employeeEmail = leaveApprovalJson.getEmail();
+			sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
+		} catch (Exception e) {
+			throw new RuntimeException("An error occurred while send your request." + e);
+		}
 	}
 
-//	This method for get the leave request by LeaveRequestId
+//	This method for find the data of leave by leave request id
 	@Override
-	public LeaveApproval getleaveRequestById(Long leaveRequestId) {
-		LeaveApproval leaveApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
-		if (leaveApproval == null) {
-			throw new LeaveRequestNotFoundException(
-					new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
+	public LeaveApproval getleaveRequestById(Long leaveRequestId) throws IOException {
+		try {
+			LeaveApproval leaveApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
+			if (leaveApproval == null) {
+				throw new LeaveRequestNotFoundException(
+						new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
+
+			}
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
+			return leaveApproval;
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"An error occurred while retrieving leave approval for leave request Id: " + leaveRequestId);
 		}
-		return leaveApproval;
 	}
 
 //	This method for find all the Leave Request by employeeId
 	@Override
-	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId) {
+	public List<LeaveApproval> getLeaveRequestByEmployeeId(Long employeeId) throws IOException {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.getLeaveRequestByEmployeeId(employeeId);
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(
 					new MessageResponse("This Employee ID " + employeeId + " not found."));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -126,11 +167,20 @@ public class LeaveService implements ILeaveService {
 
 //	This method for find all leave request
 	@Override
-	public List<LeaveApproval> findAllLeaveApproval() {
+	public List<LeaveApproval> findAllLeaveApproval() throws IOException {
 		List<LeaveApproval> leaveApprovals = null;
 		leaveApprovals = iLeaveRepository.findAllLeaveApproval();
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -138,7 +188,8 @@ public class LeaveService implements ILeaveService {
 
 //	This method for update the leave request by the manager Accepted or Rejected with the help of leaveRequestId
 	@Override
-	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval) throws IOException {
+	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval,
+			MultipartFile medicalDocumentsName) throws IOException {
 		LeaveApproval existingApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
 		if (existingApproval == null) {
 			throw new LeaveRequestNotFoundException(
@@ -165,6 +216,20 @@ public class LeaveService implements ILeaveService {
 			existingApproval.setApprovingManagerName(leaveApprovalJson.getApprovingManagerName());
 			existingApproval.setApprovalRemarks(leaveApprovalJson.getApprovalRemarks());
 			existingApproval.setManagerEmail(leaveApprovalJson.getManagerEmail());
+
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				if (existingApproval.getMedicalDocumentsName() != null) {
+					Path oldMedicalDocument = Paths.get(uplaodDirectory, existingApproval.getMedicalDocumentsName());
+					Files.deleteIfExists(oldMedicalDocument);
+				}
+				String uniqueIdentifier = UUID.randomUUID().toString();
+				String originalFileName = medicalDocumentsName.getOriginalFilename();
+				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
+
+				Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
+				Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
+				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
+			}
 
 			// Fetch admin and manager email addresses based on roles
 			String adminEmail = null;
@@ -200,10 +265,19 @@ public class LeaveService implements ILeaveService {
 
 //	This method for find all pending leave request 
 	@Override
-	public List<LeaveApproval> findAllLeaveApprovalPending() {
+	public List<LeaveApproval> findAllLeaveApprovalPending() throws IOException {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalPending();
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -211,10 +285,19 @@ public class LeaveService implements ILeaveService {
 
 //	This method for find all accepted leave request 
 	@Override
-	public List<LeaveApproval> findAllLeaveApprovalAccepted() {
+	public List<LeaveApproval> findAllLeaveApprovalAccepted() throws IOException {
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalAccepted();
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -222,11 +305,20 @@ public class LeaveService implements ILeaveService {
 
 //	This method for find all rejected leave request 
 	@Override
-	public List<LeaveApproval> findAllLeaveApprovalRejected() {
+	public List<LeaveApproval> findAllLeaveApprovalRejected() throws IOException {
 
 		List<LeaveApproval> leaveApprovals = iLeaveRepository.findAllLeaveApprovalRejected();
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
+		}
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				byte[] fileData = fileService.getFileData(medicalDocumentsName);
+				if (fileData != null) {
+					leaveApproval.setMedicalDocumentData(fileData);
+				}
+			}
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
@@ -272,11 +364,11 @@ public class LeaveService implements ILeaveService {
 
 //	Find all accepted leaves for calendar 
 	@Override
-	public List<LeaveApproval> getAllLeaveApprovals() {
+	public List<LeaveApproval> getAllLeaveApprovalsAccepted() {
 		return iLeaveRepository.findAllLeaveApprovalAccepted();
 	}
 
-//	Find the leaves on a paticular day
+//	This method is to calculate how many employees are on leave in a day.
 	@Override
 	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals) {
 		List<LeaveCalendarData> calendarData = new ArrayList<>();
@@ -301,5 +393,49 @@ public class LeaveService implements ILeaveService {
 		}
 
 		return calendarData;
+	}
+
+//	This method is to mark the date on which more than 20% leave occurred and or will occur on the following day.
+	@Override
+	public List<MarkedDate> markCalendarDates() {
+		try {
+			List<LeaveApproval> leaveApprovals = getAllLeaveApprovalsAccepted();
+			List<MarkedDate> markedDates = new ArrayList<>();
+
+			Map<LocalDate, Integer> dateToEmployeeCount = new HashMap<>();
+			List<PersonalInfo> employees = iPersonalInfoDAO.findAllPersonalInfo();
+
+			// Calculate the number of employees on leave for each date
+			for (LeaveApproval approval : leaveApprovals) {
+				LocalDate startDate = LocalDate.parse(approval.getStartDate());
+				LocalDate endDate = LocalDate.parse(approval.getEndDate());
+
+				while (!startDate.isAfter(endDate)) {
+					dateToEmployeeCount.put(startDate, dateToEmployeeCount.getOrDefault(startDate, 0) + 1);
+					startDate = startDate.plusDays(1);
+				}
+			}
+
+			int totalEmployees = getTotalEmployeeCount(employees);
+
+			// Determine which dates should be marked
+			for (LocalDate date : dateToEmployeeCount.keySet()) {
+				int employeeCount = dateToEmployeeCount.get(date);
+
+				if (employeeCount > 0.2 * totalEmployees) {
+					markedDates.add(new MarkedDate(date, true));
+				} else {
+					markedDates.add(new MarkedDate(date, false));
+				}
+			}
+
+			return markedDates;
+		} catch (Exception e) {
+			throw new RuntimeException("An error occurred while processing the request.");
+		}
+	}
+
+	private int getTotalEmployeeCount(List<PersonalInfo> employees) {
+		return employees.size();
 	}
 }

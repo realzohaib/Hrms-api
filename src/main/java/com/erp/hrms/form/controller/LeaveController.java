@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
+import com.erp.hrms.entity.form.MarkedDate;
+import com.erp.hrms.exception.LeaveRequestNotFoundException;
 import com.erp.hrms.form.service.ILeaveService;
 
 @RestController
@@ -30,7 +32,8 @@ public class LeaveController {
 //	This method for send the leave request to manager
 	@PostMapping("/leave/request")
 	public ResponseEntity<?> createLeaveApproval(@RequestParam("leaveApproval") String leaveApproval,
-			@RequestParam("medicalDocumentsName") MultipartFile medicalDocumentsName) throws IOException {
+			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
+			throws IOException {
 		try {
 			iLeaveService.createLeaveApproval(leaveApproval, medicalDocumentsName);
 			return new ResponseEntity<>(new MessageResponse("Your leave request send to your manager."), HttpStatus.OK);
@@ -42,23 +45,26 @@ public class LeaveController {
 
 //	This method for get the leave request by LeaveRequestId
 	@GetMapping("/leave/request/{leaveRequestId}")
-	public ResponseEntity<?> getleaveRequestById(@PathVariable Long leaveRequestId) throws Exception {
+	public ResponseEntity<?> getleaveRequestById(@PathVariable Long leaveRequestId) throws IOException {
+
 		try {
-			return new ResponseEntity<>(iLeaveService.getleaveRequestById(leaveRequestId), HttpStatus.OK);
+			LeaveApproval getleaveRequestById = iLeaveService.getleaveRequestById(leaveRequestId);
+			return ResponseEntity.ok(getleaveRequestById);
+		} catch (LeaveRequestNotFoundException e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
 		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("Leave Request with ID: " + leaveRequestId + " not found "),
-					HttpStatus.NOT_FOUND);
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
 		}
 	}
 
 //	This method for find all the Leave Request by employeeId
 	@GetMapping("/findall/leave/request/with/employeeId/{employeeId}")
-	public ResponseEntity<?> getLeaveRequestByEmployeeId(@PathVariable Long employeeId) {
+	public ResponseEntity<?> getLeaveRequestByEmployeeId(@PathVariable Long employeeId) throws IOException {
 		try {
 			return new ResponseEntity<>(iLeaveService.getLeaveRequestByEmployeeId(employeeId), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(
-					new MessageResponse("leave request with employee ID: " + employeeId + " not foundm"),
+					new MessageResponse("leave request with employee ID: " + employeeId + " not found"),
 					HttpStatus.NOT_FOUND);
 		}
 	}
@@ -76,9 +82,10 @@ public class LeaveController {
 //	This method for update the leave request by the manager Accepted or Rejected with the help of leaveRequestId
 	@PutMapping("/leave/request/approvedByManager/{leaveRequestId}")
 	public ResponseEntity<?> approvedByManager(@PathVariable Long leaveRequestId,
-			@RequestParam("leaveApproval") String leaveApproval) throws IOException {
+			@RequestParam("leaveApproval") String leaveApproval,
+			@RequestParam("medicalDocumentsName") MultipartFile medicalDocumentsName) throws IOException {
 		try {
-			iLeaveService.approvedByManager(leaveRequestId, leaveApproval);
+			iLeaveService.approvedByManager(leaveRequestId, leaveApproval, medicalDocumentsName);
 			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By manager"),
 					HttpStatus.OK);
 		} catch (Exception e) {
@@ -141,10 +148,24 @@ public class LeaveController {
 		}
 	}
 
+//	This method is to calculate how many employees are on leave in a day.
 	@GetMapping("/leave-calendar")
 	public ResponseEntity<List<LeaveCalendarData>> getLeaveCalendar() {
-		List<LeaveApproval> leaveApprovals = iLeaveService.getAllLeaveApprovals();
+		List<LeaveApproval> leaveApprovals = iLeaveService.getAllLeaveApprovalsAccepted();
 		List<LeaveCalendarData> calendarData = iLeaveService.generateLeaveCalendar(leaveApprovals);
 		return new ResponseEntity<>(calendarData, HttpStatus.OK);
+	}
+
+//	This method is to mark the date on which more than 20% leave occurred and or will occur on the following day
+	@GetMapping("/marked-calendar-dates")
+	public ResponseEntity<?> getMarkedCalendarDates() {
+		try {
+			List<MarkedDate> markedDates = iLeaveService.markCalendarDates();
+			return new ResponseEntity<>(markedDates, HttpStatus.OK);
+		} catch (Exception e) {
+
+			return new ResponseEntity<>(new MessageResponse("An error occurred while fetching marked calendar dates."),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

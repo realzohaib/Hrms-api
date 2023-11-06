@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -35,14 +36,14 @@ public class LeaveApproval {
 	private String contactNumber;
 	private String emergencyContactNumber;
 
-	// ye mustufa bhai ko add jar wana hai
 	private String medicalDocumentsName;
 	private String jobLevel;
 	private String location;
 
-	// Mustufa bhai se ye field add karwani hai manager ko email send karne keliye
-	// aur ye manager name ki tarha hi kaam karega
 	private String managerEmail;
+
+	@Transient
+	private byte[] medicalDocumentData;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "leaveTypeLeaveApproval", referencedColumnName = "leaveTypeId")
