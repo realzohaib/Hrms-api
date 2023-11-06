@@ -128,7 +128,7 @@ public class LeaveService implements ILeaveService {
 			if (leaveApproval == null) {
 				throw new LeaveRequestNotFoundException(
 						new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
-			
+
 			}
 			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
@@ -218,6 +218,10 @@ public class LeaveService implements ILeaveService {
 			existingApproval.setManagerEmail(leaveApprovalJson.getManagerEmail());
 
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				if (existingApproval.getMedicalDocumentsName() != null) {
+					Path oldMedicalDocument = Paths.get(uplaodDirectory, existingApproval.getMedicalDocumentsName());
+					Files.deleteIfExists(oldMedicalDocument);
+				}
 				String uniqueIdentifier = UUID.randomUUID().toString();
 				String originalFileName = medicalDocumentsName.getOriginalFilename();
 				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;

@@ -33,7 +33,7 @@ public class Education {
 	private String secondaryyear;
 
 	private String secondaryDocumentScan;
-	
+
 	@Transient
 	private byte[] secondaryDocumentScanData;
 
@@ -48,7 +48,7 @@ public class Education {
 	private String seniorSecondaryYear;
 
 	private String seniorSecondaryDocumentScan;
-	
+
 	@Transient
 	private byte[] seniorSecondaryDocumentScanData;
 
@@ -63,7 +63,7 @@ public class Education {
 	private String graduationYear;
 
 	private String graduationDocumentScan;
-	
+
 	@Transient
 	private byte[] graduationDocumentScanData;
 
@@ -78,7 +78,7 @@ public class Education {
 	private String postGraduationYear;
 
 	private String postGraduationDocumentScan;
-	
+
 	@Transient
 	private byte[] postGraduationDocumentScanData;
 
@@ -93,7 +93,7 @@ public class Education {
 	private String diplomaYear;
 
 	private String diplomaDocumentScan;
-	
+
 	@Transient
 	private byte[] diplomaDocumentScanData;
 

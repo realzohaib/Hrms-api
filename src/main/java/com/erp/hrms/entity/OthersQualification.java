@@ -33,7 +33,7 @@ public class OthersQualification {
 	private String othersYear;
 
 	private String othersDocumentScan;
-	
+
 	@Transient
 	private byte[] othersDocumentScanData;
 
