@@ -42,39 +42,38 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PersonalInfoServiceImpl implements IPersonalInfoService {
-	
-	public static int generateRandom4DigitNumber() {
-        Random random = new Random();
-        return 1000 + random.nextInt(9000); // Generates a random 4-digit number
-    }
 
-    public static long concatenateIdWithRandomNumber(long id, int randomPart) {
-        return (id * 10000L) + randomPart;
-    }
-    
+	public static int generateRandom4DigitNumber() {
+		Random random = new Random();
+		return 1000 + random.nextInt(9000); // Generates a random 4-digit number
+	}
+
+	public static long concatenateIdWithRandomNumber(long id, int randomPart) {
+		return (id * 10000L) + randomPart;
+	}
 
 	@Autowired
 	IRoleRepository roleRepository;
-	
+
 	@Autowired
 	private IPersonalInfoDAO dao;
 
 	@Autowired
 	private DepartmentRepository departmentRepository;
-	
+
 	@Autowired
 	private JavaMailSender sender;
-	
+
 	@Autowired
 	private AuthController security;
 
 	@Override
-	public void savedata(String personalinfo,String SignupRequest,String url ,MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
-			MultipartFile passportScan, MultipartFile licensecopy, MultipartFile relativeid,
-			MultipartFile raddressproof, MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
-			MultipartFile graduationDocumentScan, MultipartFile postGraduationDocumentScan,
-			MultipartFile[] othersDocumentScan, MultipartFile[] degreeScan, MultipartFile payslipScan,
-			MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
+	public void savedata(String personalinfo, String SignupRequest, String url, MultipartFile passportSizePhoto,
+			MultipartFile OtherIdProofDoc, MultipartFile passportScan, MultipartFile licensecopy,
+			MultipartFile relativeid, MultipartFile raddressproof, MultipartFile secondaryDocumentScan,
+			MultipartFile seniorSecondaryDocumentScan, MultipartFile graduationDocumentScan,
+			MultipartFile postGraduationDocumentScan, MultipartFile[] othersDocumentScan, MultipartFile[] degreeScan,
+			MultipartFile payslipScan, MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
 			MultipartFile CertificateUploadedForOutsource, MultipartFile visaDocs, MultipartFile diplomaDocumentScan,
 			MultipartFile declarationRequired, MultipartFile[] achievementsRewardsDocs) throws IOException {
 
@@ -89,17 +88,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		long employeeId;
 		try {
 			Long departmentId = PersonalInfo.getDepartment().getDepartmentId();
-			
+
 			// Generate a 4-digit random number
-	        int randomPart = generateRandom4DigitNumber();
-	      
-	        employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
-	        if(!dao.existByID(employeeId)) {
-	        	  employeeId = employeeId*10;
-	        }
-	        
-	        PersonalInfo.setEmployeeId(employeeId);
-			
+			int randomPart = generateRandom4DigitNumber();
+
+			employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
+			if (!dao.existByID(employeeId)) {
+				employeeId = employeeId * 10;
+			}
+
+			PersonalInfo.setEmployeeId(employeeId);
+
 			PersonalInfo.setFathersFirstName("Mr " + PersonalInfo.getFathersFirstName());
 			PersonalInfo.setStatus("Active");
 			PersonalInfo.setEmpStatus("New employee");
@@ -127,7 +126,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				visaDetail.setSiGlobalWorkVisaCompany(PersonalInfo.getVisainfo().getSiGlobalWorkVisaCompany());
 				visaDetail.setVisaIssueyDate(PersonalInfo.getVisainfo().getVisaIssueyDate());
 				visaDetail.setVisaType(PersonalInfo.getVisainfo().getVisaType());
-				
+
 				visaDetail.setVisaEmailSend20and60daysBefore(false);
 				visaDetail.setVisaEmailSend10and30daysBefore(false);
 				visaDetail.setVisaEmailSend4daysBefore(false);
@@ -276,16 +275,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 				PersonalInfo.setTraining(training);
 			}
-								
-			if(PersonalInfo != null) {
-				UserEntity userentity = PersonalInfo.getUserentity();
-				System.out.println(userentity);
-				if(userentity != null) {
-					Set<RoleEntity> roles = userentity.getRoles();
-					System.out.println(roles);
-				}
-			}
-			
+
 			Set<String> strRoles = Signuprequest.getRole();
 			Set<RoleEntity> roles = new HashSet<>();
 
@@ -317,25 +307,24 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			}
 
 			UserEntity user = new UserEntity();
-			
+
 			user.setEmail(PersonalInfo.getEmail());
 			user.setUsername(String.valueOf(employeeId));
 			user.setPersonalinfo(PersonalInfo);
 			user.setRoles(roles);
 			user.setEnabled(false);
-			
-	        String activationToken = UUID.randomUUID().toString();	        
-	        user.setActivationToken(activationToken);
+
+			String activationToken = UUID.randomUUID().toString();
+			user.setActivationToken(activationToken);
 
 			PersonalInfo.setUserentity(user);
-			
-			dao.savePersonalInfo(PersonalInfo);	
-			
-			
-	        String activationLink = url+ "/activate?token=" + activationToken;
 
-			//sendOnboardingEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName());
-	        sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), activationLink);
+			dao.savePersonalInfo(PersonalInfo);
+
+			String activationLink = url + "/activate?token=" + activationToken;
+
+			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(),
+					activationLink);
 		} catch (Exception e) {
 			throw e;
 		}
@@ -348,7 +337,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			findAllPersonalInfo = dao.findAllPersonalInfo();
 			return findAllPersonalInfo;
 		} catch (Exception e) {
-			throw new RuntimeException("Something wrong: " + e);
+			throw new RuntimeException("Something wrong: " + e.getMessage());
 		}
 	}
 
@@ -373,12 +362,12 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 //			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
 //		}
 //	}
-	
+
 	@Override
 	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) {
-			PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
-			return personalInfoByEmployeeId;
-		
+		PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
+		return personalInfoByEmployeeId;
+
 	}
 
 	@Override
@@ -806,24 +795,21 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			throw new RuntimeException("Something went wrong. " + e);
 		}
 	}
-	
+
 	public void sendAccountActivationEmail(String email, long employeeId, String name, String activationLink) {
-	    SimpleMailMessage mailMessage = new SimpleMailMessage();
-	    mailMessage.setTo(email);
-	    mailMessage.setSubject("Account Activation");
+		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setTo(email);
+		mailMessage.setSubject("Account Activation");
 
-	    // Create the account activation email message
-	    String emailText = "Dear Mr. " + name + ",\n\n"
-	            + "Welcome to our platform. Your employee ID is: " + employeeId + ".\n\n"
-	            + "To activate your account, please click on the following link:\n"
-	            + activationLink + "\n\n"
-	            + "If you have any questions or need assistance, please contact our support team.\n\n"
-	            + "Best regards,\n"
-	            + "The SI Global Company Team";
+		// Create the account activation email message
+		String emailText = "Dear Mr. " + name + ",\n\n" + "Welcome to our platform. Your employee ID is: " + employeeId
+				+ ".\n\n" + "To activate your account, please click on the following link:\n" + activationLink + "\n\n"
+				+ "If you have any questions or need assistance, please contact our support team.\n\n"
+				+ "Best regards,\n" + "The SI Global Company Team";
 
-	    mailMessage.setText(emailText);
+		mailMessage.setText(emailText);
 
-	    sender.send(mailMessage);
+		sender.send(mailMessage);
 	}
 
 }
