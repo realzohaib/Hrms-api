@@ -1145,6 +1145,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			if (personalInfo.getLicense() != null) {
 				drivingLicense.setDrivinglicense(personalInfo.getLicense().getDrivinglicense());
 				drivingLicense.setOwnvehicle(personalInfo.getLicense().getOwnvehicle());
+				drivingLicense.setLicenseType(personalInfo.getLicense().getLicenseType());
 				if (licensecopy != null && !licensecopy.isEmpty()) {
 					// Delete the old licensecopy file if it exists
 					if (drivingLicense.getLicensecopy() != null) {
