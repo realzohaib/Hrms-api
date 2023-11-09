@@ -80,6 +80,17 @@ public class LeaveRepository implements ILeaveRepository {
 	}
 
 	@Override
+	public LeaveApproval approvedOrDenyByHR(Long leaveRequestId, LeaveApproval leaveApproval) {
+		try {
+			leaveApproval.setLeaveRequestId(leaveRequestId);
+			entityManager.merge(leaveApproval);
+			return leaveApproval;
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	@Override
 	public List<LeaveApproval> findAllLeaveApprovalPending() {
 		List<LeaveApproval> leaveApprovals = null;
 		try {

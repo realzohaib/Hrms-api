@@ -120,6 +120,8 @@ public class PersonalInfo implements Serializable {
 	private String status;
 
 	private String empStatus;
+	
+	private String verifyAndNotVerify;
 
 	private PassportDetails psDetail;
 

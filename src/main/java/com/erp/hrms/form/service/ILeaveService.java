@@ -20,7 +20,11 @@ public interface ILeaveService {
 
 	public List<LeaveApproval> findAllLeaveApproval() throws IOException;
 
-	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval, MultipartFile medicalDocumentsName) throws IOException;
+	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval,
+			MultipartFile medicalDocumentsName) throws IOException;
+
+	public LeaveApproval approvedOrDenyByHR(Long leaveRequestId, String leaveApproval,
+			MultipartFile medicalDocumentsName) throws IOException;
 
 	public List<LeaveApproval> findAllLeaveApprovalPending() throws IOException;
 

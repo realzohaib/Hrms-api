@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.management.relation.RoleResult;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -421,6 +423,16 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MANAGER)
 								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 						roles.add(modRole);
+						break;
+					case "hr":
+						RoleEntity hrRole = roleRepository.findByName(ERole.ROLE_HR)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(hrRole);
+						break;
+					case "subadmin":
+						RoleEntity subAdminRole = roleRepository.findByName(ERole.ROLE_SUBADMIN)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+						roles.add(subAdminRole);
 					}
 				});
 			}

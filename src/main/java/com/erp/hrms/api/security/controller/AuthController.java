@@ -155,6 +155,16 @@ public class AuthController {
 					RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MANAGER)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 					roles.add(modRole);
+					break;
+				case "hr":
+					RoleEntity hrRole = roleRepository.findByName(ERole.ROLE_HR)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(hrRole);
+					break;
+				case "subadmin":
+					RoleEntity subAdminRole = roleRepository.findByName(ERole.ROLE_SUBADMIN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+					roles.add(subAdminRole);
 				}
 			});
 		}
@@ -173,7 +183,8 @@ public class AuthController {
 		if (roleRepository.findAll().isEmpty()) {
 			try {
 				List<RoleEntity> roleList = Arrays.asList(new RoleEntity(ERole.ROLE_ADMIN),
-						new RoleEntity(ERole.ROLE_EMPLOYEE), new RoleEntity(ERole.ROLE_MANAGER));
+						new RoleEntity(ERole.ROLE_EMPLOYEE), new RoleEntity(ERole.ROLE_MANAGER),
+						new RoleEntity(ERole.ROLE_HR), new RoleEntity(ERole.ROLE_SUBADMIN));
 
 				List<RoleEntity> savedRoles = roleRepository.saveAll(roleList);
 
