@@ -17,6 +17,7 @@ public class DepartmentService implements IDepartmentService {
 	@Autowired
 	private DepartmentRepository idepartmentRepository;
 
+	@Override
 	public void saveInitialDepartments() {
 		if (idepartmentRepository.findAll().isEmpty()) {
 			List<Department> initialDepartments = new ArrayList<>();
@@ -52,7 +53,7 @@ public class DepartmentService implements IDepartmentService {
 	}
 
 	@Override
-	public List<PersonalInfoDTO> getFirstAndLastNamesByDepartmentName(String departmentName) {
+	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName) {
 		return idepartmentRepository.findFirstAndLastNameByDepartmentName(departmentName);
 	}
 }

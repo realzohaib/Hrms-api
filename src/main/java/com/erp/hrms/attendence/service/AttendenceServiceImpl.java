@@ -20,11 +20,15 @@ import com.erp.hrms.shift.Dao.ShiftAssignmentDaoImpl;
 @Service
 public class AttendenceServiceImpl implements IAttendenceService {
 	@Autowired
-	 private IAttendencerepo repo;
-	
+	private IAttendencerepo repo;
+
 	@Autowired
 	private ShiftAssignmentDaoImpl shift;
-	
+
+	private boolean isWorkingDay(DayOfWeek dayOfWeek) {
+		// Implement your organization's working day criteria here
+		return dayOfWeek != DayOfWeek.SUNDAY;
+	}
 
 	// function to calculate time difference between two timestamp
 	public long calculateBreakDurationInMillis(Timestamp breakStart, Timestamp breakEnd) {
@@ -87,44 +91,43 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 	@Override
 	public Attendence punchout(long id) throws AttendencenotRegistered {
-	    try {
-	        Attendence attendence = repo.getById(id);
-	        Timestamp timestamp = time();
-	        attendence.setPunchOutTime(timestamp);
+		try {
+			Attendence attendence = repo.getById(id);
+			Timestamp timestamp = time();
+			attendence.setPunchOutTime(timestamp);
 
-	        Timestamp punchInTime = attendence.getPunchInTime();
-	        Timestamp punchOutTime = attendence.getPunchOutTime();
+			Timestamp punchInTime = attendence.getPunchInTime();
+			Timestamp punchOutTime = attendence.getPunchOutTime();
 
-	        if (punchInTime != null && punchOutTime != null) {
+			if (punchInTime != null && punchOutTime != null) {
 // here the function name is calculateBreakDurationInMillis but we are calculating time difference between punchOut and punchIn
 // calculateTotalDurationInMillis means total working hrs from punch in to punch out i	   	
-	            long calculateTotalDurationInMillis = calculateBreakDurationInMillis(punchInTime, punchOutTime);
-	            attendence.setWorkingHours(calculateTotalDurationInMillis);
+				long calculateTotalDurationInMillis = calculateBreakDurationInMillis(punchInTime, punchOutTime);
+				attendence.setWorkingHours(calculateTotalDurationInMillis);
 
-	            // Constants for better readability and maintainability
-	            final long FULL_SHIFT_DURATION = 39600000; // 11 hours in milliseconds
-	            final double HALF_DAY_THRESHOLD = 0.85;
-	            final double ONE_HOUR = 3600000;
+				// Constants for better readability and maintainability
+				final long FULL_SHIFT_DURATION = 39600000; // 11 hours in milliseconds
+				final double HALF_DAY_THRESHOLD = 0.85;
+				final double ONE_HOUR = 3600000;
 
-	            if (calculateTotalDurationInMillis < HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION) {
-	                attendence.setHalfDay(true);
-	            }
+				if (calculateTotalDurationInMillis < HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION) {
+					attendence.setHalfDay(true);
+				}
 //jab tak status apptoved nahi hai tab tak emp ke portal par nahi dikheaga overtimr
-	            if (calculateTotalDurationInMillis > FULL_SHIFT_DURATION) {
-	                long overtime = calculateTotalDurationInMillis - FULL_SHIFT_DURATION;
-	                if(overtime > ONE_HOUR) {
-	                attendence.setOverTime(overtime);
-	                attendence.setOvertimeStatus("PENDING");
-	                }
-	            }
-	        }
+				if (calculateTotalDurationInMillis > FULL_SHIFT_DURATION) {
+					long overtime = calculateTotalDurationInMillis - FULL_SHIFT_DURATION;
+					if (overtime > ONE_HOUR) {
+						attendence.setOverTime(overtime);
+						attendence.setOvertimeStatus("PENDING");
+					}
+				}
+			}
 
-	        return repo.save(attendence);
-	    } catch (Exception e) {
-	        throw new AttendencenotRegistered("Attendence not recorded");
-	    }
+			return repo.save(attendence);
+		} catch (Exception e) {
+			throw new AttendencenotRegistered("Attendence not recorded");
+		}
 	}
-
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -187,71 +190,73 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 	@Override
 	public List<Attendence> getAttendanceForMonth(Long employeeId, int year, int month) {
-		    LocalDate startDate = LocalDate.of(year, month, 1);
-		    LocalDate endDate = startDate.plusMonths(1).minusDays(1);
-		   return repo.findByEmployeeIdAndDateBetween(employeeId, startDate, endDate);
+		LocalDate startDate = LocalDate.of(year, month, 1);
+		LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+		return repo.findByEmployeeIdAndDateBetween(employeeId, startDate, endDate);
 	}
-	
+
 	@Override
 	public AttendenceResponse fullAttendence(Long employeeId, int year, int month) {
 		List<Attendence> attendanceForMonth = getAttendanceForMonth(employeeId, year, month);
-		
+
 		AttendenceResponse attendenceResponse = new AttendenceResponse();
-		 int workingDays = calculateWorkingDays(year, month);
-	     int daysPresnt=0;
-	     int halfDays=0;
-	     long totalOvertimehrsInMont=0;
-	     
-	     for(Attendence atd : attendanceForMonth){
-	    	 if(atd.isHalfDay())halfDays++;
-	    	 
-	    	if(atd.getPunchInTime() != null && atd.getPunchOutTime()!= null)daysPresnt++;
-	    	
-	    	if("APPROVED".equals(atd.getOvertimeStatus()) || "UPDATED".equals(atd.getOvertimeStatus())) {
-	    	long overTime = atd.getOverTime();
-	    	totalOvertimehrsInMont+=overTime;
-	    	}
-	     }
-	     
-	     attendenceResponse.setAttendence(attendanceForMonth);
-	     attendenceResponse.setTotalWorkigDaysInMonth(workingDays);
-	     attendenceResponse.setTotalDaysPresentInMonth(daysPresnt);
-	     attendenceResponse.setTotalHalfDaysInMonth(halfDays);	     
-	     attendenceResponse.setTotalOvertimeHoursInMonth(totalOvertimehrsInMont);
-	     attendenceResponse.setShift(shift.currentShftById(employeeId));
-	     
+		int workingDays = calculateWorkingDays(year, month);
+		int daysPresnt = 0;
+		int halfDays = 0;
+		long totalOvertimehrsInMont = 0;
+
+		for (Attendence atd : attendanceForMonth) {
+			if (atd.isHalfDay())
+				halfDays++;
+
+			if (atd.getPunchInTime() != null && atd.getPunchOutTime() != null)
+				daysPresnt++;
+
+			if ("APPROVED".equals(atd.getOvertimeStatus()) || "UPDATED".equals(atd.getOvertimeStatus())) {
+				long overTime = atd.getOverTime();
+				totalOvertimehrsInMont += overTime;
+			}
+		}
+
+		attendenceResponse.setAttendence(attendanceForMonth);
+		attendenceResponse.setTotalWorkigDaysInMonth(workingDays);
+		attendenceResponse.setTotalDaysPresentInMonth(daysPresnt);
+		attendenceResponse.setTotalHalfDaysInMonth(halfDays);
+		attendenceResponse.setTotalOvertimeHoursInMonth(totalOvertimehrsInMont);
+		attendenceResponse.setShift(shift.currentShftById(employeeId));
+
 		return attendenceResponse;
 	}
-	
+
 	@Override
 	public int calculateWorkingDays(int year, int month) {
-	    int workingDays = 0;
-	    LocalDate currentDate = LocalDate.now();
-	    LocalDate startDate = LocalDate.of(year, month, 1);
+		int workingDays = 0;
+		LocalDate currentDate = LocalDate.now();
+		LocalDate startDate = LocalDate.of(year, month, 1);
 
-	    while (!currentDate.isBefore(startDate) && currentDate.getMonthValue() == month) {
-	        DayOfWeek dayOfWeek = startDate.getDayOfWeek();
+		while (!currentDate.isBefore(startDate) && currentDate.getMonthValue() == month) {
+			DayOfWeek dayOfWeek = startDate.getDayOfWeek();
 
-	        // Check if the day is a working day based on your criteria
-	        if (isWorkingDay(dayOfWeek)) {
-	            workingDays++;
-	        }
+			// Check if the day is a working day based on your criteria
+			if (isWorkingDay(dayOfWeek)) {
+				workingDays++;
+			}
 
-	        startDate = startDate.plusDays(1);
-	    }
+			startDate = startDate.plusDays(1);
+		}
 
-	    return workingDays;
+		return workingDays;
 	}
-	
+
 	@Override
-	//method to fetch all employee with pending request for overtime approval
-	public List<Attendence> getEmployeeWithOverTimeStatusPending(){
+	// method to fetch all employee with pending request for overtime approval
+	public List<Attendence> getEmployeeWithOverTimeStatusPending() {
 		return repo.findByOvertimeStatus("PENDING");
-		
+
 	}
-	
-	//this method is to approve overtime request
-	//id is not employee id , it is AttendenceId
+
+	// this method is to approve overtime request
+	// id is not employee id , it is AttendenceId
 	@Override
 	@SuppressWarnings("deprecation")
 	public void approveOverTime(Long id) {
@@ -259,45 +264,32 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		employee.setOvertimeStatus("APPROVED");
 		repo.save(employee);
 	}
-	
-	///this method is to deny overtime request
-	//id is not employee id , it is AttendenceId
+
+	/// this method is to deny overtime request
+	// id is not employee id , it is AttendenceId
 	@Override
 	public void denyOverTime(Long id) {
 		Attendence employee = repo.getById(id);
 		employee.setOverTime(0);
 		employee.setOvertimeStatus("DENIED");
-		repo.save(employee);		
+		repo.save(employee);
 	}
 
-
-	private boolean isWorkingDay(DayOfWeek dayOfWeek) {
-	    // Implement your organization's working day criteria here
-	    return dayOfWeek != DayOfWeek.SUNDAY;
-	}
-
-	//this method is to update overtime 
-	//id is not employee id , it is AttendenceId
+	// this method is to update overtime
+	// id is not employee id , it is AttendenceId
 	@Override
 	public Attendence updateOverTime(Attendence attendence) {
-	
+
 		long id = attendence.getAttendenceId();
-		Attendence  atd = repo.getById(id);
-		
-		//updating Information
+		Attendence atd = repo.getById(id);
+
+		// updating Information
 		atd.setOverTime(attendence.getOverTime());
 		atd.setOvertimeStatus("UPDATED");
-		//saving the object to db
+		// saving the object to db
 		repo.save(atd);
-		
+
 		return atd;
 	}
-
-	
-	
-	
-
-	
-
 
 }

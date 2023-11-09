@@ -73,24 +73,24 @@ public class LeaveService implements ILeaveService {
 			leaveApprovalJson.setLeaveType(leaveType);
 
 			// Fetch admin and manager email addresses based on roles
-			String adminEmail = null;
+			String hrEmail = null;
 			String managerEmail = null;
 
 			List<UserEntity> userList = userService.getUsers();
 			for (UserEntity user : userList) {
 				Set<RoleEntity> roles = user.getRoles();
 				for (RoleEntity role : roles) {
-					if (role.getName() == ERole.ROLE_ADMIN) {
-						adminEmail = user.getEmail();
+					if (role.getName() == ERole.ROLE_HR) {
+						hrEmail = user.getEmail();
 					} else if (role.getName() == ERole.ROLE_MANAGER) {
 						managerEmail = user.getEmail();
 					}
 					// If both adminEmail and managerEmail are found, you can break out of the loop.
-					if (adminEmail != null && managerEmail != null) {
+					if (hrEmail != null && managerEmail != null) {
 						break;
 					}
 				}
-				if (adminEmail != null && managerEmail != null) {
+				if (hrEmail != null && managerEmail != null) {
 					break;
 				}
 
@@ -109,7 +109,7 @@ public class LeaveService implements ILeaveService {
 			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
 
 //		 Send emails to admin and manager
-			sendLeaveRequestEmail(adminEmail, "Leave Request from Employee", leaveApprovalJson);
+			sendLeaveRequestEmail(hrEmail, "Leave Request from Employee", leaveApprovalJson);
 			sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
 
 //		 Send an email to the employee who requested the leave
@@ -232,24 +232,25 @@ public class LeaveService implements ILeaveService {
 			}
 
 			// Fetch admin and manager email addresses based on roles
-			String adminEmail = null;
+			String hrEmail = null;
 			String managerEmail = leaveApprovalJson.getManagerEmail();
 
 			List<UserEntity> userList = userService.getUsers();
 			for (UserEntity user : userList) {
 				Set<RoleEntity> roles = user.getRoles();
 				for (RoleEntity role : roles) {
-					if (role.getName() == ERole.ROLE_ADMIN) {
-						adminEmail = user.getEmail();
+					if (role.getName() == ERole.ROLE_HR) {
+						hrEmail = user.getEmail();
 					}
 				}
-				if (adminEmail != null) {
+				if (hrEmail != null) {
 					break;
 				}
 			}
 
+//			mujhe is me admin ki jaga hr ko email change karna hai
 			// Send emails to admin
-			sendLeaveRequestEmailApproved(adminEmail, "Leave Request status by the manager", leaveApprovalJson);
+			sendLeaveRequestEmailApproved(hrEmail, "Leave Request status by the manager", leaveApprovalJson);
 //			 Send email to manager who approve or deny the leave request
 			sendLeaveRequestEmailApproved(managerEmail, "Leave Request status by the manager", leaveApprovalJson);
 

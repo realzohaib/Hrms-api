@@ -32,6 +32,10 @@ public class LeaveApproval {
 	private String approvalStatus;
 	private String approvalRemarks;
 
+	private String hrName;
+	private String hrApprovalStatus;
+	private String hrApprovalRemarks;
+	
 	private String email;
 	private String contactNumber;
 	private String emergencyContactNumber;
