@@ -80,10 +80,10 @@ public class DepartmentController {
 	}
 
 	@GetMapping("/department/name/{departmentName}/personalInfo")
-	public ResponseEntity<?> findFirstAndLastNamesByDepartmentName(@PathVariable String departmentName) {
+	public ResponseEntity<?> findPersonalInfoByDepartmentName(@PathVariable String departmentName) {
 		try {
 			List<PersonalInfoDTO> personalInfoDTOs = idepartmentService
-					.getFirstAndLastNamesByDepartmentName(departmentName);
+					.getPersonalInfoByDepartmentName(departmentName);
 
 			if (personalInfoDTOs.isEmpty()) {
 				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);

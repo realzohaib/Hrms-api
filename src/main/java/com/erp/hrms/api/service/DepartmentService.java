@@ -52,7 +52,7 @@ public class DepartmentService implements IDepartmentService {
 	}
 
 	@Override
-	public List<PersonalInfoDTO> getFirstAndLastNamesByDepartmentName(String departmentName) {
+	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName) {
 		return idepartmentRepository.findFirstAndLastNameByDepartmentName(departmentName);
 	}
 }

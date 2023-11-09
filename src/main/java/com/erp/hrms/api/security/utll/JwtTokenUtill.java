@@ -68,6 +68,7 @@ public class JwtTokenUtill {
 
 	    String token = Jwts.builder()
 	        .setSubject(userPrincipal.getUsername())
+	        .claim("email", userPrincipal.getEmail())
 	        .setIssuedAt(new Date())
 	        .setExpiration(new Date(expirationTime))
 	        .signWith(SignatureAlgorithm.HS512, jwtSecret)
