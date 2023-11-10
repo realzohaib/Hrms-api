@@ -30,7 +30,7 @@ public class JobDetails {
 	private String jobLevel;
 	private String postedLocation;
 
-	private String basicAllowance;
+	private String basicPay;
 	private String houseRentAllowance;
 	private String houseRentAmount;
 	private String foodAllowance;
@@ -41,13 +41,13 @@ public class JobDetails {
 	private String uniformAllowance;
 	private String uniformAllowanceAmount;
 	private String travellingAllowances;
-
 	private String travellingAllowancesAmount;
 	private String educationalAllowance;
 	private String educationalAllowanceAmount;
 	private String otherAllowance;
 	private String otherAllowanceAmount;
 
+//	Perquisites
 	private String vehicle;
 	private String vehicleNumber;
 	private String vehicleModelName;

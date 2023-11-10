@@ -29,4 +29,7 @@ public interface ILeaveRepository {
 
 	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
 
+	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
+			int month);
+
 }

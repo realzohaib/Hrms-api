@@ -120,7 +120,7 @@ public class PersonalInfo implements Serializable {
 	private String status;
 
 	private String empStatus;
-	
+
 	private String verifyAndNotVerify;
 
 	private PassportDetails psDetail;
@@ -168,7 +168,7 @@ public class PersonalInfo implements Serializable {
 	private List<JobDetails> jobDetails;
 
 	@ManyToOne
-	@JoinColumn(name = "department_name", referencedColumnName = "departmentName")
+	@JoinColumn(name = "departmentId", referencedColumnName = "departmentId")
 	private Department department;
 
 	@OneToOne(mappedBy = "personalinfo")

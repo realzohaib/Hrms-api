@@ -10,8 +10,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.management.relation.RoleResult;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -1582,7 +1580,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					existingJobDetails.setCompanyEmailId(updateJobDetails.getCompanyEmailId());
 					existingJobDetails.setJobLevel(updateJobDetails.getJobLevel());
 					existingJobDetails.setPostedLocation(updateJobDetails.getPostedLocation());
-					existingJobDetails.setBasicAllowance(updateJobDetails.getBasicAllowance());
+					existingJobDetails.setBasicPay(updateJobDetails.getBasicPay());
 					existingJobDetails.setHouseRentAllowance(updateJobDetails.getHouseRentAllowance());
 					existingJobDetails.setHouseRentAmount(updateJobDetails.getHouseRentAmount());
 					existingJobDetails.setFoodAllowance(updateJobDetails.getFoodAllowance());

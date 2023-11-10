@@ -41,4 +41,7 @@ public interface ILeaveService {
 	public List<LeaveApproval> getAllLeaveApprovalsAccepted();
 
 	public List<MarkedDate> markCalendarDates();
+
+	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
+			int month);
 }
