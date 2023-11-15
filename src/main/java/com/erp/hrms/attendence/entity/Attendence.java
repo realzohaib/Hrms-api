@@ -24,41 +24,39 @@ import lombok.Getter;
 @Entity
 @Data
 @Getter
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Attendence {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "attendence_Id")
 	private Long attendenceId;
-	
+
 	private LocalDate date;
-	
+
 	@Column(name = "Day")
 	private DayOfWeek day;
-	
+
 	@Column(name = "punch_In_Time")
 	private Timestamp punchInTime;
-	
-	@Column(name = "punch_Our_Time")
+
+	@Column(name = "punch_Out_Time")
 	private Timestamp punchOutTime;
-	
+
 	@Column(name = ("working_Hours"))
 	private long workingHours;
-	
+
 	private boolean halfDay;
-	
+
 	private long overTime;
-	
+
 	private String overtimeStatus;
-	
+
 	private long employeeId;
 
 	@OneToMany(mappedBy = "attendence")
 	@Cascade(CascadeType.ALL)
-    @JsonManagedReference
-	private List<Breaks>breaks;
-	
-	
+	@JsonManagedReference
+	private List<Breaks> breaks;
 
 }
