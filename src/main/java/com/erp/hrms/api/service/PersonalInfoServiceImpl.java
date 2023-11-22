@@ -25,6 +25,7 @@ import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
+import com.erp.hrms.entity.Department;
 import com.erp.hrms.entity.DrivingLicense;
 import com.erp.hrms.entity.Education;
 import com.erp.hrms.entity.EmpAchievement;
@@ -497,19 +498,21 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					}
 				}
 
-				String relativeidName = personalInfo.getRelative().getRelativeid();
-				if (relativeidName != null && !relativeidName.isEmpty()) {
-					byte[] relativeidData = personalInfoFileService.getFileData(relativeidName);
-					if (relativeidData != null) {
-						personalInfo.getRelative().setRelativeIdData(relativeidData);
+				BloodRelative relative = personalInfo.getRelative();
+				if (relative != null) {
+					String raddressproofName = relative.getRaddressproof();
+					if (raddressproofName != null && !raddressproofName.isEmpty()) {
+						byte[] raddressproofData = personalInfoFileService.getFileData(raddressproofName);
+						if (raddressproofData != null) {
+							relative.setRaddressProofData(raddressproofData);
+						}
 					}
-				}
-
-				String raddressproofName = personalInfo.getRelative().getRaddressproof();
-				if (raddressproofName != null && !raddressproofName.isEmpty()) {
-					byte[] raddressproofData = personalInfoFileService.getFileData(raddressproofName);
-					if (raddressproofData != null) {
-						personalInfo.getRelative().setRaddressProofData(raddressproofData);
+					String relativeidName = relative.getRelativeid();
+					if (relativeidName != null && !relativeidName.isEmpty()) {
+						byte[] relativeidData = personalInfoFileService.getFileData(relativeidName);
+						if (relativeidData != null) {
+							relative.setRelativeIdData(relativeidData);
+						}
 					}
 				}
 
@@ -691,19 +694,21 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 			}
 
-			String relativeidName = personalInfoByEmail.getRelative().getRelativeid();
-			if (relativeidName != null && !relativeidName.isEmpty()) {
-				byte[] relativeidData = personalInfoFileService.getFileData(relativeidName);
-				if (relativeidData != null) {
-					personalInfoByEmail.getRelative().setRelativeIdData(relativeidData);
+			BloodRelative relative = personalInfoByEmail.getRelative();
+			if (relative != null) {
+				String raddressproofName = relative.getRaddressproof();
+				if (raddressproofName != null && !raddressproofName.isEmpty()) {
+					byte[] raddressproofData = personalInfoFileService.getFileData(raddressproofName);
+					if (raddressproofData != null) {
+						relative.setRaddressProofData(raddressproofData);
+					}
 				}
-			}
-
-			String raddressproofName = personalInfoByEmail.getRelative().getRaddressproof();
-			if (raddressproofName != null && !raddressproofName.isEmpty()) {
-				byte[] raddressproofData = personalInfoFileService.getFileData(raddressproofName);
-				if (raddressproofData != null) {
-					personalInfoByEmail.getRelative().setRaddressProofData(raddressproofData);
+				String relativeidName = relative.getRelativeid();
+				if (relativeidName != null && !relativeidName.isEmpty()) {
+					byte[] relativeidData = personalInfoFileService.getFileData(relativeidName);
+					if (relativeidData != null) {
+						relative.setRelativeIdData(relativeidData);
+					}
 				}
 			}
 
@@ -882,19 +887,21 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 			}
 
-			String relativeidName = personalInfoByEmployeeId.getRelative().getRelativeid();
-			if (relativeidName != null && !relativeidName.isEmpty()) {
-				byte[] relativeidData = personalInfoFileService.getFileData(relativeidName);
-				if (relativeidData != null) {
-					personalInfoByEmployeeId.getRelative().setRelativeIdData(relativeidData);
+			BloodRelative relative = personalInfoByEmployeeId.getRelative();
+			if (relative != null) {
+				String raddressproofName = relative.getRaddressproof();
+				if (raddressproofName != null && !raddressproofName.isEmpty()) {
+					byte[] raddressproofData = personalInfoFileService.getFileData(raddressproofName);
+					if (raddressproofData != null) {
+						relative.setRaddressProofData(raddressproofData);
+					}
 				}
-			}
-
-			String raddressproofName = personalInfoByEmployeeId.getRelative().getRaddressproof();
-			if (raddressproofName != null && !raddressproofName.isEmpty()) {
-				byte[] raddressproofData = personalInfoFileService.getFileData(raddressproofName);
-				if (raddressproofData != null) {
-					personalInfoByEmployeeId.getRelative().setRaddressProofData(raddressproofData);
+				String relativeidName = relative.getRelativeid();
+				if (relativeidName != null && !relativeidName.isEmpty()) {
+					byte[] relativeidData = personalInfoFileService.getFileData(relativeidName);
+					if (relativeidData != null) {
+						relative.setRelativeIdData(relativeidData);
+					}
 				}
 			}
 
@@ -1630,6 +1637,15 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 				existingPersonalInfo.setJobDetails(jobDetails);
 			}
+
+			Department newDepartment = new Department();
+			if (personalInfo.getDepartment() != null) {
+				newDepartment.setDepartmentId(personalInfo.getDepartment().getDepartmentId());
+				newDepartment.setDepartmentName(personalInfo.getDepartment().getDepartmentName());
+
+				existingPersonalInfo.setDepartment(newDepartment);
+			}
+
 			BackgroundCheck bgcheck = existingPersonalInfo.getBgcheck();
 			if (personalInfo.getBgcheck() != null) {
 				bgcheck.setStatus(personalInfo.getBgcheck().getStatus());
