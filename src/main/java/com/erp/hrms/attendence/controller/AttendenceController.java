@@ -1,8 +1,10 @@
 package com.erp.hrms.attendence.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -169,6 +171,15 @@ public class AttendenceController {
 			return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
 		}
 
+	}
+
+	@GetMapping("/checkAttendance/{employeeId}/{date}")
+	public ResponseEntity<Boolean> checkAttendance(@PathVariable Long employeeId,
+			@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+		boolean attendanceExists = repo.existsByEmployeeIdAndDate(employeeId, date);
+
+		return ResponseEntity.ok(attendanceExists);
 	}
 
 }
