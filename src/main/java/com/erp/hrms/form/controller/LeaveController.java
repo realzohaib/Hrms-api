@@ -185,9 +185,9 @@ public class LeaveController {
 	}
 
 //	This method is for get the data of a single month that how many leaves in this month of a employee
-	@GetMapping("/totalLeaveDays/{employeeId}")
+	@GetMapping("/totalLeaveDays/{employeeId}/{year}/{month}")
 	public ResponseEntity<BigDecimal> calculateTotalLeaveDaysInMonth(@PathVariable Long employeeId,
-			@RequestParam int year, @RequestParam int month) {
+			@PathVariable int year, @PathVariable int month) {
 		try {
 			BigDecimal totalLeaveDays = iLeaveService
 					.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(employeeId, year, month);
