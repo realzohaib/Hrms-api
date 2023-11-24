@@ -97,17 +97,21 @@ public class AttendenceController {
 	}
 
 	// needs Employee Id
-	@GetMapping("/get-attendence-byDate")
-	public ResponseEntity<?> AttendenceByDate(@RequestBody AttendenceRequest req) {
-		System.out.println("hello");
+	@GetMapping("/get-attendence-byDate/{employeeId}/{startDate}/{endDate}")
+	public ResponseEntity<?> AttendenceByDate(@PathVariable("employeeId") Long employeeId,
+			@PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@PathVariable("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
 		try {
-			List<Attendence> list = service.getAttendenceByDate(req.getId(), req.getStartDate(), req.getEndODate());
+			List<Attendence> list = service.getAttendenceByDate(employeeId, startDate, endDate);
+
 			if (list.isEmpty()) {
 				return ResponseEntity.noContent().build();
 			}
+
 			return ResponseEntity.ok(list);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new MessageResponse("invalid Data"));
+			return ResponseEntity.badRequest().body(new MessageResponse("Invalid Data"));
 		}
 	}
 
