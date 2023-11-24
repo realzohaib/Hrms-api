@@ -1,5 +1,6 @@
 package com.erp.hrms.attendence.service;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -290,6 +291,18 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		repo.save(atd);
 
 		return atd;
+	}
+
+	@Override
+	public Attendence getAttendenceId(Long attendenceId) throws IOException {
+		try {
+			Attendence attendanceid = repo.getById(attendenceId);
+			return attendanceid;
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"An error occurred while retrieving attendence by attendence id: " + attendenceId);
+		}
+
 	}
 
 }
