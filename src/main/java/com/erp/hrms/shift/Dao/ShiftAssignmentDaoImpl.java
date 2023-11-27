@@ -10,15 +10,15 @@ import com.erp.hrms.shift.entity.ShiftAssignment;
 import com.erp.hrms.shift.repo.ShiftAssignmentRepo;
 
 @Service
-public class ShiftAssignmentDaoImpl implements IShiftAssignmentDao{
-	
+public class ShiftAssignmentDaoImpl implements IShiftAssignmentDao {
+
 	@Autowired
 	private ShiftAssignmentRepo repo;
 
 	@Override
 	public void saveAssignedShift(ShiftAssignment shiftAssignment) {
 		repo.save(shiftAssignment);
-		
+
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class ShiftAssignmentDaoImpl implements IShiftAssignmentDao{
 	}
 
 	@Override
-	public ShiftAssignment updateShift(ShiftAssignment asign , long id) {
+	public ShiftAssignment updateShift(ShiftAssignment asign, long id) {
 		asign.setEmployeeId(id);
 		return repo.save(asign);
 	}
@@ -59,8 +59,5 @@ public class ShiftAssignmentDaoImpl implements IShiftAssignmentDao{
 	public List<ShiftAssignment> findByShift_ShiftNameAndStartDate(String shiftName, LocalDate date) {
 		return repo.findByShift_ShiftNameAndStartDate(date, shiftName);
 	}
-
-	
-
 
 }

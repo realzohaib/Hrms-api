@@ -1,5 +1,6 @@
 package com.erp.hrms.attendence.service;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -110,24 +111,15 @@ public class AttendenceServiceImpl implements IAttendenceService {
 				final double HALF_DAY_THRESHOLD = 0.85;
 				final double ONE_HOUR = 3600000;
 
-				if (calculateTotalDurationInMillis > FULL_SHIFT_DURATION
-						&& calculateTotalDurationInMillis < FULL_SHIFT_DURATION + ONE_HOUR + ONE_HOUR) {
-					attendence.setNormalWorkingDay(true);
-				}
-
 				if (calculateTotalDurationInMillis < HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION) {
 					attendence.setHalfDay(true);
 				}
-//jab tak status apptoved nahi hai tab tak emp ke portal par nahi dikheaga overtime
-// added extra one houre for break time inclusion			
+//jab tak status apptoved nahi hai tab tak emp ke portal par nahi dikheaga overtimr
 				if (calculateTotalDurationInMillis > FULL_SHIFT_DURATION) {
-					long overtime = calculateTotalDurationInMillis - FULL_SHIFT_DURATION
-							+ new Double(ONE_HOUR).longValue();
+					long overtime = calculateTotalDurationInMillis - FULL_SHIFT_DURATION;
 					if (overtime > ONE_HOUR) {
 						attendence.setOverTime(overtime);
 						attendence.setOvertimeStatus("PENDING");
-					} else {
-						attendence.setOverTime(0);
 					}
 				}
 			}
@@ -182,8 +174,12 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	}
 
 	private Breaks findBreakToEnd(List<Breaks> breakList) {
+		// Implement your logic to find the break that needs to be ended.
+		// This may involve checking for a null 'breakEnd' property, or you may have
+		// other criteria.
+		// You can also add error handling if the logic doesn't find a break to end.
 
-		// Find the first break with a null 'breakEnd' property
+		// Example: Find the first break with a null 'breakEnd' property
 		return breakList.stream().filter(breaks -> breaks.getBreakEnd() == null).findFirst().orElse(null);
 	}
 
@@ -209,10 +205,9 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		int daysPresnt = 0;
 		int halfDays = 0;
 		long totalOvertimehrsInMont = 0;
-		int totalNormalWorkingDay = 0;
 
 		for (Attendence atd : attendanceForMonth) {
-			if (atd.isHalfDay() == true)
+			if (atd.isHalfDay())
 				halfDays++;
 
 			if (atd.getPunchInTime() != null && atd.getPunchOutTime() != null)
@@ -222,10 +217,6 @@ public class AttendenceServiceImpl implements IAttendenceService {
 				long overTime = atd.getOverTime();
 				totalOvertimehrsInMont += overTime;
 			}
-
-			if (atd.isNormalWorkingDay() == true) {
-				totalNormalWorkingDay++;
-			}
 		}
 
 		attendenceResponse.setAttendence(attendanceForMonth);
@@ -234,7 +225,6 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		attendenceResponse.setTotalHalfDaysInMonth(halfDays);
 		attendenceResponse.setTotalOvertimeHoursInMonth(totalOvertimehrsInMont);
 		attendenceResponse.setShift(shift.currentShftById(employeeId));
-		attendenceResponse.setNoOfDaysWorkedRegularHours(totalNormalWorkingDay);
 
 		return attendenceResponse;
 	}
@@ -301,6 +291,18 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		repo.save(atd);
 
 		return atd;
+	}
+
+	@Override
+	public Attendence getAttendenceId(Long attendenceId) throws IOException {
+		try {
+			Attendence attendanceid = repo.getById(attendenceId);
+			return attendanceid;
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"An error occurred while retrieving attendence by attendence id: " + attendenceId);
+		}
+
 	}
 
 }

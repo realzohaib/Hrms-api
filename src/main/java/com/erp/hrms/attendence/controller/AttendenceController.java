@@ -1,5 +1,6 @@
 package com.erp.hrms.attendence.controller;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -98,17 +99,21 @@ public class AttendenceController {
 	}
 
 	// needs Employee Id
-	@GetMapping("/get-attendence-byDate")
-	public ResponseEntity<?> AttendenceByDate(@RequestBody AttendenceRequest req) {
-		System.out.println("hello");
+	@GetMapping("/get-attendence-byDate/{employeeId}/{startDate}/{endDate}")
+	public ResponseEntity<?> AttendenceByDate(@PathVariable("employeeId") Long employeeId,
+			@PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@PathVariable("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
 		try {
-			List<Attendence> list = service.getAttendenceByDate(req.getId(), req.getStartDate(), req.getEndODate());
+			List<Attendence> list = service.getAttendenceByDate(employeeId, startDate, endDate);
+
 			if (list.isEmpty()) {
 				return ResponseEntity.noContent().build();
 			}
+
 			return ResponseEntity.ok(list);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new MessageResponse("invalid Data"));
+			return ResponseEntity.badRequest().body(new MessageResponse("Invalid Data"));
 		}
 	}
 
@@ -173,16 +178,25 @@ public class AttendenceController {
 		}
 
 	}
-	
-	@GetMapping("/checkAttendance")
-	public ResponseEntity<Boolean> checkAttendance(
-	        @RequestParam Long employeeId,
-	        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-	    boolean attendanceExists = repo.existsByEmployeeIdAndDate(employeeId, date);
+	@GetMapping("/checkAttendance/{employeeId}/{date}")
+	public ResponseEntity<Boolean> checkAttendance(@PathVariable Long employeeId,
+			@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-	    return ResponseEntity.ok(attendanceExists);
+		boolean attendanceExists = repo.existsByEmployeeIdAndDate(employeeId, date);
+
+		return ResponseEntity.ok(attendanceExists);
 	}
 
+	@GetMapping("/attendance/{attendanceid}")
+	public ResponseEntity<?> getAttendenceId(@PathVariable Long attendanceid) throws IOException {
+		try {
+			Attendence attendenceId = service.getAttendenceId(attendanceid);
+
+			return ResponseEntity.ok(attendenceId);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
+		}
+	}
 
 }
