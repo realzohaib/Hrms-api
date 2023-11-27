@@ -297,7 +297,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		// updating Information
 		atd.setOverTime(attendence.getOverTime());
 		atd.setOvertimeStatus("UPDATED");
-		// saving the object to db
+		// saving the object to dbs
 		repo.save(atd);
 
 		return atd;
