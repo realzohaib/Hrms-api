@@ -46,7 +46,6 @@ public class AccountActivationController {
 	public ResponseEntity<?> savePassword(@RequestBody SignupRequest request) {
 		try {
 			String username = request.getUsername();
-			long parseLong = Long.parseLong(username);
 
 			UserEntity user = repo.getByUsername(username);
 
