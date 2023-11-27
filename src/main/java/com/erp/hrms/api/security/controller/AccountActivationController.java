@@ -15,57 +15,55 @@ import com.erp.hrms.api.request.SignupRequest;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
 
-
 @RestController
 public class AccountActivationController {
-	
+
 	@Autowired
-	private  UserRepository repo;
-	
+	private UserRepository repo;
+
 	@Autowired
 	PasswordEncoder encoder;
-	
+
 	@GetMapping("/activate")
 	public ResponseEntity<?> activateAccount(@RequestParam("token") String activationToken) {
-	    try {
-	        UserEntity user = repo.findByActivationToken(activationToken);
-	        if (user != null) {
-	            user.setActivationToken(null);
-	            user.setEnabled(true);
-	            repo.save(user);
-	            return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessageResponse("Account Activated"));
-	        } else {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Invalid activation token. Account activation failed."));
-	        }
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
-	    }
+		try {
+			UserEntity user = repo.findByActivationToken(activationToken);
+			if (user != null) {
+				user.setActivationToken(null);
+				user.setEnabled(true);
+				repo.save(user);
+				return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessageResponse("Account Activated"));
+			} else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body(new MessageResponse("Invalid activation token. Account activation failed."));
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
+		}
 	}
-	
+
 	@PostMapping("/save-password")
 	public ResponseEntity<?> savePassword(@RequestBody SignupRequest request) {
-	    try {
-	        String username = request.getUsername();
-	        long parseLong = Long.parseLong(username);
+		try {
+			String username = request.getUsername();
+			long parseLong = Long.parseLong(username);
 
-	        UserEntity user = repo.getByUsername(username);
+			UserEntity user = repo.getByUsername(username);
 
-	        if (user != null) {
-	            user.setPassword(encoder.encode(request.getPassword()));
-	            repo.save(user);
-	            return ResponseEntity.ok(new MessageResponse("Password updated successfully"));
-	        } else {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("User not found. Password update failed."));
-	        }
-	    } catch (NumberFormatException e) {
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Invalid user identifier. Password update failed."));
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()  ));
-	    }
+			if (user != null) {
+				user.setPassword(encoder.encode(request.getPassword()));
+				repo.save(user);
+				return ResponseEntity.ok(new MessageResponse("Password updated successfully"));
+			} else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body(new MessageResponse("User not found. Password update failed."));
+			}
+		} catch (NumberFormatException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new MessageResponse("Invalid user identifier. Password update failed."));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
+		}
 	}
-
-
-	
-	
 
 }
