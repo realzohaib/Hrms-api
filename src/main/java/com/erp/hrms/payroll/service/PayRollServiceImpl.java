@@ -1,18 +1,23 @@
 package com.erp.hrms.payroll.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
+import com.erp.hrms.attendence.service.AttendenceResponse;
+import com.erp.hrms.attendence.service.AttendenceServiceImpl;
 import com.erp.hrms.entity.JobDetails;
 import com.erp.hrms.entity.PersonalInfo;
+import com.erp.hrms.form.service.LeaveService;
 import com.erp.hrms.payments.OverTimePay;
 import com.erp.hrms.payments.OvertimePayService;
 import com.erp.hrms.payroll.dao.IPayRollRepo;
 import com.erp.hrms.payroll.entity.Allowances;
 import com.erp.hrms.payroll.entity.PayRoll;
+import com.erp.hrms.payroll.entity.PayRollResponse;
 
 @Service
 public class PayRollServiceImpl implements IPayRollService {
@@ -26,8 +31,17 @@ public class PayRollServiceImpl implements IPayRollService {
 	@Autowired
 	private OvertimePayService overtime;
 
+	@Autowired
+	private AttendenceServiceImpl attendence;
+	
+	@Autowired
+	private LeaveService leave;
+
 	@Override
-	public PayRoll getPayRollByEmpId(long empId , int year ,int  month) {
+	public PayRollResponse getPayRollByEmpId(long empId, int year, int month) {
+
+		PayRollResponse payRollResponse = new PayRollResponse();
+
 		PersonalInfo employee = personalinfo.getPersonalInfoByEmployeeId(empId);
 
 		PayRoll payRoll = new PayRoll();
@@ -64,24 +78,32 @@ public class PayRollServiceImpl implements IPayRollService {
 		long overtimeAmount = getovertimeAmount.getOvertimeAmount();
 		payRoll.setOvertimePayAmount(overtimeAmount);
 
-		return payRoll;
+		AttendenceResponse fullAttendence = attendence.fullAttendence(empId, year, month);
+		BigDecimal leaves = leave.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(empId, year, month);
+
+		payRollResponse.setPayroll(payRoll);
+		payRollResponse.setAttendence(fullAttendence);
+		payRollResponse.setTotalleaves(leaves);
+
+		return payRollResponse;
 	}
-	
-	
+
 	@Override
 	public void savePayRoll(PayRoll payroll) {
 		repo.save(payroll);
 	}
 
 	@Override
-	public PayRoll findPayrollForEmployeePage(long id, int year, int month) {
+	public PayRollResponse findPayrollForEmployeePage(long id, int year, int month) {
 		PayRoll payroll = repo.findByemployeeId(id);
 
 		if (payroll == null) {
-			return getPayRollByEmpId(id , year , month);
+			return getPayRollByEmpId(id, year, month);
 		}
+		PayRollResponse response = new PayRollResponse();
+		response.setPayroll(payroll);
 
-		return payroll;
+		return response;
 	}
 
 }

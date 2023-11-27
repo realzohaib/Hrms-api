@@ -23,9 +23,6 @@ public class PayRoll {
 	private String Contact;
 	private String Address;
 	
-	private int noOfDaysWorkedRegularHours;
-	private long overtimehours;
-	private int halfDayLeaves;
 	private int leavedays;
 	private int  tardyDays;
 	

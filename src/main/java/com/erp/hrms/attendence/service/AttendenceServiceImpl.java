@@ -109,14 +109,20 @@ public class AttendenceServiceImpl implements IAttendenceService {
 				// Constants for better readability and maintainability
 				final long FULL_SHIFT_DURATION = 39600000; // 11 hours in milliseconds
 				final double HALF_DAY_THRESHOLD = 0.85;
-				final double ONE_HOUR = 3600000;
+				final long ONE_HOUR = 3600000;
 
 				if (calculateTotalDurationInMillis < HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION) {
 					attendence.setHalfDay(true);
 				}
+
+				if (calculateTotalDurationInMillis >= HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION
+						&& calculateTotalDurationInMillis < FULL_SHIFT_DURATION + ONE_HOUR) {
+					attendence.setNormalWorkingDay(true);
+				}
+
 //jab tak status apptoved nahi hai tab tak emp ke portal par nahi dikheaga overtimr
 				if (calculateTotalDurationInMillis > FULL_SHIFT_DURATION) {
-					long overtime = calculateTotalDurationInMillis - FULL_SHIFT_DURATION;
+					long overtime = calculateTotalDurationInMillis - (FULL_SHIFT_DURATION + ONE_HOUR);
 					if (overtime > ONE_HOUR) {
 						attendence.setOverTime(overtime);
 						attendence.setOvertimeStatus("PENDING");
@@ -205,6 +211,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		int daysPresnt = 0;
 		int halfDays = 0;
 		long totalOvertimehrsInMont = 0;
+		int noOfDaysWorkedRegularHours = 0;
 
 		for (Attendence atd : attendanceForMonth) {
 			if (atd.isHalfDay())
@@ -216,6 +223,10 @@ public class AttendenceServiceImpl implements IAttendenceService {
 			if ("APPROVED".equals(atd.getOvertimeStatus()) || "UPDATED".equals(atd.getOvertimeStatus())) {
 				long overTime = atd.getOverTime();
 				totalOvertimehrsInMont += overTime;
+
+			}
+			if (atd.isNormalWorkingDay()) {
+				noOfDaysWorkedRegularHours++;
 			}
 		}
 
@@ -225,6 +236,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		attendenceResponse.setTotalHalfDaysInMonth(halfDays);
 		attendenceResponse.setTotalOvertimeHoursInMonth(totalOvertimehrsInMont);
 		attendenceResponse.setShift(shift.currentShftById(employeeId));
+		attendenceResponse.setNoOfDaysWorkedRegularHours(noOfDaysWorkedRegularHours);
 
 		return attendenceResponse;
 	}
