@@ -27,7 +27,7 @@ public class PayRollServiceImpl implements IPayRollService {
 	private OvertimePayService overtime;
 
 	@Override
-	public PayRoll getPayRollByEmpId(long empId) {
+	public PayRoll getPayRollByEmpId(long empId , int year ,int  month) {
 		PersonalInfo employee = personalinfo.getPersonalInfoByEmployeeId(empId);
 
 		PayRoll payRoll = new PayRoll();
@@ -74,11 +74,11 @@ public class PayRollServiceImpl implements IPayRollService {
 	}
 
 	@Override
-	public PayRoll findPayrollForEmployeePage(long id) {
+	public PayRoll findPayrollForEmployeePage(long id, int year, int month) {
 		PayRoll payroll = repo.findByemployeeId(id);
 
 		if (payroll == null) {
-			return getPayRollByEmpId(id);
+			return getPayRollByEmpId(id , year , month);
 		}
 
 		return payroll;

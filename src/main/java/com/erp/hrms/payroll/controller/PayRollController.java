@@ -16,21 +16,22 @@ import com.erp.hrms.payroll.service.PayRollServiceImpl;
 
 @RestController
 public class PayRollController {
-	
+
 	@Autowired
 	private PayRollServiceImpl service;
-	
-	@GetMapping("/payRoll/{empId}")
-	public ResponseEntity<?>getPayRollByEmpId(@PathVariable long empId){
+
+	@GetMapping("/payRoll/{empId}/{year}/{month}")
+	public ResponseEntity<?> getPayRollByEmpId(@PathVariable long empId, @PathVariable int year,
+			@PathVariable int month) {
 		try {
-			return ResponseEntity.ok(service.getPayRollByEmpId(empId));
+			return ResponseEntity.ok(service.getPayRollByEmpId(empId, year, month));
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
 	@PostMapping("/payRoll")
-	public ResponseEntity<?>savePayRoll(@RequestBody PayRoll payroll){
+	public ResponseEntity<?> savePayRoll(@RequestBody PayRoll payroll) {
 		try {
 			service.savePayRoll(payroll);
 			return ResponseEntity.ok().body(new MessageResponse("PayRoll Saaved"));
@@ -38,15 +39,15 @@ public class PayRollController {
 			return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	@GetMapping("/payRoll-employee-Page/{empId}")
-	public ResponseEntity<?>getPayRollByEmpIdForEmployee(@PathVariable long empId){
+
+	@GetMapping("/payRoll-employee-Page/{empId}/{year}/{month}")
+	public ResponseEntity<?> getPayRollByEmpIdForEmployee(@PathVariable long empId, @PathVariable int year,
+			@PathVariable int month) {
 		try {
-			return ResponseEntity.ok(service.findPayrollForEmployeePage(empId));
+			return ResponseEntity.ok(service.findPayrollForEmployeePage(empId, year, month));
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 	}
-	
 
 }
