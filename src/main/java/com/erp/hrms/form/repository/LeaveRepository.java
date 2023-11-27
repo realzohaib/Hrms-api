@@ -8,6 +8,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
@@ -70,6 +73,17 @@ public class LeaveRepository implements ILeaveRepository {
 
 	@Override
 	public LeaveApproval approvedByManager(Long leaveRequestId, LeaveApproval leaveApproval) {
+		try {
+			leaveApproval.setLeaveRequestId(leaveRequestId);
+			entityManager.merge(leaveApproval);
+			return leaveApproval;
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public LeaveApproval approvedOrDenyByHR(Long leaveRequestId, LeaveApproval leaveApproval) {
 		try {
 			leaveApproval.setLeaveRequestId(leaveRequestId);
 			entityManager.merge(leaveApproval);
@@ -158,6 +172,22 @@ public class LeaveRepository implements ILeaveRepository {
 			}
 		}
 		throw new LeaveRequestNotFoundException(new MessageResponse("No data available now"));
+	}
+
+	@Override
+	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
+			int month) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<BigDecimal> query = cb.createQuery(BigDecimal.class);
+		Root<LeaveApproval> root = query.from(LeaveApproval.class);
+
+		query.select(cb.sum(root.get("numberOfDaysRequested").as(BigDecimal.class))).where(
+				cb.equal(root.get("employeeId"), employeeId),
+				cb.equal(cb.function("YEAR", Integer.class, root.get("startDate")), year),
+				cb.equal(cb.function("MONTH", Integer.class, root.get("startDate")), month),
+				cb.equal(root.get("approvalStatus"), "ACCEPTED"));
+
+		return entityManager.createQuery(query).getSingleResult();
 	}
 
 }

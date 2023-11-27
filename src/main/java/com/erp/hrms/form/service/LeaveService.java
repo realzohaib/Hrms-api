@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -40,6 +42,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class LeaveService implements ILeaveService {
+
+	private static final Logger logger = LoggerFactory.getLogger(LeaveApproval.class);
 
 	public static String uplaodDirectory = System.getProperty("user.dir") + "/src/main/webapp/images";
 
@@ -73,27 +77,23 @@ public class LeaveService implements ILeaveService {
 			leaveApprovalJson.setLeaveType(leaveType);
 
 			// Fetch admin and manager email addresses based on roles
-			String adminEmail = null;
+			String hrEmail = null;
 			String managerEmail = null;
 
 			List<UserEntity> userList = userService.getUsers();
 			for (UserEntity user : userList) {
 				Set<RoleEntity> roles = user.getRoles();
 				for (RoleEntity role : roles) {
-					if (role.getName() == ERole.ROLE_ADMIN) {
-						adminEmail = user.getEmail();
+					if (role.getName() == ERole.ROLE_HR) {
+						hrEmail = user.getEmail();
 					} else if (role.getName() == ERole.ROLE_MANAGER) {
 						managerEmail = user.getEmail();
 					}
-					// If both adminEmail and managerEmail are found, you can break out of the loop.
-					if (adminEmail != null && managerEmail != null) {
-						break;
-					}
 				}
-				if (adminEmail != null && managerEmail != null) {
+				// If both adminEmail and managerEmail are found, you can break out of the loop.
+				if (hrEmail != null && managerEmail != null) {
 					break;
 				}
-
 			}
 
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
@@ -108,9 +108,20 @@ public class LeaveService implements ILeaveService {
 
 			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
 
-//		 Send emails to admin and manager
-			sendLeaveRequestEmail(adminEmail, "Leave Request from Employee", leaveApprovalJson);
-			sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
+//		 Send emails to hr and manager
+			// If both HR and manager emails are found, send emails to both
+			if (hrEmail != null && managerEmail != null) {
+				sendLeaveRequestEmail(hrEmail, "Leave Request from Employee", leaveApprovalJson);
+				sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
+			} else if (hrEmail != null) {
+				// If only HR email is found, send the email to HR
+				sendLeaveRequestEmail(hrEmail, "Leave Request from Employee", leaveApprovalJson);
+			} else if (managerEmail != null) {
+				// If only manager email is found, send the email to the manager
+				sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
+			} else {
+				logger.warn("Neither HR nor manager email found. Leave request email not sent.");
+			}
 
 //		 Send an email to the employee who requested the leave
 			String employeeEmail = leaveApprovalJson.getEmail();
@@ -231,33 +242,101 @@ public class LeaveService implements ILeaveService {
 				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
 			}
 
-			// Fetch admin and manager email addresses based on roles
-			String adminEmail = null;
+			// Fetch hr and manager email addresses based on roles
+			String hrEmail = null;
 			String managerEmail = leaveApprovalJson.getManagerEmail();
 
 			List<UserEntity> userList = userService.getUsers();
 			for (UserEntity user : userList) {
 				Set<RoleEntity> roles = user.getRoles();
 				for (RoleEntity role : roles) {
-					if (role.getName() == ERole.ROLE_ADMIN) {
-						adminEmail = user.getEmail();
+					if (role.getName() == ERole.ROLE_HR) {
+						hrEmail = user.getEmail();
 					}
 				}
-				if (adminEmail != null) {
+				if (hrEmail != null) {
 					break;
 				}
 			}
 
-			// Send emails to admin
-			sendLeaveRequestEmailApproved(adminEmail, "Leave Request status by the manager", leaveApprovalJson);
+			// Send emails to hr
+			sendLeaveRequestEmailApproved(hrEmail, "Leave Request status by the manager", leaveApprovalJson);
 //			 Send email to manager who approve or deny the leave request
 			sendLeaveRequestEmailApproved(managerEmail, "Leave Request status by the manager", leaveApprovalJson);
 
 			// Send an email to the employee
 			String employeeEmail = leaveApprovalJson.getEmail();
-			sendLeaveRequestEmailApproved(employeeEmail, "Leave Request status by the manager", leaveApprovalJson);
+			sendLeaveRequestEmailApproved(employeeEmail, "Your leave request status", leaveApprovalJson);
 
 			return iLeaveRepository.approvedByManager(leaveRequestId, leaveApprovalJson);
+		} catch (Exception e) {
+			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
+		}
+	}
+
+//	This method for update the leave request by the manager Accepted or Rejected with the help of leaveRequestId
+	@Override
+	public LeaveApproval approvedOrDenyByHR(Long leaveRequestId, String leaveApproval,
+			MultipartFile medicalDocumentsName) throws IOException {
+		LeaveApproval existingApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
+		if (existingApproval == null) {
+			throw new LeaveRequestNotFoundException(
+					new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
+		}
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
+			existingApproval.setEmployeeId(leaveApprovalJson.getEmployeeId());
+			existingApproval.setNameOfEmployee(leaveApprovalJson.getNameOfEmployee());
+			existingApproval.setEmail(leaveApprovalJson.getEmail());
+			existingApproval.setContactNumber(leaveApprovalJson.getContactNumber());
+			existingApproval.setDesignation(leaveApprovalJson.getDesignation());
+			existingApproval.setDepartment(leaveApprovalJson.getDepartment());
+			existingApproval.setJobLevel(leaveApprovalJson.getJobLevel());
+			existingApproval.setLocation(leaveApprovalJson.getLocation());
+			existingApproval.setEmergencyContactNumber(leaveApprovalJson.getEmergencyContactNumber());
+			existingApproval.setRequestDate(leaveApprovalJson.getRequestDate());
+			existingApproval.setLeaveType(leaveApprovalJson.getLeaveType());
+			existingApproval.setStartDate(leaveApprovalJson.getStartDate());
+			existingApproval.setEndDate(leaveApprovalJson.getEndDate());
+			existingApproval.setNumberOfDaysRequested(leaveApprovalJson.getNumberOfDaysRequested());
+			existingApproval.setApprovalStatus(leaveApprovalJson.getApprovalStatus());
+			existingApproval.setApprovingManagerName(leaveApprovalJson.getApprovingManagerName());
+			existingApproval.setApprovalRemarks(leaveApprovalJson.getApprovalRemarks());
+			existingApproval.setManagerEmail(leaveApprovalJson.getManagerEmail());
+			existingApproval.setHrName(leaveApprovalJson.getHrName());
+			existingApproval.setHrApprovalStatus(leaveApprovalJson.getHrApprovalStatus());
+			existingApproval.setHrApprovalRemarks(leaveApprovalJson.getHrApprovalRemarks());
+			existingApproval.setHrEmail(leaveApprovalJson.getHrEmail());
+
+			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+				if (existingApproval.getMedicalDocumentsName() != null) {
+					Path oldMedicalDocument = Paths.get(uplaodDirectory, existingApproval.getMedicalDocumentsName());
+					Files.deleteIfExists(oldMedicalDocument);
+				}
+				String uniqueIdentifier = UUID.randomUUID().toString();
+				String originalFileName = medicalDocumentsName.getOriginalFilename();
+				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
+
+				Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
+				Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
+				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
+			}
+
+			// Fetch hr and manager email addresses based on roles
+			String hrEmail = leaveApprovalJson.getHrEmail();
+			String managerEmail = leaveApprovalJson.getManagerEmail();
+
+			// Send emails to hr
+			sendLeaveRequestEmailApprovedOrDenyByHR(hrEmail, "Leave Request status by the HR", leaveApprovalJson);
+//			 Send email to manager who approve or deny the leave request
+			sendLeaveRequestEmailApprovedOrDenyByHR(managerEmail, "Leave Request status by the HR", leaveApprovalJson);
+
+			// Send an email to the employee
+			String employeeEmail = leaveApprovalJson.getEmail();
+			sendLeaveRequestEmailApprovedOrDenyByHR(employeeEmail, "Leave Request status by the HR", leaveApprovalJson);
+
+			return iLeaveRepository.approvedOrDenyByHR(leaveRequestId, leaveApprovalJson);
 		} catch (Exception e) {
 			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
 		}
@@ -330,13 +409,13 @@ public class LeaveService implements ILeaveService {
 		return iLeaveRepository.calculateTotalNumberOfDaysRequestedByEmployee(employeeId);
 	}
 
-//	This method for calculate total number of leave days with employee id and leave name
+//	This method for calculate total number of leave days with employee id with leave name
 	@Override
 	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName) {
 		return iLeaveRepository.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName);
 	}
 
-//	This method for send email send to admin and manager and employee.
+//	This method for send email send to hr and manager and employee.
 	private void sendLeaveRequestEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
@@ -348,7 +427,7 @@ public class LeaveService implements ILeaveService {
 		mailSender.send(message);
 	}
 
-//	This method for send email send to admin and manager and employee when manager accepted or rejected  
+//	This method for send email send to hr and manager and employee when manager accepted or rejected  
 	private void sendLeaveRequestEmailApproved(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
@@ -359,6 +438,22 @@ public class LeaveService implements ILeaveService {
 				+ leaveApproval.getLeaveReason() + "\n" + "Manager Name : " + leaveApproval.getApprovingManagerName()
 				+ "\n" + "Status :" + leaveApproval.getApprovalStatus() + "\n" + "Manager remark :"
 				+ leaveApproval.getApprovalRemarks() + "\n" + "\n");
+		mailSender.send(message);
+	}
+
+//	This method for send email send to hr and manager and employee when manager accepted or rejected  
+	private void sendLeaveRequestEmailApprovedOrDenyByHR(String to, String subject, LeaveApproval leaveApproval) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+		message.setText("Your Leave Request status :\n" + "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n"
+				+ "Leave Type: " + leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: "
+				+ leaveApproval.getStartDate() + "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: "
+				+ leaveApproval.getLeaveReason() + "\n" + "Manager Name : " + leaveApproval.getApprovingManagerName()
+				+ "\n" + "Status :" + leaveApproval.getApprovalStatus() + "\n" + "Manager remark :"
+				+ leaveApproval.getApprovalRemarks() + "\n" + "HR Name :" + leaveApproval.getHrName() + "\n"
+				+ "Status :" + leaveApproval.getHrApprovalStatus() + "\n" + "HR remark :"
+				+ leaveApproval.getHrApprovalRemarks() + "\n" + "\n");
 		mailSender.send(message);
 	}
 
@@ -437,5 +532,11 @@ public class LeaveService implements ILeaveService {
 
 	private int getTotalEmployeeCount(List<PersonalInfo> employees) {
 		return employees.size();
+	}
+
+	@Override
+	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
+			int month) {
+		return iLeaveRepository.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(employeeId, year, month);
 	}
 }

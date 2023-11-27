@@ -567,7 +567,7 @@ public class Helper {
 							break;
 
 						case 115:
-							jobDetails.setBasicAllowance(currentCell.getStringCellValue());
+							jobDetails.setBasicPay(currentCell.getStringCellValue());
 							break;
 
 						case 116:

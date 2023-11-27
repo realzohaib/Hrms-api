@@ -21,6 +21,8 @@ public class AttendenceResponse {
 	
 	private long totalOvertimeHoursInMonth;
 	
+	private Integer noOfDaysWorkedRegularHours;
+	
 	private ShiftAssignment shift;
 	
 

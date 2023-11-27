@@ -1,6 +1,7 @@
 package com.erp.hrms.form.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,20 @@ public class LeaveController {
 		}
 	}
 
+//	This method for update the leave request by the hr Accepted or Rejected with the help of leaveRequestId
+	@PutMapping("/leave/request/approvedByhr/{leaveRequestId}")
+	public ResponseEntity<?> approvedOrDenyByHR(@PathVariable Long leaveRequestId,
+			@RequestParam("leaveApproval") String leaveApproval,
+			@RequestParam("medicalDocumentsName") MultipartFile medicalDocumentsName) throws IOException {
+		try {
+			iLeaveService.approvedOrDenyByHR(leaveRequestId, leaveApproval, medicalDocumentsName);
+			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By HR"), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(new MessageResponse("Error while approving leave request. " + e),
+					HttpStatus.BAD_REQUEST);
+		}
+	}
+
 //	This method for find all pending request
 	@GetMapping("/leave/request/findall/pending")
 	public ResponseEntity<?> findAllLeaveApprovalPending() {
@@ -166,6 +181,19 @@ public class LeaveController {
 
 			return new ResponseEntity<>(new MessageResponse("An error occurred while fetching marked calendar dates."),
 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+//	This method is for get the data of a single month that how many leaves in this month of a employee
+	@GetMapping("/totalLeaveDays/{employeeId}/{year}/{month}")
+	public ResponseEntity<BigDecimal> calculateTotalLeaveDaysInMonth(@PathVariable Long employeeId,
+			@PathVariable int year, @PathVariable int month) {
+		try {
+			BigDecimal totalLeaveDays = iLeaveService
+					.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(employeeId, year, month);
+			return ResponseEntity.ok(totalLeaveDays);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 }

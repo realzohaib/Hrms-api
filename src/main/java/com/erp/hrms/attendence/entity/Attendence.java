@@ -52,6 +52,8 @@ public class Attendence {
 	
 	private String overtimeStatus;
 	
+	private boolean normalWorkingDay;//neither half day nor overtime
+	
 	private long employeeId;
 
 	@OneToMany(mappedBy = "attendence")

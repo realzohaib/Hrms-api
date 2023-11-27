@@ -11,6 +11,8 @@ public interface ILeaveRepository {
 
 	public LeaveApproval approvedByManager(Long leaveRequestId, LeaveApproval leaveApproval);
 
+	public LeaveApproval approvedOrDenyByHR(Long leaveRequestId, LeaveApproval leaveApproval);
+
 	public LeaveApproval getleaveRequestById(Long leaveRequestId);
 
 	public List<LeaveApproval> findAllLeaveApproval();
@@ -26,5 +28,8 @@ public interface ILeaveRepository {
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId);
 
 	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
+
+	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
+			int month);
 
 }

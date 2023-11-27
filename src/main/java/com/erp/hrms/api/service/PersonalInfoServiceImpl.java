@@ -421,8 +421,19 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MANAGER)
 								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 						roles.add(modRole);
+						break;
+					case "hr":
+						RoleEntity hrRole = roleRepository.findByName(ERole.ROLE_HR)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(hrRole);
+						break;
+					case "subadmin":
+						RoleEntity subAdminRole = roleRepository.findByName(ERole.ROLE_SUBADMIN)
+								.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+						roles.add(subAdminRole);
 					}
 				});
+
 			}
 
 			UserEntity user = new UserEntity();
@@ -1570,7 +1581,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					existingJobDetails.setCompanyEmailId(updateJobDetails.getCompanyEmailId());
 					existingJobDetails.setJobLevel(updateJobDetails.getJobLevel());
 					existingJobDetails.setPostedLocation(updateJobDetails.getPostedLocation());
-					existingJobDetails.setBasicAllowance(updateJobDetails.getBasicAllowance());
+					existingJobDetails.setBasicPay(updateJobDetails.getBasicPay());
 					existingJobDetails.setHouseRentAllowance(updateJobDetails.getHouseRentAllowance());
 					existingJobDetails.setHouseRentAmount(updateJobDetails.getHouseRentAmount());
 					existingJobDetails.setFoodAllowance(updateJobDetails.getFoodAllowance());

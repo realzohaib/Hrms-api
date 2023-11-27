@@ -30,7 +30,7 @@ public class JobDetails {
 	private String jobLevel;
 	private String postedLocation;
 
-	private String basicAllowance;
+	private String basicPay;
 	private String houseRentAllowance;
 	private String houseRentAmount;
 	private String foodAllowance;
