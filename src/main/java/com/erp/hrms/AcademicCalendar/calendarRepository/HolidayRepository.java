@@ -6,8 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.erp.hrms.AcademicCalendar.Holiday;
-import com.erp.hrms.entity.form.LeaveApproval;
+import com.erp.hrms.AcademicCalendar.entity.Holiday;
 
 public interface HolidayRepository extends JpaRepository<Holiday, Long> {
 

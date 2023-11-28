@@ -1,4 +1,4 @@
-package com.erp.hrms.AcademicCalendar;
+package com.erp.hrms.AcademicCalendar.entity;
 
 import java.time.LocalDate;
 

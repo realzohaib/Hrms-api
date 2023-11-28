@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.erp.hrms.AcademicCalendar.Holiday;
 import com.erp.hrms.AcademicCalendar.calendarService.ICalendarService;
+import com.erp.hrms.AcademicCalendar.entity.Holiday;
 import com.erp.hrms.api.security.response.MessageResponse;
 
 @RestController

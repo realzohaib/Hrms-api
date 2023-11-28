@@ -2,7 +2,7 @@ package com.erp.hrms.AcademicCalendar.calendarService;
 
 import java.util.List;
 
-import com.erp.hrms.AcademicCalendar.Holiday;
+import com.erp.hrms.AcademicCalendar.entity.Holiday;
 
 public interface ICalendarService {
 
