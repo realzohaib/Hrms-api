@@ -8,6 +8,7 @@ import com.erp.hrms.payroll.entity.PayRoll;
 @Repository
 public interface IPayRollRepo extends JpaRepository<PayRoll, Long>{
 	
-	PayRoll findByemployeeId(long id);
+	//PayRoll findByemployeeId(long id);
+    PayRoll findByEmployeeIdAndMonthAndYear(long employeeId, int month, int year);
 
 }

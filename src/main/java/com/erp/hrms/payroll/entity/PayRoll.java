@@ -11,35 +11,36 @@ import lombok.Data;
 @Entity
 @Data
 public class PayRoll {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long payRollID;
-	private long employeeId;
-	private String Name;
-	private String jobDesignation;
-	private String jobLevel;
-	private String jobLocation;
-	private String Department;
-	private String Contact;
-	private String Address;
-	
-	private int leavedays;
-	private int  tardyDays;
-	
-	@Embedded
-	private Allowances allowances;
-	
-	private String IncentivesName;
-	private String IncentiveAmount;
-	
-	private String anySpecialReward;
-	private String bonus;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long payrollId;
+    private long employeeId;
+    private String name;
+    private String jobDesignation;
+    private String jobLevel;
+    private String jobLocation;
+    private String department;
+    private String contact;
+    private String address;
+    
+    private int month;
+    private int year;
+    
+    private int leaveDays;
+    private int tardyDays;
+    
+    @Embedded
+    private Allowances allowances;
+    
+    private String incentivesName;
+    private double incentiveAmount;
+    
+    private String anySpecialReward;
+    private double anySpecialRewardAmount;
+    private double bonus;
 
-	private Long OvertimePayAmount;
-	private String OvertimePay;
-	private String monthyPerformancePay;
-	private String totalPay;
-	
-	
-
+    private double overtimePayAmount;
+    private double overtimePay;
+    private double monthlyPerformancePay;
+    private double totalPay;
 }

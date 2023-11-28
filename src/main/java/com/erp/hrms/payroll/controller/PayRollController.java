@@ -3,7 +3,6 @@ package com.erp.hrms.payroll.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +34,7 @@ public class PayRollController {
 		try {
 			service.savePayRoll(payroll);
 			return ResponseEntity.ok().body(new MessageResponse("PayRoll Saaved"));
-		} catch (Exception e) {
+		} catch (Exception e) {	
 			return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 	}

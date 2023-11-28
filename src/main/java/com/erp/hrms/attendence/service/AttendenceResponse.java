@@ -21,7 +21,9 @@ public class AttendenceResponse {
 	
 	private long totalOvertimeHoursInMonth;
 	
-	private Integer noOfDaysWorkedRegularHours;
+	private int noOfDaysWorkedRegularHours;
+	
+	private int totalTardyDays;
 	
 	private ShiftAssignment shift;
 	

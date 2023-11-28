@@ -45,7 +45,7 @@ public class AttendenceController {
 			Attendence punchIn = service.punchIn(attendence);
 			return ResponseEntity.ok(punchIn);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e);
+			return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
 		}
 
 	}
@@ -66,7 +66,7 @@ public class AttendenceController {
 	@PostMapping("/punch-out")
 	public ResponseEntity<?> punchOut(@RequestBody AttendenceRequest req) throws AttendencenotRegistered {
 		try {
-			Attendence punchout = service.punchout(req.getId());
+			Attendence punchout = service.punchOut(req.getId());
 			return ResponseEntity.ok(punchout);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Something went Wrong..!"));

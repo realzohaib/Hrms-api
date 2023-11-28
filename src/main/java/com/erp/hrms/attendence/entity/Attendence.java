@@ -53,6 +53,8 @@ public class Attendence {
 	private String overtimeStatus;
 
 	private boolean normalWorkingDay;// neither half day nor overtime
+	
+	private boolean tardyDay;
 
 	private long employeeId;
 

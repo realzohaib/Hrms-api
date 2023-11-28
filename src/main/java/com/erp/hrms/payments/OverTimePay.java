@@ -16,6 +16,6 @@ public class OverTimePay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private LocalDate date;
-	private long overtimeAmount;
+	private double overtimeAmount;
 
 }
