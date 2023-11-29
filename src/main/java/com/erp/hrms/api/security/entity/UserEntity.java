@@ -57,7 +57,7 @@ public class UserEntity implements Serializable {
 	@Size(max = 120)
 	private String password;
 
-	private String activationToken;
+	private String otp;
 
 	private boolean isEnabled;
 

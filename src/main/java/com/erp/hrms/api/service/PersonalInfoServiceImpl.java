@@ -445,17 +445,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			user.setRoles(roles);
 			user.setEnabled(false);
 
-			String activationToken = UUID.randomUUID().toString();
-			user.setActivationToken(activationToken);
+			Random random = new Random();
+			int otpNumber = random.nextInt(900000) + 100000;
+			String otp = String.valueOf(otpNumber);
+
+			user.setOtp(otp);
 
 			PersonalInfo.setUserentity(user);
 
 			dao.savePersonalInfo(PersonalInfo);
 
-			String activationLink = url + "/activate?token=" + activationToken;
-
-			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(),
-					activationLink);
+			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp);
 		} catch (Exception e) {
 			throw new RuntimeException("An error occurred while saving personal information.", e);
 		}
@@ -1729,15 +1729,15 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		}
 	}
 
-	public void sendAccountActivationEmail(String email, long employeeId, String name, String activationLink) {
+	public void sendAccountActivationEmail(String email, long employeeId, String name, String otp) {
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(email);
-		mailMessage.setSubject("Account Activation");
+		mailMessage.setSubject("Account Activation ");
 
-		// Create the account activation email message
-		String emailText = "Dear Mr. " + name + ",\n\n" + "Welcome to our platform. Your employee ID is: " + employeeId
-				+ ".\n\n" + "To activate your account, please click on the following link:\n" + activationLink + "\n\n"
-				+ "If you have any questions or need assistance, please contact our support team.\n\n"
+		// Create the first-time password set email message with OTP
+		String emailText = "Dear Mr. " + name + ",\n\n" + "Welcome to our platform! Your employee ID is: " + employeeId
+				+ ".\n\n" + "To Activate your Account, please use the following One-Time Password (OTP):\n" + "OTP: "
+				+ otp + "\n\n" + "If you have any questions or need assistance, please contact our support team.\n\n"
 				+ "Best regards,\n" + "The SI Global Company Team";
 
 		mailMessage.setText(emailText);
