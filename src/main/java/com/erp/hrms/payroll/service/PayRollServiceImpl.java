@@ -37,6 +37,37 @@ public class PayRollServiceImpl implements IPayRollService {
 	@Autowired
 	private LeaveService leave;
 
+	private double leaveDayCut(	AttendenceResponse fullAttendence , BigDecimal leaves) {
+		double leaveDayCutAmount = 0;
+		int totalDaysPresentInMonth = fullAttendence.getTotalDaysPresentInMonth();
+		int totalWorkigDaysInMonth = fullAttendence.getTotalWorkigDaysInMonth();
+		BigDecimal totalLeavesTakenInMonth = leaves;
+		int totalLeavesTakenInMonthue = totalLeavesTakenInMonth.intValue();
+		
+		int uninformedLeaves = totalWorkigDaysInMonth - totalDaysPresentInMonth -totalLeavesTakenInMonthue;
+		
+		if(uninformedLeaves > 0) {
+			//for now keepig it static
+			//int casual
+			
+		}else
+			return leaveDayCutAmount;
+		
+		
+
+		return leaveDayCutAmount;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	private double calculateTotalPay(PayRoll payRoll) {
 		// Convert String allowances to double
 		double houseRentAmount = Double.parseDouble(payRoll.getAllowances().getHouseRentAmount());
@@ -75,7 +106,7 @@ public class PayRollServiceImpl implements IPayRollService {
 		// Retrieve total leaves
 		BigDecimal leaves = leave.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(empId, year, month);
 
-		//PayRoll payroll = repo.findByemployeeId(empId);
+		// PayRoll payroll = repo.findByemployeeId(empId);
 		PayRoll payroll = repo.findByEmployeeIdAndMonthAndYear(empId, month, year);
 		if (payroll != null) {
 			payRollResponse.setPayroll(payroll);
@@ -132,7 +163,7 @@ public class PayRollServiceImpl implements IPayRollService {
 		// Set the total overtime pay in the PayRoll object
 		payRoll.setOvertimePay(totalOvertimePay);
 
-		//method to calculate total Pay
+		// method to calculate total Pay
 		double totalPay = calculateTotalPay(payRoll);
 
 		// Setting total Pay
@@ -148,13 +179,13 @@ public class PayRollServiceImpl implements IPayRollService {
 
 	@Override
 	public void savePayRoll(PayRoll payroll) {
-		System.out.println(payroll);	
+		System.out.println(payroll);
 		repo.save(payroll);
 	}
 
 	@Override
 	public PayRollResponse findPayrollForEmployeePage(long empId, int year, int month) {
-		//PayRoll payroll = repo.findByemployeeId(empId);
+		// PayRoll payroll = repo.findByemployeeId(empId);
 		PayRoll payroll = repo.findByEmployeeIdAndMonthAndYear(empId, month, year);
 
 		if (payroll == null) {
