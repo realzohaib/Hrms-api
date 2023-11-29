@@ -1,5 +1,6 @@
 package com.erp.hrms.AcademicCalendar.calendarControlelr;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -131,4 +132,16 @@ public class CalendarController {
 					.body(new MessageResponse("Unexpected error occurred: " + e.getMessage()));
 		}
 	}
+
+	@GetMapping("/total-in-month/{year}/{month}")
+	public ResponseEntity<BigDecimal> calculateTotalLeaveDaysInMonth(@PathVariable int year, @PathVariable int month) {
+		try {
+			BigDecimal totalLeaveDays = icalendarService
+					.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(year, month);
+			return ResponseEntity.ok(totalLeaveDays);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
 }

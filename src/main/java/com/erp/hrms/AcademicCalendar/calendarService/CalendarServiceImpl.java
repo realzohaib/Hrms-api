@@ -1,5 +1,6 @@
 package com.erp.hrms.AcademicCalendar.calendarService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -82,4 +83,10 @@ public class CalendarServiceImpl implements ICalendarService {
 			throw new RuntimeException("An error occurred while retrieving holidays by holiday Id: " + holidayId);
 		}
 	}
+
+	@Override
+	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(int year, int month) {
+		return calendarReposiroty.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(year, month);
+	}
+
 }
