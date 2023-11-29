@@ -54,7 +54,7 @@ public class AccountActivationController {
 				repo.save(user);
 				return ResponseEntity.ok(new StatusResponse(true));
 			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new MessageResponse("User not found. Password update failed."));
 			}
 		} catch (NumberFormatException e) {

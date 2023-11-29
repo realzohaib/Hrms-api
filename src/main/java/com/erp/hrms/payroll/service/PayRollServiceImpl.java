@@ -37,37 +37,24 @@ public class PayRollServiceImpl implements IPayRollService {
 	@Autowired
 	private LeaveService leave;
 
-	private double leaveDayCut(	AttendenceResponse fullAttendence , BigDecimal leaves) {
+	private double leaveDayCut(AttendenceResponse fullAttendence, BigDecimal leaves) {
 		double leaveDayCutAmount = 0;
 		int totalDaysPresentInMonth = fullAttendence.getTotalDaysPresentInMonth();
 		int totalWorkigDaysInMonth = fullAttendence.getTotalWorkigDaysInMonth();
 		BigDecimal totalLeavesTakenInMonth = leaves;
 		int totalLeavesTakenInMonthue = totalLeavesTakenInMonth.intValue();
-		
-		int uninformedLeaves = totalWorkigDaysInMonth - totalDaysPresentInMonth -totalLeavesTakenInMonthue;
-		
-		if(uninformedLeaves > 0) {
-			//for now keepig it static
-			//int casual
-			
-		}else
-			return leaveDayCutAmount;
-		
-		
 
+		int uninformedLeaves = totalWorkigDaysInMonth - totalDaysPresentInMonth - totalLeavesTakenInMonthue;
+
+		if (uninformedLeaves > 0) {
+			// for now keepig it static
+			// int casual
+
+		}
 		return leaveDayCutAmount;
+
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	private double calculateTotalPay(PayRoll payRoll) {
 		// Convert String allowances to double
 		double houseRentAmount = Double.parseDouble(payRoll.getAllowances().getHouseRentAmount());

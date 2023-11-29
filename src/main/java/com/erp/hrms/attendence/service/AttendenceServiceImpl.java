@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import com.erp.hrms.attendence.entity.Attendence;
 import com.erp.hrms.attendence.entity.Breaks;
 import com.erp.hrms.attendence.repo.IAttendencerepo;
+import com.erp.hrms.helper.entity.monthCycle;
+import com.erp.hrms.helper.service.IMonthCycleService;
 import com.erp.hrms.shift.Dao.ShiftAssignmentDaoImpl;
 import com.erp.hrms.shift.entity.ShiftAssignment;
 
@@ -27,6 +29,9 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 	@Autowired
 	private ShiftAssignmentDaoImpl shift;
+
+	@Autowired
+	private IMonthCycleService monthcycle;
 
 	private boolean isWorkingDay(DayOfWeek dayOfWeek) {
 		// Implement your organization's working day criteria here
@@ -209,13 +214,50 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 	@Override
 	public List<Attendence> getAttendanceForMonth(Long employeeId, int year, int month) {
-		LocalDate startDate = LocalDate.of(year, month, 1);
-		LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+		int startDay = 0;
+		int endDay = 0;
+		List<monthCycle> list = monthcycle.getmonthcycle();
+
+		for (monthCycle cycle : list) {
+			startDay = cycle.getStartDate();
+			endDay = cycle.getLastDate();
+			break;
+		}
+
+		// Assuming the month cycle starts on the 27th of the last month
+		LocalDate startDate = LocalDate.of(year, month, startDay).minusMonths(1);
+		System.out.println("start date is " + startDate);
+
+		// Ensure endDay is not greater than the maximum day of the month
+		endDay = Math.min(endDay, startDate.plusMonths(1).lengthOfMonth());
+
+		// Calculate the end date by adding one month
+		LocalDate endDate = startDate.plusMonths(1);
+		endDate = endDate.withDayOfMonth(endDay);
+
+		System.out.println("end date is " + endDate);
+
 		return repo.findByEmployeeIdAndDateBetween(employeeId, startDate, endDate);
 	}
 
 	@Override
 	public AttendenceResponse fullAttendence(Long employeeId, int year, int month) {
+		int startDay = 0;
+		int endDay = 0;
+		List<monthCycle> list = monthcycle.getmonthcycle();
+
+		for (monthCycle cycle : list) {
+			startDay = cycle.getStartDate();
+			endDay = cycle.getLastDate();
+			break;
+		}
+
+		LocalDate currentDate = LocalDate.now();
+		//LocalDate currentDate = LocalDate.of(2023, 11, 27);
+
+		if (currentDate.isAfter(currentDate.withDayOfMonth(endDay))) {
+			month++;
+		}
 		List<Attendence> attendanceForMonth = getAttendanceForMonth(employeeId, year, month);
 
 		AttendenceResponse attendenceResponse = new AttendenceResponse();
@@ -263,10 +305,31 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	@Override
 	public int calculateWorkingDays(int year, int month) {
 		int workingDays = 0;
-		LocalDate currentDate = LocalDate.now();
-		LocalDate startDate = LocalDate.of(year, month, 1);
+		int startDay = 0;
+		int endDay = 0;
+		List<monthCycle> list = monthcycle.getmonthcycle();
 
-		while (!currentDate.isBefore(startDate) && currentDate.getMonthValue() == month) {
+		for (monthCycle cycle : list) {
+			startDay = cycle.getStartDate();
+			endDay = cycle.getLastDate();
+			break;
+		}
+		 LocalDate currentDate = LocalDate.now();
+		//LocalDate currentDate = LocalDate.of(2023, 11, 27);
+
+		LocalDate startDate = LocalDate.of(year, month, startDay).minusMonths(1);
+
+		// Check if currentDate is after endDay, then update startDate to be the day
+		// after endDay
+		if (currentDate.isAfter(startDate.withDayOfMonth(endDay))) {
+			startDate = startDate.withDayOfMonth(endDay).plusDays(1);
+		}
+
+		if (currentDate.isAfter(currentDate.withDayOfMonth(endDay)) && currentDate.getMonthValue() == month) {
+			currentDate = currentDate.withDayOfMonth(endDay);
+		}
+
+		while (!currentDate.isBefore(startDate)) {
 			DayOfWeek dayOfWeek = startDate.getDayOfWeek();
 
 			// Check if the day is a working day based on your criteria

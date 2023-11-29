@@ -124,6 +124,18 @@ public class AttendenceController {
 			AttendenceResponse fullAttendence = service.fullAttendence(id, year, month);
 			return ResponseEntity.ok(fullAttendence);
 		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage() ));
+
+		}
+	}
+	
+	//it is for testing purpose , needs to be removed after testing
+	@GetMapping("/get-attendence-byMonth2/{id}/{year}/{month}")
+	public ResponseEntity<?> AttendenceByMontwithnewmonthcycle(@PathVariable long id, @PathVariable int year, @PathVariable int month) {
+		try {
+			List<Attendence> attendanceForMonth = service.getAttendanceForMonth(id, year, month);
+			return ResponseEntity.ok(attendanceForMonth);
+		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(new MessageResponse("invalid Data"));
 
 		}
