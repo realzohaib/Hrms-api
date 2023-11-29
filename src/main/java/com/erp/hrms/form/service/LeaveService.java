@@ -540,4 +540,5 @@ public class LeaveService implements ILeaveService {
 			int month) {
 		return iLeaveRepository.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(employeeId, year, month);
 	}
+
 }
