@@ -77,21 +77,19 @@ public class LeaveService implements ILeaveService {
 			leaveApprovalJson.setLeaveType(leaveType);
 
 			// Fetch admin and manager email addresses based on roles
-			String hrEmail = null;
 			String managerEmail = null;
 
 			List<UserEntity> userList = userService.getUsers();
 			for (UserEntity user : userList) {
 				Set<RoleEntity> roles = user.getRoles();
 				for (RoleEntity role : roles) {
-					if (role.getName() == ERole.ROLE_HR) {
-						hrEmail = user.getEmail();
-					} else if (role.getName() == ERole.ROLE_MANAGER) {
+
+					if (role.getName() == ERole.ROLE_MANAGER) {
 						managerEmail = user.getEmail();
 					}
 				}
 				// If both adminEmail and managerEmail are found, you can break out of the loop.
-				if (hrEmail != null && managerEmail != null) {
+				if (managerEmail != null) {
 					break;
 				}
 			}
@@ -108,15 +106,7 @@ public class LeaveService implements ILeaveService {
 
 			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
 
-//		 Send emails to hr and manager
-			// If both HR and manager emails are found, send emails to both
-			if (hrEmail != null && managerEmail != null) {
-				sendLeaveRequestEmail(hrEmail, "Leave Request from Employee", leaveApprovalJson);
-				sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
-			} else if (hrEmail != null) {
-				// If only HR email is found, send the email to HR
-				sendLeaveRequestEmail(hrEmail, "Leave Request from Employee", leaveApprovalJson);
-			} else if (managerEmail != null) {
+			if (managerEmail != null) {
 				// If only manager email is found, send the email to the manager
 				sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
 			} else {
@@ -244,7 +234,6 @@ public class LeaveService implements ILeaveService {
 
 			// Fetch hr and manager email addresses based on roles
 			String hrEmail = null;
-			String managerEmail = leaveApprovalJson.getManagerEmail();
 
 			List<UserEntity> userList = userService.getUsers();
 			for (UserEntity user : userList) {
@@ -262,12 +251,6 @@ public class LeaveService implements ILeaveService {
 			// Send emails to hr
 			sendLeaveRequestEmailApproved(hrEmail, "Leave Request status by the manager", leaveApprovalJson);
 //			 Send email to manager who approve or deny the leave request
-			sendLeaveRequestEmailApproved(managerEmail, "Leave Request status by the manager", leaveApprovalJson);
-
-			// Send an email to the employee
-			String employeeEmail = leaveApprovalJson.getEmail();
-			sendLeaveRequestEmailApproved(employeeEmail, "Your leave request status", leaveApprovalJson);
-
 			return iLeaveRepository.approvedByManager(leaveRequestId, leaveApprovalJson);
 		} catch (Exception e) {
 			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
@@ -420,10 +403,15 @@ public class LeaveService implements ILeaveService {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
 		message.setSubject(subject);
-		message.setText("Leave Request Details:\n" + "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n"
-				+ "Leave Name: " + leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: "
-				+ leaveApproval.getStartDate() + "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: "
-				+ leaveApproval.getLeaveReason() + "\n");
+		String emailContent = "Dear " + leaveApproval.getNameOfEmployee() + ",\n\n"
+				+ "Your leave request has been received and is currently under review. Here are the details:\n\n"
+				+ "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n" + "Leave Type: "
+				+ leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: " + leaveApproval.getStartDate()
+				+ "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: " + leaveApproval.getLeaveReason()
+				+ "\n\n"
+				+ "You will be notified once the request is approved or if any further information is required.\n\n"
+				+ "Thank you,\n" + "SI Global";
+		message.setText(emailContent);
 		mailSender.send(message);
 	}
 
@@ -432,12 +420,18 @@ public class LeaveService implements ILeaveService {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
 		message.setSubject(subject);
-		message.setText("Your Leave Request status :\n" + "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n"
-				+ "Leave Type: " + leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: "
-				+ leaveApproval.getStartDate() + "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: "
-				+ leaveApproval.getLeaveReason() + "\n" + "Manager Name : " + leaveApproval.getApprovingManagerName()
-				+ "\n" + "Status :" + leaveApproval.getApprovalStatus() + "\n" + "Manager remark :"
-				+ leaveApproval.getApprovalRemarks() + "\n" + "\n");
+		String emailContent = "Dear ,\n\n"
+				+ "I trust this message finds you well. I am writing to inform you about the updated status of a recent leave request. The details are as follows:\n\n"
+				+ "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n" + "Leave Type: "
+				+ leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: " + leaveApproval.getStartDate()
+				+ "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: " + leaveApproval.getLeaveReason()
+				+ "\n" + "Manager Name: " + leaveApproval.getApprovingManagerName() + "\n" + "Status: "
+				+ leaveApproval.getApprovalStatus() + "\n" + "Manager Remark: " + leaveApproval.getApprovalRemarks()
+				+ "\n\n"
+				+ "I kindly request your attention to this matter and appreciate your prompt consideration. If further action is required, please do not hesitate to contact me.\n\n"
+				+ "Thank you for your time and assistance.\n\n" + "Sincerely,\n"
+				+ leaveApproval.getApprovingManagerName() + "\n" + leaveApproval.getJobLevel() + "\n" + "SI Global\n";
+		message.setText(emailContent);
 		mailSender.send(message);
 	}
 
@@ -446,14 +440,21 @@ public class LeaveService implements ILeaveService {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
 		message.setSubject(subject);
-		message.setText("Your Leave Request status :\n" + "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n"
-				+ "Leave Type: " + leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: "
-				+ leaveApproval.getStartDate() + "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: "
-				+ leaveApproval.getLeaveReason() + "\n" + "Manager Name : " + leaveApproval.getApprovingManagerName()
-				+ "\n" + "Status :" + leaveApproval.getApprovalStatus() + "\n" + "Manager remark :"
-				+ leaveApproval.getApprovalRemarks() + "\n" + "HR Name :" + leaveApproval.getHrName() + "\n"
-				+ "Status :" + leaveApproval.getHrApprovalStatus() + "\n" + "HR remark :"
-				+ leaveApproval.getHrApprovalRemarks() + "\n" + "\n");
+		String emailContent = "Dear ,\n\n"
+				+ "I hope this message finds you well. I am writing to inform you about the status of the recent leave request. The details are as follows:\n\n"
+				+ "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n" + "Leave Type: "
+				+ leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: " + leaveApproval.getStartDate()
+				+ "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: " + leaveApproval.getLeaveReason()
+				+ "\n" + "Manager Name: " + leaveApproval.getApprovingManagerName() + "\n" + "Status (Manager): "
+				+ leaveApproval.getApprovalStatus() + "\n" + "Manager Remark: " + leaveApproval.getApprovalRemarks()
+				+ "\n\n" + "HR Name: " + leaveApproval.getHrName() + "\n" + "Status (HR): "
+				+ leaveApproval.getHrApprovalStatus() + "\n" + "HR Remark: " + leaveApproval.getHrApprovalRemarks()
+				+ "\n\n"
+				+ "Please take note of the provided information and feel free to reach out if you have any questions or concerns.\n\n"
+				+ "Thank you for your attention to this matter.\n\n" + "Sincerely,\n" + leaveApproval.getHrName() + "\n"
+				+ "SI Global\n";
+
+		message.setText(emailContent);
 		mailSender.send(message);
 	}
 

@@ -84,7 +84,7 @@ public class LeaveController {
 	@PutMapping("/leave/request/approvedByManager/{leaveRequestId}")
 	public ResponseEntity<?> approvedByManager(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
-			@RequestParam("medicalDocumentsName") MultipartFile medicalDocumentsName) throws IOException {
+			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName) throws IOException {
 		try {
 			iLeaveService.approvedByManager(leaveRequestId, leaveApproval, medicalDocumentsName);
 			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By manager"),
@@ -99,7 +99,7 @@ public class LeaveController {
 	@PutMapping("/leave/request/approvedByhr/{leaveRequestId}")
 	public ResponseEntity<?> approvedOrDenyByHR(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
-			@RequestParam("medicalDocumentsName") MultipartFile medicalDocumentsName) throws IOException {
+			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName) throws IOException {
 		try {
 			iLeaveService.approvedOrDenyByHR(leaveRequestId, leaveApproval, medicalDocumentsName);
 			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By HR"), HttpStatus.OK);
