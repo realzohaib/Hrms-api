@@ -1,11 +1,15 @@
 package com.erp.hrms.entity.form;
 
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
@@ -50,8 +54,15 @@ public class LeaveApproval {
 	@Transient
 	private byte[] medicalDocumentData;
 
+	private double totalRequestedDays;
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "leaveTypeLeaveApproval", referencedColumnName = "leaveTypeId")
 	private LeaveType leaveType;
+
+//	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.EAGER)
+//	@JoinColumn(name = "leave_approval_id") // Use a different name for the foreign key column
+	private List<RemaingLeaves> remaingLeavesList;
 
 }

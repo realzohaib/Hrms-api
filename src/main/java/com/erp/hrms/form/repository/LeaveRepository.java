@@ -191,4 +191,11 @@ public class LeaveRepository implements ILeaveRepository {
 		return entityManager.createQuery(query).getSingleResult();
 	}
 
+	@Override
+	public boolean employeeExists(Long employeeId) {
+		String jpql = "SELECT COUNT(l) > 0 FROM LeaveApproval l WHERE l.employeeId = :employeeId";
+		TypedQuery<Boolean> query = entityManager.createQuery(jpql, Boolean.class);
+		query.setParameter("employeeId", employeeId);
+		return query.getSingleResult();
+	}
 }

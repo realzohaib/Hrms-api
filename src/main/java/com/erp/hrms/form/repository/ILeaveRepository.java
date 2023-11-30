@@ -32,4 +32,6 @@ public interface ILeaveRepository {
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
 			int month);
 
+	public boolean employeeExists(Long employeeId);
+
 }
