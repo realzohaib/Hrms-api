@@ -253,7 +253,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		}
 
 		LocalDate currentDate = LocalDate.now();
-		//LocalDate currentDate = LocalDate.of(2023, 11, 27);
+		//LocalDate currentDate = LocalDate.of(2023, 11, 25);
 
 		if (currentDate.isAfter(currentDate.withDayOfMonth(endDay))) {
 			month++;

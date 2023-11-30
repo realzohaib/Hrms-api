@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -124,14 +123,15 @@ public class AttendenceController {
 			AttendenceResponse fullAttendence = service.fullAttendence(id, year, month);
 			return ResponseEntity.ok(fullAttendence);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage() ));
+			return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
 
 		}
 	}
-	
-	//it is for testing purpose , needs to be removed after testing
+
+	// it is for testing purpose , needs to be removed after testing
 	@GetMapping("/get-attendence-byMonth2/{id}/{year}/{month}")
-	public ResponseEntity<?> AttendenceByMontwithnewmonthcycle(@PathVariable long id, @PathVariable int year, @PathVariable int month) {
+	public ResponseEntity<?> AttendenceByMontwithnewmonthcycle(@PathVariable long id, @PathVariable int year,
+			@PathVariable int month) {
 		try {
 			List<Attendence> attendanceForMonth = service.getAttendanceForMonth(id, year, month);
 			return ResponseEntity.ok(attendanceForMonth);
