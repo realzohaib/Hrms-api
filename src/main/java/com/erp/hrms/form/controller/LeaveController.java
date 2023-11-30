@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
+import com.erp.hrms.entity.form.LeaveCountDTO;
+import com.erp.hrms.entity.form.LeaveSummary;
 import com.erp.hrms.entity.form.MarkedDate;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 import com.erp.hrms.form.service.ILeaveService;
@@ -84,7 +86,8 @@ public class LeaveController {
 	@PutMapping("/leave/request/approvedByManager/{leaveRequestId}")
 	public ResponseEntity<?> approvedByManager(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
-			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName) throws IOException {
+			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
+			throws IOException {
 		try {
 			iLeaveService.approvedByManager(leaveRequestId, leaveApproval, medicalDocumentsName);
 			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By manager"),
@@ -99,7 +102,8 @@ public class LeaveController {
 	@PutMapping("/leave/request/approvedByhr/{leaveRequestId}")
 	public ResponseEntity<?> approvedOrDenyByHR(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
-			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName) throws IOException {
+			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
+			throws IOException {
 		try {
 			iLeaveService.approvedOrDenyByHR(leaveRequestId, leaveApproval, medicalDocumentsName);
 			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By HR"), HttpStatus.OK);
@@ -196,6 +200,18 @@ public class LeaveController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	
+
+//	This method give the total leaves in a year of particular employee
+	@GetMapping("/leave/summary/{employeeId}/{year}")
+	public List<LeaveSummary> getLeaveSummaryByEmployeeAndYear(@PathVariable Long employeeId, @PathVariable int year) {
+		return iLeaveService.getLeaveSummaryByEmployeeAndYear(employeeId, year);
+	}
+
+//	This method give the total leaves in a month of particular employee
+	@GetMapping("/leave/count/{employeeId}/{year}/{month}")
+	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(@PathVariable Long employeeId, @PathVariable int year,
+			@PathVariable int month) {
+		return iLeaveService.getLeaveCountByEmployeeAndMonth(employeeId, year, month);
+	}
 
 }

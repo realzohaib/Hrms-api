@@ -17,6 +17,8 @@ import org.springframework.stereotype.Repository;
 
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.LeaveApproval;
+import com.erp.hrms.entity.form.LeaveCountDTO;
+import com.erp.hrms.entity.form.LeaveSummary;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 
 @Repository
@@ -174,7 +176,6 @@ public class LeaveRepository implements ILeaveRepository {
 		throw new LeaveRequestNotFoundException(new MessageResponse("No data available now"));
 	}
 
-// this is old code
 	@Override
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
 			int month) {
@@ -192,10 +193,37 @@ public class LeaveRepository implements ILeaveRepository {
 	}
 
 	@Override
-	public boolean employeeExists(Long employeeId) {
-		String jpql = "SELECT COUNT(l) > 0 FROM LeaveApproval l WHERE l.employeeId = :employeeId";
-		TypedQuery<Boolean> query = entityManager.createQuery(jpql, Boolean.class);
+	public List<LeaveSummary> getLeaveSummaryByEmployeeAndYear(Long employeeId, int year) {
+		String queryString = "SELECT NEW com.erp.hrms.entity.form.LeaveSummary(l.leaveType.leaveName, SUM(l.numberOfDaysRequested)) "
+				+ "FROM LeaveApproval l "
+				+ "WHERE l.employeeId = :employeeId AND YEAR(l.startDate) = :year AND l.hrApprovalStatus = 'Accepted' "
+				+ "GROUP BY l.leaveType.leaveName";
+
+		Query query = entityManager.createQuery(queryString, LeaveSummary.class);
 		query.setParameter("employeeId", employeeId);
-		return query.getSingleResult();
+		query.setParameter("year", year);
+
+		return query.getResultList();
+	}
+
+	@Override
+	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(Long employeeId, int year, int month) {
+		try {
+			TypedQuery<LeaveCountDTO> query = entityManager.createQuery(
+					"SELECT NEW com.erp.hrms.entity.form.LeaveCountDTO(l.leaveType.leaveName, SUM(l.numberOfDaysRequested)) "
+							+ "FROM LeaveApproval l "
+							+ "WHERE l.employeeId = :employeeId AND YEAR(l.startDate) = :year AND MONTH(l.startDate) = :month AND l.hrApprovalStatus = 'Accepted' "
+							+ "GROUP BY l.leaveType.leaveName",
+					LeaveCountDTO.class);
+
+			query.setParameter("employeeId", employeeId);
+			query.setParameter("year", year);
+			query.setParameter("month", month);
+
+			return query.getResultList();
+		} catch (NoResultException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

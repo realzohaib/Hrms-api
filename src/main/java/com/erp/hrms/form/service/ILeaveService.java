@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
+import com.erp.hrms.entity.form.LeaveCountDTO;
+import com.erp.hrms.entity.form.LeaveSummary;
 import com.erp.hrms.entity.form.MarkedDate;
 
 public interface ILeaveService {
@@ -44,4 +46,9 @@ public interface ILeaveService {
 
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
 			int month);
+
+	public List<LeaveSummary> getLeaveSummaryByEmployeeAndYear(Long employeeId, int year);
+
+	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(Long employeeId, int year, int month);
+
 }
