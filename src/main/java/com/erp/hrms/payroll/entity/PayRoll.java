@@ -28,6 +28,8 @@ public class PayRoll {
 
 	private int leaveDays;
 	private int tardyDays;
+	
+	private double basicPay;
 
 	@Embedded
 	private Allowances allowances;

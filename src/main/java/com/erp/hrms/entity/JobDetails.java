@@ -55,6 +55,7 @@ public class JobDetails {
 	private String isVehicleNewOrPreowned;
 
 	private String cashOrChipFacility;
+	private String cashAmount;
 	private String chipNumber;
 	private String accommodationYesOrNo;
 	private String isShredOrSeparate;

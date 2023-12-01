@@ -16,6 +16,7 @@ import com.erp.hrms.payments.OverTimePay;
 import com.erp.hrms.payments.OvertimePayService;
 import com.erp.hrms.payroll.dao.IPayRollRepo;
 import com.erp.hrms.payroll.entity.Allowances;
+import com.erp.hrms.payroll.entity.Deductions;
 import com.erp.hrms.payroll.entity.PayRoll;
 import com.erp.hrms.payroll.entity.PayRollResponse;
 
@@ -37,18 +38,21 @@ public class PayRollServiceImpl implements IPayRollService {
 	@Autowired
 	private LeaveService leave;
 
-	private double leaveDayCut(AttendenceResponse fullAttendence, BigDecimal leaves) {
+	private double leaveDayCut(AttendenceResponse fullAttendence, BigDecimal leaves, Double basicPay) {
 		double leaveDayCutAmount = 0;
 		int totalDaysPresentInMonth = fullAttendence.getTotalDaysPresentInMonth();
 		int totalWorkigDaysInMonth = fullAttendence.getTotalWorkigDaysInMonth();
-		BigDecimal totalLeavesTakenInMonth = leaves;
+		//BigDecimal totalLeavesTakenInMonth = leaves;
+        BigDecimal value2 = new BigDecimal("2.0");
+		BigDecimal totalLeavesTakenInMonth = value2;
 		int totalLeavesTakenInMonthue = totalLeavesTakenInMonth.intValue();
 
 		int uninformedLeaves = totalWorkigDaysInMonth - totalDaysPresentInMonth - totalLeavesTakenInMonthue;
 
 		if (uninformedLeaves > 0) {
-			// for now keepig it static
-			// int casual
+			double oneDayAmount = basicPay / 30;
+			leaveDayCutAmount = 1.3 * oneDayAmount;// abhi 1.3 static di hai baad mai isse dynamic karna hoga
+			return leaveDayCutAmount;
 
 		}
 		return leaveDayCutAmount;
@@ -70,6 +74,7 @@ public class PayRollServiceImpl implements IPayRollService {
 				+ travellingAllowancesAmount + educationalAllowanceAmount + otherAllowanceAmount;
 
 		// Sum up other amounts
+		double basicPay = payRoll.getBasicPay();
 		double anySpecialRewardAmount = payRoll.getAnySpecialRewardAmount();
 		double bonus = payRoll.getBonus();
 		double monthyPerformancePay = payRoll.getMonthlyPerformancePay();
@@ -77,8 +82,8 @@ public class PayRollServiceImpl implements IPayRollService {
 		double overtimePay = payRoll.getOvertimePayAmount();
 
 		// Calculate total pay
-		double totalPay = totalAllowances + anySpecialRewardAmount + bonus + monthyPerformancePay + incentiveAmount
-				+ overtimePay;
+		double totalPay = basicPay + totalAllowances + anySpecialRewardAmount + bonus + monthyPerformancePay
+				+ incentiveAmount + overtimePay;
 
 		return totalPay;
 	}
@@ -106,16 +111,24 @@ public class PayRollServiceImpl implements IPayRollService {
 		// Retrieve employee details
 		PersonalInfo employee = personalinfo.getPersonalInfoByEmployeeId(empId);
 
-		// Initialize PayRoll and Allowances objects
+		// Initialize PayRoll,Deductions and Allowances objects
 		PayRoll payRoll = new PayRoll();
 		Allowances allowances = new Allowances();
+		Deductions deductions = new Deductions();
 
+		// isko global variable rakha hai q ke iski value hume leaveday cut func mai
+		// chahiye
+		Double basicPay = 0.0;
 		// Set job details from the employee's JobDetails list
 		List<JobDetails> jobDetails = employee.getJobDetails();
 		for (JobDetails job : jobDetails) {
 			payRoll.setJobDesignation(job.getJobPostDesignation());
 			payRoll.setJobLevel(job.getJobLevel());
 			payRoll.setJobLocation(job.getPostedLocation());
+
+			String string = job.getBasicPay();
+			basicPay = Double.valueOf(string);
+			payRoll.setBasicPay(basicPay);
 
 			allowances.setHouseRentAmount(job.getHouseRentAmount());
 			allowances.setFoodAllowanceAmount(job.getFoodAllowanceAmount());
@@ -156,6 +169,12 @@ public class PayRollServiceImpl implements IPayRollService {
 		// Setting total Pay
 		payRoll.setTotalPay(totalPay);
 
+		// setting values of deduction
+		double leaveDayCut = leaveDayCut(fullAttendence, leaves, basicPay);
+		deductions.setLeaveDayCut(leaveDayCut);
+
+		payRoll.setDeductions(deductions);
+		
 		// Set the details in the PayRollResponse
 		payRollResponse.setPayroll(payRoll);
 		payRollResponse.setAttendence(fullAttendence);
