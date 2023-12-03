@@ -253,7 +253,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		}
 
 		LocalDate currentDate = LocalDate.now();
-		//LocalDate currentDate = LocalDate.of(2023, 11, 25);
+		// LocalDate currentDate = LocalDate.of(2023, 11, 25);
 
 		if (currentDate.isAfter(currentDate.withDayOfMonth(endDay))) {
 			month++;
@@ -314,8 +314,8 @@ public class AttendenceServiceImpl implements IAttendenceService {
 			endDay = cycle.getLastDate();
 			break;
 		}
-		 LocalDate currentDate = LocalDate.now();
-		//LocalDate currentDate = LocalDate.of(2023, 11, 27);
+		// LocalDate currentDate = LocalDate.now();
+		LocalDate currentDate = LocalDate.of(2023, 12, 03);
 
 		LocalDate startDate = LocalDate.of(year, month, startDay).minusMonths(1);
 
@@ -325,8 +325,12 @@ public class AttendenceServiceImpl implements IAttendenceService {
 			startDate = startDate.withDayOfMonth(endDay).plusDays(1);
 		}
 
-		if (currentDate.isAfter(currentDate.withDayOfMonth(endDay)) && currentDate.getMonthValue() == month) {
-			currentDate = currentDate.withDayOfMonth(endDay);
+		if (currentDate.isAfter(currentDate.withDayOfMonth(endDay)) || currentDate.getMonthValue() != month) {
+			if (!(currentDate.isBefore(startDate.withDayOfMonth(startDate.lengthOfMonth()))
+					|| currentDate.isEqual(startDate.withDayOfMonth(startDate.lengthOfMonth())))) {
+				currentDate = currentDate.withDayOfMonth(endDay).withMonth(month);
+			}
+
 		}
 
 		while (!currentDate.isBefore(startDate)) {

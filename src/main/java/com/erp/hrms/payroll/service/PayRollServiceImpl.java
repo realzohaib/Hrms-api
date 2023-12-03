@@ -38,25 +38,70 @@ public class PayRollServiceImpl implements IPayRollService {
 	@Autowired
 	private LeaveService leave;
 
-	private double leaveDayCut(AttendenceResponse fullAttendence, BigDecimal leaves, Double basicPay) {
+	private double leaveDayCut(AttendenceResponse fullAttendence, Double basicPay, PayRoll pl) {
 		double leaveDayCutAmount = 0;
-		int totalDaysPresentInMonth = fullAttendence.getTotalDaysPresentInMonth();
-		int totalWorkigDaysInMonth = fullAttendence.getTotalWorkigDaysInMonth();
-		//BigDecimal totalLeavesTakenInMonth = leaves;
-        BigDecimal value2 = new BigDecimal("2.0");
-		BigDecimal totalLeavesTakenInMonth = value2;
-		int totalLeavesTakenInMonthue = totalLeavesTakenInMonth.intValue();
+		int totalDaysPresentInMonthI = 20;
+		double totalDaysPresentInMonth = totalDaysPresentInMonthI;
+		int totalWorkigDaysInMonthI = 25;
+		double totalWorkigDaysInMonth = totalWorkigDaysInMonthI;
+		double totalcasualleavesApproved = 31;
+		double totalmedicalleavesApproved = 15;
+		double casualleaveinmonth = 2;
+		double medicalleaveinmonth = 2;
+		double totalcasualleavesprovidedinyear = 30;
+		double totalmedicalleavesprovidedinyear = 15;
+		double totalAllowances = calculateTotalAllowances(pl);
 
-		int uninformedLeaves = totalWorkigDaysInMonth - totalDaysPresentInMonth - totalLeavesTakenInMonthue;
+		// 1 day pay = (basic pay + allowances + benefits) / (30 - Sundays)
+		// Benefits need to be added, details in onboarding module
+
+		// For testing purposes
+		double onedayamount = 500;
+
+		double uninformedLeaves = totalWorkigDaysInMonth - totalDaysPresentInMonth
+				- (casualleaveinmonth + medicalleaveinmonth); // 25 - 20 - (3) = 2
 
 		if (uninformedLeaves > 0) {
-			double oneDayAmount = basicPay / 30;
-			leaveDayCutAmount = 1.3 * oneDayAmount;// abhi 1.3 static di hai baad mai isse dynamic karna hoga
-			return leaveDayCutAmount;
-
+			leaveDayCutAmount = uninformedLeaves * (onedayamount * 1.3); // Abhi 1.3 hardcoded hai, baad mai isse
 		}
-		return leaveDayCutAmount;
 
+		if (totalcasualleavesApproved > totalcasualleavesprovidedinyear) {
+			double daysexceeedingcasualleavesprovided = totalcasualleavesApproved - casualleaveinmonth;
+			if (daysexceeedingcasualleavesprovided < totalcasualleavesprovidedinyear) {
+				double noofdaysforamounttobededucted = totalcasualleavesApproved - totalcasualleavesprovidedinyear;
+				leaveDayCutAmount += onedayamount * noofdaysforamounttobededucted;
+			} else {
+				leaveDayCutAmount += onedayamount * casualleaveinmonth;
+			}
+		}
+
+		if (totalmedicalleavesApproved > totalmedicalleavesprovidedinyear) {
+			double daysexceeedingmedicalleavesprovided = totalmedicalleavesApproved - medicalleaveinmonth;
+			if (daysexceeedingmedicalleavesprovided < totalmedicalleavesprovidedinyear) {
+				double noofdaysforamounttobededucted = totalmedicalleavesApproved - totalmedicalleavesprovidedinyear;
+				leaveDayCutAmount += onedayamount * noofdaysforamounttobededucted;
+			} else {
+				leaveDayCutAmount += onedayamount * medicalleaveinmonth;
+			}
+		}
+
+		return leaveDayCutAmount;
+	}
+
+	private double calculateTotalAllowances(PayRoll payRoll) {
+		// Convert String allowances to double
+		double houseRentAmount = Double.parseDouble(payRoll.getAllowances().getHouseRentAmount());
+		double foodAllowanceAmount = Double.parseDouble(payRoll.getAllowances().getFoodAllowanceAmount());
+		double vehicleAllowanceAmount = Double.parseDouble(payRoll.getAllowances().getVehicleAllowanceAmount());
+		double uniformAllowanceAmount = Double.parseDouble(payRoll.getAllowances().getUniformAllowanceAmount());
+		double travellingAllowancesAmount = Double.parseDouble(payRoll.getAllowances().getTravellingAllowancesAmount());
+		double educationalAllowanceAmount = Double.parseDouble(payRoll.getAllowances().getEducationalAllowanceAmount());
+		double otherAllowanceAmount = Double.parseDouble(payRoll.getAllowances().getOtherAllowanceAmount());
+
+		// Sum up all amounts
+		double totalAllowances = houseRentAmount + foodAllowanceAmount + vehicleAllowanceAmount + uniformAllowanceAmount
+				+ travellingAllowancesAmount + educationalAllowanceAmount + otherAllowanceAmount;
+		return totalAllowances;
 	}
 
 	private double calculateTotalPay(PayRoll payRoll) {
@@ -98,7 +143,6 @@ public class PayRollServiceImpl implements IPayRollService {
 		// Retrieve total leaves
 		BigDecimal leaves = leave.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(empId, year, month);
 
-		// PayRoll payroll = repo.findByemployeeId(empId);
 		PayRoll payroll = repo.findByEmployeeIdAndMonthAndYear(empId, month, year);
 		if (payroll != null) {
 			payRollResponse.setPayroll(payroll);
@@ -111,7 +155,7 @@ public class PayRollServiceImpl implements IPayRollService {
 		// Retrieve employee details
 		PersonalInfo employee = personalinfo.getPersonalInfoByEmployeeId(empId);
 
-		// Initialize PayRoll,Deductions and Allowances objects
+		// Initialize PayRoll, sDeductions and Allowances objects
 		PayRoll payRoll = new PayRoll();
 		Allowances allowances = new Allowances();
 		Deductions deductions = new Deductions();
@@ -170,11 +214,11 @@ public class PayRollServiceImpl implements IPayRollService {
 		payRoll.setTotalPay(totalPay);
 
 		// setting values of deduction
-		double leaveDayCut = leaveDayCut(fullAttendence, leaves, basicPay);
+		double leaveDayCut = leaveDayCut(fullAttendence, basicPay, payRoll);
 		deductions.setLeaveDayCut(leaveDayCut);
 
 		payRoll.setDeductions(deductions);
-		
+
 		// Set the details in the PayRollResponse
 		payRollResponse.setPayroll(payRoll);
 		payRollResponse.setAttendence(fullAttendence);
@@ -191,7 +235,6 @@ public class PayRollServiceImpl implements IPayRollService {
 
 	@Override
 	public PayRollResponse findPayrollForEmployeePage(long empId, int year, int month) {
-		// PayRoll payroll = repo.findByemployeeId(empId);
 		PayRoll payroll = repo.findByEmployeeIdAndMonthAndYear(empId, month, year);
 
 		if (payroll == null) {
