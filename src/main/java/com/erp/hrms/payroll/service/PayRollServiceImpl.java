@@ -1,6 +1,8 @@
 package com.erp.hrms.payroll.service;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,15 @@ import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.form.service.LeaveService;
 import com.erp.hrms.payments.OverTimePay;
 import com.erp.hrms.payments.OvertimePayService;
+import com.erp.hrms.payments.Tax;
+import com.erp.hrms.payments.TaxService;
 import com.erp.hrms.payroll.dao.IPayRollRepo;
+import com.erp.hrms.payroll.dao.ISalaryCerti;
 import com.erp.hrms.payroll.entity.Allowances;
 import com.erp.hrms.payroll.entity.Deductions;
 import com.erp.hrms.payroll.entity.PayRoll;
 import com.erp.hrms.payroll.entity.PayRollResponse;
+import com.erp.hrms.payroll.entity.SalaryCerti;
 
 @Service
 public class PayRollServiceImpl implements IPayRollService {
@@ -38,24 +44,34 @@ public class PayRollServiceImpl implements IPayRollService {
 	@Autowired
 	private LeaveService leave;
 
+	@Autowired
+	private TaxService tax;
+
+	@Autowired
+	private ISalaryCerti certirepo;
+
 	private double leaveDayCut(AttendenceResponse fullAttendence, Double basicPay, PayRoll pl) {
 		double leaveDayCutAmount = 0;
 		int totalDaysPresentInMonthI = 20;
 		double totalDaysPresentInMonth = totalDaysPresentInMonthI;
 		int totalWorkigDaysInMonthI = 25;
 		double totalWorkigDaysInMonth = totalWorkigDaysInMonthI;
-		double totalcasualleavesApproved = 31;
-		double totalmedicalleavesApproved = 15;
+		// solving challenge 1
+		// for now this is not totalcasualleaves APPROVED IN YEAR this is total casual
+		// leaves taken till current month
+		double totalcasualleavesTakenTillCurrentMonth = 30;
+		// same as totalcasualleavesApproved
+		double totalmedicalleavesTakenTillCurrentMonth = 12;
 		double casualleaveinmonth = 2;
 		double medicalleaveinmonth = 2;
 		double totalcasualleavesprovidedinyear = 30;
 		double totalmedicalleavesprovidedinyear = 15;
-		double totalAllowances = calculateTotalAllowances(pl);
+		double calculateOneDayAmount = calculateOneDayAmount(pl);
 
 		// 1 day pay = (basic pay + allowances + benefits) / (30 - Sundays)
-		// Benefits need to be added, details in onboarding module
+		// double onedayamount = calculateOneDayAmount / totalWorkigDaysInMonth;
 
-		// For testing purposes
+		// For testing purposes , needs to be removed
 		double onedayamount = 500;
 
 		double uninformedLeaves = totalWorkigDaysInMonth - totalDaysPresentInMonth
@@ -63,22 +79,25 @@ public class PayRollServiceImpl implements IPayRollService {
 
 		if (uninformedLeaves > 0) {
 			leaveDayCutAmount = uninformedLeaves * (onedayamount * 1.3); // Abhi 1.3 hardcoded hai, baad mai isse
+																			// dynamic karna hai
 		}
 
-		if (totalcasualleavesApproved > totalcasualleavesprovidedinyear) {
-			double daysexceeedingcasualleavesprovided = totalcasualleavesApproved - casualleaveinmonth;
+		if (totalcasualleavesTakenTillCurrentMonth > totalcasualleavesprovidedinyear) {
+			double daysexceeedingcasualleavesprovided = totalcasualleavesTakenTillCurrentMonth - casualleaveinmonth;
 			if (daysexceeedingcasualleavesprovided < totalcasualleavesprovidedinyear) {
-				double noofdaysforamounttobededucted = totalcasualleavesApproved - totalcasualleavesprovidedinyear;
+				double noofdaysforamounttobededucted = totalcasualleavesTakenTillCurrentMonth
+						- totalcasualleavesprovidedinyear;
 				leaveDayCutAmount += onedayamount * noofdaysforamounttobededucted;
 			} else {
 				leaveDayCutAmount += onedayamount * casualleaveinmonth;
 			}
 		}
 
-		if (totalmedicalleavesApproved > totalmedicalleavesprovidedinyear) {
-			double daysexceeedingmedicalleavesprovided = totalmedicalleavesApproved - medicalleaveinmonth;
+		if (totalmedicalleavesTakenTillCurrentMonth > totalmedicalleavesprovidedinyear) {
+			double daysexceeedingmedicalleavesprovided = totalmedicalleavesTakenTillCurrentMonth - medicalleaveinmonth;
 			if (daysexceeedingmedicalleavesprovided < totalmedicalleavesprovidedinyear) {
-				double noofdaysforamounttobededucted = totalmedicalleavesApproved - totalmedicalleavesprovidedinyear;
+				double noofdaysforamounttobededucted = totalmedicalleavesTakenTillCurrentMonth
+						- totalmedicalleavesprovidedinyear;
 				leaveDayCutAmount += onedayamount * noofdaysforamounttobededucted;
 			} else {
 				leaveDayCutAmount += onedayamount * medicalleaveinmonth;
@@ -88,7 +107,7 @@ public class PayRollServiceImpl implements IPayRollService {
 		return leaveDayCutAmount;
 	}
 
-	private double calculateTotalAllowances(PayRoll payRoll) {
+	private double calculateOneDayAmount(PayRoll payRoll) {
 		// Convert String allowances to double
 		double houseRentAmount = Double.parseDouble(payRoll.getAllowances().getHouseRentAmount());
 		double foodAllowanceAmount = Double.parseDouble(payRoll.getAllowances().getFoodAllowanceAmount());
@@ -98,10 +117,23 @@ public class PayRollServiceImpl implements IPayRollService {
 		double educationalAllowanceAmount = Double.parseDouble(payRoll.getAllowances().getEducationalAllowanceAmount());
 		double otherAllowanceAmount = Double.parseDouble(payRoll.getAllowances().getOtherAllowanceAmount());
 
+		// Perquisites
+		double vehicleCashAmount = payRoll.getVehicleCashAmount();
+		double electricityAllocationAmount = payRoll.getElectricityAllocationAmount();
+		double rentAllocationAmount = payRoll.getRentAllocationAmount();
+
+		double basicPay = payRoll.getBasicPay();
+
 		// Sum up all amounts
-		double totalAllowances = houseRentAmount + foodAllowanceAmount + vehicleAllowanceAmount + uniformAllowanceAmount
-				+ travellingAllowancesAmount + educationalAllowanceAmount + otherAllowanceAmount;
-		return totalAllowances;
+		double total = houseRentAmount + foodAllowanceAmount + vehicleAllowanceAmount + uniformAllowanceAmount
+				+ travellingAllowancesAmount + educationalAllowanceAmount + otherAllowanceAmount + vehicleCashAmount
+				+ electricityAllocationAmount + rentAllocationAmount + basicPay;
+
+		return total;
+	}
+
+	private double calculateDeductions(Deductions de, double taxAmount) {
+		return de.getLeaveDayCut() + de.getTardyDayCut() + de.getHalfDayCut() + taxAmount;
 	}
 
 	private double calculateTotalPay(PayRoll payRoll) {
@@ -124,13 +156,45 @@ public class PayRollServiceImpl implements IPayRollService {
 		double bonus = payRoll.getBonus();
 		double monthyPerformancePay = payRoll.getMonthlyPerformancePay();
 		double incentiveAmount = payRoll.getIncentiveAmount();
-		double overtimePay = payRoll.getOvertimePayAmount();
+		double overtimePay = payRoll.getOvertimePay();
+
+		// Perquisites
+		double vehicleCashAmount = payRoll.getVehicleCashAmount();
+		double electricityAllocationAmount = payRoll.getElectricityAllocationAmount();
+		double rentAllocationAmount = payRoll.getRentAllocationAmount();
 
 		// Calculate total pay
-		double totalPay = basicPay + totalAllowances + anySpecialRewardAmount + bonus + monthyPerformancePay
-				+ incentiveAmount + overtimePay;
+		double totalPay = vehicleCashAmount + electricityAllocationAmount + rentAllocationAmount + basicPay
+				+ totalAllowances + anySpecialRewardAmount + bonus + monthyPerformancePay + incentiveAmount
+				+ overtimePay;
 
 		return totalPay;
+	}
+
+	private double taxCalculation(PayRoll pay) {
+		List<Tax> taxcal = pay.getTax();
+		double basicPay = pay.getBasicPay();
+		double taxAmout = 0;
+		for (Tax tax : taxcal) {
+			double salaryPercentOfTax = tax.getSalaryPercentOfTax();
+			taxAmout += (basicPay * salaryPercentOfTax) / 100;
+		}
+		return taxAmout;
+	}
+
+	private LocalDate getThirdLastWorkingDay(int month, int year) {
+		LocalDate lastdayofmonth = LocalDate.of(year, month, 1).plusMonths(1).minusDays(1);
+
+		LocalDate currentDay = lastdayofmonth;
+		int workingDaysCount = 0;
+		while (workingDaysCount < 3) {
+			if (currentDay.getDayOfWeek() != DayOfWeek.SUNDAY) {
+				workingDaysCount++;
+			}
+			currentDay = currentDay.minusDays(1);
+		}
+		return currentDay.plusDays(1);
+
 	}
 
 	@Override
@@ -170,6 +234,16 @@ public class PayRollServiceImpl implements IPayRollService {
 			payRoll.setJobLevel(job.getJobLevel());
 			payRoll.setJobLocation(job.getPostedLocation());
 
+			// Perquisites
+			double vehicleCashAmount = Double.parseDouble(job.getCashAmount());
+			payRoll.setVehicleCashAmount(vehicleCashAmount);
+
+			double electricityAllocationAmount = Double.parseDouble(job.getElectricityAllocationAmount());
+			payRoll.setElectricityAllocationAmount(electricityAllocationAmount);
+
+			double rentAllocationAmount = Double.parseDouble(job.getRentAllocationAmount());
+			payRoll.setRentAllocationAmount(rentAllocationAmount);
+
 			String string = job.getBasicPay();
 			basicPay = Double.valueOf(string);
 			payRoll.setBasicPay(basicPay);
@@ -193,6 +267,8 @@ public class PayRollServiceImpl implements IPayRollService {
 		payRoll.setAddress(employee.getPermanentResidentialAddress());
 		payRoll.setYear(year);
 		payRoll.setMonth(month);
+		payRoll.setMethodUsedForPayment("Cash");
+		payRoll.setDateOfPayment(getThirdLastWorkingDay(month, year));
 
 		// calculating OverTime Ammount
 		OverTimePay overtimeAmount = overtime.getovertimeAmount();
@@ -203,20 +279,23 @@ public class PayRollServiceImpl implements IPayRollService {
 		double totalOvertimeHoursInMonthInHours = totalOvertimeHoursInMonth / (1000.0 * 60 * 60);
 		// Calculate total overtime pay
 		double totalOvertimePay = totalOvertimeHoursInMonthInHours * amount;
-
 		// Set the total overtime pay in the PayRoll object
 		payRoll.setOvertimePay(totalOvertimePay);
 
 		// method to calculate total Pay
 		double totalPay = calculateTotalPay(payRoll);
-
 		// Setting total Pay
 		payRoll.setTotalPay(totalPay);
+
+		// calculating tax
+		List<Tax> taxlist = tax.getTax();
+		payRoll.setTax(taxlist);
 
 		// setting values of deduction
 		double leaveDayCut = leaveDayCut(fullAttendence, basicPay, payRoll);
 		deductions.setLeaveDayCut(leaveDayCut);
-
+		double totalDeduction = calculateDeductions(deductions, taxCalculation(payRoll));
+		deductions.setTotalDeductions(totalDeduction);
 		payRoll.setDeductions(deductions);
 
 		// Set the details in the PayRollResponse
@@ -254,5 +333,35 @@ public class PayRollServiceImpl implements IPayRollService {
 
 		return response;
 	}
+
+	@Override
+	public SalaryCerti getSalaryCerti(long empId, int year, int month) {
+		//need to add if condition
+		SalaryCerti salaryCerti = new SalaryCerti();
+
+		salaryCerti.setEmployeeId(empId);
+		salaryCerti.setMonth(month);
+		salaryCerti.setYear(year);
+		salaryCerti.setManagerApprovalStatusForCerti("Pending");
+		return certirepo.save(salaryCerti);
+
+	}
+	
+	
+	@Override
+	public SalaryCerti updateSalaryCertiStatus(SalaryCerti certi) {
+		SalaryCerti salaryCerti = certirepo.findByEmployeeIdAndMonthAndYear(certi.getEmployeeId(), certi.getMonth(), certi.getYear());
+		salaryCerti.setManagerApprovalStatusForCerti(certi.getManagerApprovalStatusForCerti());
+		salaryCerti.setHrApprovalStatusForCerti(certi.getHrApprovalStatusForCerti());
+		return certirepo.save(salaryCerti);
+
+	}
+
+	@Override
+	public List<SalaryCerti> getAllRequest() {
+		return certirepo.findAll();
+	}
+	
+	
 
 }

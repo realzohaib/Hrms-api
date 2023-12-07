@@ -125,10 +125,14 @@ public class AttendenceServiceImpl implements IAttendenceService {
 				// Constants for better readability and maintainability
 				final long FULL_SHIFT_DURATION = 11 * 60 * 60 * 1000; // 11 hours in milliseconds
 				final double HALF_DAY_THRESHOLD = 0.85;
+				final double HALF_DAY_THRESHOLD2 = 0.45;
 				final long ONE_HOUR = 60 * 60 * 1000;
 
 				// Set half day flag
-				attendence.setHalfDay(totalDurationInMillis < HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION);
+				if(totalDurationInMillis < HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION  && totalDurationInMillis > HALF_DAY_THRESHOLD2 * FULL_SHIFT_DURATION)
+				attendence.setHalfDay(true);
+				
+				//isme 45 % se kam hua to leave cut karnui hai , usme kaam karna hai
 
 				// Set normal working day flag
 				if (totalDurationInMillis >= HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION
@@ -314,8 +318,8 @@ public class AttendenceServiceImpl implements IAttendenceService {
 			endDay = cycle.getLastDate();
 			break;
 		}
-		// LocalDate currentDate = LocalDate.now();
-		LocalDate currentDate = LocalDate.of(2023, 12, 03);
+		 LocalDate currentDate = LocalDate.now();
+		//LocalDate currentDate = LocalDate.of(2023, 12, 03);
 
 		LocalDate startDate = LocalDate.of(year, month, startDay).minusMonths(1);
 
