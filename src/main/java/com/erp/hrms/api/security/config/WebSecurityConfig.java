@@ -90,16 +90,20 @@ public class WebSecurityConfig {
 				.and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 
-				//.anyRequest().permitAll();
+				// .anyRequest().permitAll();
 
-				.antMatchers("/api/auth/**").permitAll().antMatchers("/api/v1/personal-info").hasRole("ADMIN")
+				
+				.antMatchers("/api/auth/**").permitAll()
+				.antMatchers("/api/v1/dashboard").permitAll()
+				.antMatchers("/**").hasRole("ADMIN")
+				.antMatchers("/api/v1/**").hasAnyRole("ADMIN", "HR")
+				.antMatchers("/api/v1/personal-info").hasAnyRole("ADMIN", "HR")
 				.antMatchers("/api/v1/personal-info/find/all/active").hasAnyRole("ADMIN", "HR")
 				.antMatchers("/api/v1/personal-info/email/{email}").hasAnyRole("ADMIN", "HR")
-				.antMatchers("/api/v1/personal-info/employeeId/{employeeId}").hasAnyRole("ADMIN", "EMPLOYEE")
+				.antMatchers("/api/v1/personal-info/employeeId/{employeeId}").hasAnyRole("ADMIN", "EMPLOYEE", "HR")
 				.antMatchers("/api/v1/personal-info/delete/{email}").hasRole("ADMIN")
-				.antMatchers("/api/v1/personal-info/update/email/{email}").hasAnyRole("ADMIN", "EMPLOYEE" ,"HR")
-		        .antMatchers("/api/v1/dashboard").permitAll()
-		        .antMatchers("/api/v1/**").hasAnyRole("ADMIN", "HR");
+				.antMatchers("/api/v1/personal-info/update/email/{email}").hasAnyRole("ADMIN", "EMPLOYEE", "HR")
+				.anyRequest().authenticated();
 
 		http.authenticationProvider(authenticationProvider());
 
