@@ -12,4 +12,5 @@ public class LeaveCountDTO {
 	private String leaveName;
 	private Double totalLeaveDays;
 
+	
 }

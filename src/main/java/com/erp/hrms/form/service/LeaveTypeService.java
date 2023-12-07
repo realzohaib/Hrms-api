@@ -1,6 +1,7 @@
 package com.erp.hrms.form.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,16 @@ public class LeaveTypeService implements ILeaveTypeService {
 
 	@Autowired
 	public ILeaveTypeRepository iLeaveTypeRepository;
+
+	@Override
+	public void predefinedLeaveType() {
+		if (iLeaveTypeRepository.findAllLeaveType().isEmpty()) {
+			List<LeaveType> initialLeaveType = new ArrayList<>();
+			initialLeaveType.add(new LeaveType("Medical", 15.0));
+			initialLeaveType.add(new LeaveType("Casual", 30.0));
+			iLeaveTypeRepository.predefinedLeaveType(initialLeaveType);
+		}
+	}
 
 	@Override
 	public void createLeaveType(String leaveType) throws IOException {

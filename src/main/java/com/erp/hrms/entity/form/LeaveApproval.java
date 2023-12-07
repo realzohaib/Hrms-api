@@ -50,8 +50,8 @@ public class LeaveApproval {
 	@Transient
 	private byte[] medicalDocumentData;
 
-	private Double remaingMedicalLeave;
-	private Double remaingCasualLeave;
+	private Double remainingMedicalLeaves;
+	private Double remainingCasualLeaves;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "leaveTypeLeaveApproval", referencedColumnName = "leaveTypeId")

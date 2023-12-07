@@ -19,8 +19,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "holidays")
-public class Holiday {
+@Table(name = "AcademicCalendar")
+public class AcademicCalendar {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

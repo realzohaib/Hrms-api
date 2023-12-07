@@ -1634,6 +1634,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					existingJobDetails.setChipNumber(updateJobDetails.getChipNumber());
 					existingJobDetails.setReferredBy(updateJobDetails.getReferredBy());
 					existingJobDetails.setByWhom(updateJobDetails.getByWhom());
+					existingJobDetails.setCashAmount(updateJobDetails.getCashAmount());
 				}
 				existingPersonalInfo.setJobDetails(jobDetails);
 			}

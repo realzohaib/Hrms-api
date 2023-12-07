@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCountDTO;
-import com.erp.hrms.entity.form.LeaveSummary;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 
 @Repository
@@ -44,7 +43,6 @@ public class LeaveRepository implements ILeaveRepository {
 		} catch (NoResultException e) {
 			return null;
 		}
-
 	}
 
 	@Override
@@ -193,20 +191,6 @@ public class LeaveRepository implements ILeaveRepository {
 	}
 
 	@Override
-	public List<LeaveSummary> getLeaveSummaryByEmployeeAndYear(Long employeeId, int year) {
-		String queryString = "SELECT NEW com.erp.hrms.entity.form.LeaveSummary(l.leaveType.leaveName, SUM(l.numberOfDaysRequested)) "
-				+ "FROM LeaveApproval l "
-				+ "WHERE l.employeeId = :employeeId AND YEAR(l.startDate) = :year AND l.hrApprovalStatus = 'Accepted' "
-				+ "GROUP BY l.leaveType.leaveName";
-
-		Query query = entityManager.createQuery(queryString, LeaveSummary.class);
-		query.setParameter("employeeId", employeeId);
-		query.setParameter("year", year);
-
-		return query.getResultList();
-	}
-
-	@Override
 	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(Long employeeId, int year, int month) {
 		try {
 			TypedQuery<LeaveCountDTO> query = entityManager.createQuery(
@@ -219,6 +203,9 @@ public class LeaveRepository implements ILeaveRepository {
 			query.setParameter("employeeId", employeeId);
 			query.setParameter("year", year);
 			query.setParameter("month", month);
+
+			System.out
+					.println("Generated SQL Query: " + query.unwrap(org.hibernate.query.Query.class).getQueryString());
 
 			return query.getResultList();
 		} catch (NoResultException e) {

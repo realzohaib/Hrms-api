@@ -5,8 +5,12 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +30,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.erp.hrms.AcademicCalendar.calendarRepository.CalendarRepository;
+import com.erp.hrms.AcademicCalendar.entity.AcademicCalendar;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.security.entity.RoleEntity;
 import com.erp.hrms.api.security.entity.UserEntity;
@@ -35,12 +41,14 @@ import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
 import com.erp.hrms.entity.form.LeaveCountDTO;
-import com.erp.hrms.entity.form.LeaveSummary;
+import com.erp.hrms.entity.form.LeaveDataDTO;
+import com.erp.hrms.entity.form.LeaveEmployee;
 import com.erp.hrms.entity.form.LeaveType;
 import com.erp.hrms.entity.form.MarkedDate;
 import com.erp.hrms.exception.LeaveRequestApprovalException;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 import com.erp.hrms.form.repository.ILeaveRepository;
+import com.erp.hrms.form.repository.IleaveApprovalRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -68,6 +76,15 @@ public class LeaveService implements ILeaveService {
 	@Autowired
 	private FileService fileService;
 
+	@Autowired
+	private IleaveApprovalRepo repo;
+
+	@Autowired
+	private CalendarRepository calendarRepository;
+
+	@Autowired
+	private ILeaveTypeService leavetype;
+
 //	This method for send the leave request to manager and send email to manager and admin
 	@Override
 	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException {
@@ -82,12 +99,12 @@ public class LeaveService implements ILeaveService {
 					.max(Comparator.comparingLong(LeaveApproval::getLeaveRequestId)).orElse(null);
 			if (existingEmployee != null) {
 				// Employee already exists, fetch and set existing values
-				leaveApprovalJson.setRemaingMedicalLeave(existingEmployee.getRemaingMedicalLeave());
-				leaveApprovalJson.setRemaingCasualLeave(existingEmployee.getRemaingCasualLeave());
+				leaveApprovalJson.setRemainingMedicalLeaves(existingEmployee.getRemainingMedicalLeaves());
+				leaveApprovalJson.setRemainingCasualLeaves(existingEmployee.getRemainingCasualLeaves());
 			} else {
 				// Employee does not exist, set default values
-				leaveApprovalJson.setRemaingMedicalLeave(15.0); // Default value for remaingMedicalLeave
-				leaveApprovalJson.setRemaingCasualLeave(30.0); // Default value for remaingCasualLeave
+				leaveApprovalJson.setRemainingMedicalLeaves(15.0);
+				leaveApprovalJson.setRemainingCasualLeaves(30.0);
 			}
 
 			LeaveType leaveType = entityManager.find(LeaveType.class,
@@ -147,7 +164,6 @@ public class LeaveService implements ILeaveService {
 			if (leaveApproval == null) {
 				throw new LeaveRequestNotFoundException(
 						new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
-
 			}
 			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
@@ -332,16 +348,12 @@ public class LeaveService implements ILeaveService {
 				if ("Accepted".equalsIgnoreCase(leaveApprovalJson.getHrApprovalStatus())) {
 					if (1L == leaveid) {
 						// Subtract from remainingMedicalLeave for medical leave
-						existingApproval.setRemaingMedicalLeave(
-								existingApproval.getRemaingMedicalLeave() - numberOfDaysRequested);
-						System.out.println("Medical leave subtracted. Remaining Medical Leave: "
-								+ existingApproval.getRemaingMedicalLeave());
+						existingApproval.setRemainingMedicalLeaves(
+								existingApproval.getRemainingMedicalLeaves() - numberOfDaysRequested);
 					} else if (2L == leaveid) {
 						// Subtract from remainingCasualLeave for casual leave
-						existingApproval.setRemaingCasualLeave(
-								existingApproval.getRemaingCasualLeave() - numberOfDaysRequested);
-						System.out.println("Casual leave subtracted. Remaining Casual Leave: "
-								+ existingApproval.getRemaingCasualLeave());
+						existingApproval.setRemainingCasualLeaves(
+								existingApproval.getRemainingCasualLeaves() - numberOfDaysRequested);
 					}
 				}
 			}
@@ -349,7 +361,7 @@ public class LeaveService implements ILeaveService {
 			String hrEmail = leaveApprovalJson.getHrEmail();
 			String managerEmail = leaveApprovalJson.getManagerEmail();
 
-			// Send emails to hr
+//			// Send emails to hr
 			sendLeaveRequestEmailApprovedOrDenyByHR(hrEmail, "Leave Request status by the HR", leaveApprovalJson);
 //			 Send email to manager who approve or deny the leave request
 			sendLeaveRequestEmailApprovedOrDenyByHR(managerEmail, "Leave Request status by the HR", leaveApprovalJson);
@@ -504,7 +516,32 @@ public class LeaveService implements ILeaveService {
 	}
 
 //	This method is to calculate how many employees are on leave in a day.
-	@Override
+//	@Override
+//	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals) {
+//		List<LeaveCalendarData> calendarData = new ArrayList<>();
+//
+//		for (LeaveApproval approval : leaveApprovals) {
+//			LocalDate startDate = LocalDate.parse(approval.getStartDate());
+//			LocalDate endDate = LocalDate.parse(approval.getEndDate());
+//
+//			List<LocalDate> leaveDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
+//
+//			for (LocalDate date : leaveDates) {
+//				Optional<LeaveCalendarData> existingData = calendarData.stream()
+//						.filter(data -> data.getDate().equals(date)).findFirst();
+//
+//				if (existingData.isPresent()) {
+//					existingData.get().incrementEmployeeCount();
+//				} else {
+//					LeaveCalendarData data = new LeaveCalendarData(date);
+//					calendarData.add(data);
+//				}
+//			}
+//		}
+//
+//		return calendarData;
+//	}
+
 	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals) {
 		List<LeaveCalendarData> calendarData = new ArrayList<>();
 
@@ -518,10 +555,17 @@ public class LeaveService implements ILeaveService {
 				Optional<LeaveCalendarData> existingData = calendarData.stream()
 						.filter(data -> data.getDate().equals(date)).findFirst();
 
+				LeaveEmployee leaveEmployee = new LeaveEmployee();
+				leaveEmployee.setEmployeeId(approval.getEmployeeId());
+				leaveEmployee.setEmployeeName(approval.getNameOfEmployee());
+
 				if (existingData.isPresent()) {
 					existingData.get().incrementEmployeeCount();
+					existingData.get().getLeaveEmployees().add(leaveEmployee);
 				} else {
 					LeaveCalendarData data = new LeaveCalendarData(date);
+					data.incrementEmployeeCount();
+					data.setLeaveEmployees(new ArrayList<>(Collections.singletonList(leaveEmployee)));
 					calendarData.add(data);
 				}
 			}
@@ -580,13 +624,138 @@ public class LeaveService implements ILeaveService {
 		return iLeaveRepository.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(employeeId, year, month);
 	}
 
+//	This method find all leave in a year of particular employee 
 	@Override
-	public List<LeaveSummary> getLeaveSummaryByEmployeeAndYear(Long employeeId, int year) {
-		return iLeaveRepository.getLeaveSummaryByEmployeeAndYear(employeeId, year);
+	public List<LeaveCountDTO> getAllLeavesByEmployeeIdAndYear(Long employeeId, int year, String countryName) {
+		List<LeaveApproval> leaveApprovals = repo.findByEmployeeIdAndHrApprovalStatus(employeeId, "Accepted");
+		List<AcademicCalendar> holidays = calendarRepository.findByYearAndCountry(year, countryName);
+
+		Map<String, Double> leaveTypeTotalDaysMap = new HashMap<>();
+
+		for (LeaveApproval leaveApproval : leaveApprovals) {
+			LocalDate startDate = LocalDate.parse(leaveApproval.getStartDate());
+			LocalDate endDate = LocalDate.parse(leaveApproval.getEndDate());
+
+			if (endDate.isAfter(LocalDate.of(year, 1, 1)) && startDate.isBefore(LocalDate.of(year + 1, 1, 1))) {
+				LocalDate startOfYear = startDate.isBefore(LocalDate.of(year, 1, 1)) ? LocalDate.of(year, 1, 1)
+						: startDate;
+				LocalDate endOfYear = endDate.isAfter(LocalDate.of(year + 1, 1, 1))
+						? LocalDate.of(year + 1, 1, 1).minusDays(1)
+						: endDate;
+				long diffInDays = ChronoUnit.DAYS.between(startOfYear, endOfYear) + 1;
+
+				for (AcademicCalendar holiday : holidays) {
+					LocalDate startHolidayDate = holiday.getStartHolidayDate();
+					LocalDate endHolidayDate = holiday.getEndHolidayDate();
+					if (startDate.isBefore(endHolidayDate) && endDate.isAfter(startHolidayDate)) {
+						LocalDate overlapStartDate = startDate.isAfter(startHolidayDate) ? startDate : startHolidayDate;
+						LocalDate overlapEndDate = endDate.isBefore(endHolidayDate) ? endDate : endHolidayDate;
+						diffInDays -= calculateDaysInRange(overlapStartDate, overlapEndDate);
+					}
+				}
+
+				LocalDate currentDate = startOfYear;
+				while (!currentDate.isAfter(endOfYear)) {
+					if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+						diffInDays--;
+					}
+					currentDate = currentDate.plusDays(1);
+				}
+
+				leaveTypeTotalDaysMap.merge(leaveApproval.getLeaveType().getLeaveName(), (double) diffInDays,
+						Double::sum);
+			}
+		}
+
+		// Convert the map to a list of LeaveCountDTO
+		List<LeaveCountDTO> result = leaveTypeTotalDaysMap.entrySet().stream()
+				.map(entry -> new LeaveCountDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+
+		return result;
 	}
 
 	@Override
-	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(Long employeeId, int year, int month) {
-		return iLeaveRepository.getLeaveCountByEmployeeAndMonth(employeeId, year, month);
+	public List<LeaveCountDTO> getAllLeaveByMonthByEmployeeId(int year, int month, long employeeId,
+			String countryName) {
+
+		List<LeaveApproval> leaves = repo.findByEmployeeIdAndHrApprovalStatus(employeeId, "Accepted");
+		List<AcademicCalendar> holidays = calendarRepository.findByYearAndCountry(year, countryName);
+
+		Map<String, Double> leaveTypeTotalDaysMap = new HashMap<>();
+		YearMonth yearMonth = YearMonth.of(year, month);
+
+		// Get the first day of the month
+		LocalDate firstDayOfMonth = yearMonth.atDay(1);
+
+		// Get the last day of the month
+		LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
+
+		for (LeaveApproval leave : leaves) {
+			String startDateString = leave.getStartDate();
+			String endDateString = leave.getEndDate();
+			LocalDate startDate = LocalDate.parse(startDateString);
+			LocalDate endDate = LocalDate.parse(endDateString);
+
+			// Check if the leave period overlaps with the specified month
+			if (endDate.isAfter(firstDayOfMonth.minusDays(1)) && startDate.isBefore(lastDayOfMonth.plusDays(1))) {
+				// Adjust start date and end date to fit within the month
+				startDate = startDate.isBefore(firstDayOfMonth) ? firstDayOfMonth : startDate;
+				endDate = endDate.isAfter(lastDayOfMonth) ? lastDayOfMonth : endDate;
+
+				// Calculate the duration between the two dates
+				int daysBetweenInclusive = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
+				// Subtract holidays and weekends
+				for (AcademicCalendar holiday : holidays) {
+					LocalDate startHolidayDate = holiday.getStartHolidayDate();
+					LocalDate endHolidayDate = holiday.getEndHolidayDate();
+
+					if (startDate.isBefore(endHolidayDate) && endDate.isAfter(startHolidayDate)) {
+						// Overlapping dates, subtract the days
+						LocalDate overlapStartDate = startDate.isAfter(startHolidayDate) ? startDate : startHolidayDate;
+						LocalDate overlapEndDate = endDate.isBefore(endHolidayDate) ? endDate : endHolidayDate;
+
+						daysBetweenInclusive -= calculateDaysInRange(overlapStartDate, overlapEndDate);
+					}
+				}
+
+				LocalDate currentDate = startDate;
+				while (!currentDate.isAfter(endDate)) {
+					DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
+					if (dayOfWeek == DayOfWeek.SUNDAY) {
+						daysBetweenInclusive -= 1;
+					}
+					currentDate = currentDate.plusDays(1);
+				}
+
+				// Update the total days for each leave type
+				leaveTypeTotalDaysMap.merge(leave.getLeaveType().getLeaveName(), (double) daysBetweenInclusive,
+						Double::sum);
+			}
+		}
+
+		// Convert the map to a list of LeaveCountDTO
+		List<LeaveCountDTO> result = leaveTypeTotalDaysMap.entrySet().stream()
+				.map(entry -> new LeaveCountDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+
+		return result;
+
 	}
+
+	// Helper method to calculate days between two dates inclusive
+	private int calculateDaysInRange(LocalDate startDate, LocalDate endDate) {
+		return (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
+	}
+
+//	This method give the total count of employee on leave on a particular date and also give the list of employee
+	@Override
+	public LeaveDataDTO getLeaveDataByDate(String date) {
+		List<LeaveApproval> leaveApprovals = repo.findByDate(date);
+
+		long employeeIdCount = leaveApprovals.stream().map(LeaveApproval::getEmployeeId).distinct().count();
+
+		return new LeaveDataDTO(leaveApprovals, employeeIdCount);
+	}
+
+	
 }

@@ -1,6 +1,5 @@
 package com.erp.hrms.AcademicCalendar.calendarControlelr;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.AcademicCalendar.calendarService.ICalendarService;
-import com.erp.hrms.AcademicCalendar.entity.Holiday;
+import com.erp.hrms.AcademicCalendar.entity.AcademicCalendar;
 import com.erp.hrms.api.security.response.MessageResponse;
 
 @RestController
@@ -31,7 +30,7 @@ public class CalendarController {
 	@GetMapping("/holidays")
 	public ResponseEntity<?> getAllHolidays() {
 		try {
-			List<Holiday> allHolidays = icalendarService.getAllHolidays();
+			List<AcademicCalendar> allHolidays = icalendarService.getAllHolidays();
 			if (allHolidays.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("No holidays found."));
 			}
@@ -46,9 +45,9 @@ public class CalendarController {
 	}
 
 	@PostMapping("/add-holiday")
-	public ResponseEntity<?> addHoliday(@RequestBody Holiday holiday) {
+	public ResponseEntity<?> addHoliday(@RequestBody AcademicCalendar academicCalendar) {
 		try {
-			icalendarService.addHoliday(holiday);
+			icalendarService.addHoliday(academicCalendar);
 			return new ResponseEntity<>(new MessageResponse("Your holiday day is created."), HttpStatus.CREATED);
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(new MessageResponse("Error while creating holiday. " + e.getMessage()),
@@ -62,7 +61,7 @@ public class CalendarController {
 	@GetMapping("/getholidays/{countryName}")
 	public ResponseEntity<?> getAllHolidaysWithCountry(@PathVariable("countryName") String countryName) {
 		try {
-			List<Holiday> allHolidaysWithCountry = icalendarService.getAllHolidaysWithCountry(countryName);
+			List<AcademicCalendar> allHolidaysWithCountry = icalendarService.getAllHolidaysWithCountry(countryName);
 			if (allHolidaysWithCountry.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND)
 						.body(new MessageResponse("No holidays found for country: " + countryName));
@@ -78,9 +77,10 @@ public class CalendarController {
 	}
 
 	@PutMapping("/update/holiday/{holidayId}")
-	public ResponseEntity<?> updateHoliday(@PathVariable Long holidayId, @RequestBody Holiday holiday) {
+	public ResponseEntity<?> updateHoliday(@PathVariable Long holidayId,
+			@RequestBody AcademicCalendar academicCalendar) {
 		try {
-			icalendarService.updateHoliday(holidayId, holiday);
+			icalendarService.updateHoliday(holidayId, academicCalendar);
 			return new ResponseEntity<>(new MessageResponse("Your holiday updated"), HttpStatus.OK);
 		} catch (EntityNotFoundException e) {
 			return new ResponseEntity<>(new MessageResponse("Holiday not found with id: " + holidayId),
@@ -100,7 +100,7 @@ public class CalendarController {
 	public ResponseEntity<?> getAllHolidaysWithYearAndCountry(@PathVariable("year") int year,
 			@PathVariable("countryName") String countryName) {
 		try {
-			List<Holiday> holidays = icalendarService.getAllHolidaysWithYearAndCountry(year, countryName);
+			List<AcademicCalendar> holidays = icalendarService.getAllHolidaysWithYearAndCountry(year, countryName);
 			if (holidays.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
 						new MessageResponse("No holidays found for the year " + year + " and country: " + countryName));
@@ -118,7 +118,7 @@ public class CalendarController {
 	@GetMapping("/getholiday/{holidayId}")
 	public ResponseEntity<?> getHolidayWithHolidayId(@PathVariable("holidayId") Long holidayId) {
 		try {
-			Holiday holidayByid = icalendarService.getHolidayByid(holidayId);
+			AcademicCalendar holidayByid = icalendarService.getHolidayByid(holidayId);
 			if (holidayByid == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND)
 						.body(new MessageResponse("No data found for this holiday id: " + holidayId));
@@ -133,15 +133,10 @@ public class CalendarController {
 		}
 	}
 
-	@GetMapping("/total-in-month/{year}/{month}")
-	public ResponseEntity<BigDecimal> calculateTotalLeaveDaysInMonth(@PathVariable int year, @PathVariable int month) {
-		try {
-			BigDecimal totalLeaveDays = icalendarService
-					.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(year, month);
-			return ResponseEntity.ok(totalLeaveDays);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+	@GetMapping("/total-holidays-in-month/{countryName}/{year}/{month}")
+	public int getAllHolidaysWithYearAndMonthAndCountryName(@PathVariable int year, @PathVariable String countryName,
+			@PathVariable int month) {
+		return icalendarService.getAllHolidaysWithYearAndMonthAndCountryName(year, month, countryName);
 	}
 
 }

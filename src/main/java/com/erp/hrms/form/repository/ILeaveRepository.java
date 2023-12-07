@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCountDTO;
-import com.erp.hrms.entity.form.LeaveSummary;
 
 public interface ILeaveRepository {
 
@@ -33,8 +32,6 @@ public interface ILeaveRepository {
 
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
 			int month);
-
-	public List<LeaveSummary> getLeaveSummaryByEmployeeAndYear(Long employeeId, int year);
 
 	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(Long employeeId, int year, int month);
 }

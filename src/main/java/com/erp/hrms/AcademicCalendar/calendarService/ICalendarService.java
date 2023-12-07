@@ -3,21 +3,24 @@ package com.erp.hrms.AcademicCalendar.calendarService;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.erp.hrms.AcademicCalendar.entity.Holiday;
+import com.erp.hrms.AcademicCalendar.entity.AcademicCalendar;
 
 public interface ICalendarService {
 
-	public List<Holiday> getAllHolidays();
+	public List<AcademicCalendar> getAllHolidays();
 
-	public void addHoliday(Holiday holiday);
+	public void addHoliday(AcademicCalendar academicCalendar);
 
-	public List<Holiday> getAllHolidaysWithCountry(String countryName);
+	public List<AcademicCalendar> getAllHolidaysWithCountry(String countryName);
 
-	public Holiday updateHoliday(Long holidayId, Holiday holiday);
+	public AcademicCalendar updateHoliday(Long holidayId, AcademicCalendar academicCalendar);
 
-	public List<Holiday> getAllHolidaysWithYearAndCountry(int year, String countryName);
+	public List<AcademicCalendar> getAllHolidaysWithYearAndCountry(int year, String countryName);
 
-	public Holiday getHolidayByid(Long holidayId);
+	public AcademicCalendar getHolidayByid(Long holidayId);
 
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(int year, int month);
+
+	public int getAllHolidaysWithYearAndMonthAndCountryName(int year, int month, String countryName);
+
 }
