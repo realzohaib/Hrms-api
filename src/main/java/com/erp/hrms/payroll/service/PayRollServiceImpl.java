@@ -18,6 +18,8 @@ import com.erp.hrms.payments.OverTimePay;
 import com.erp.hrms.payments.OvertimePayService;
 import com.erp.hrms.payments.Tax;
 import com.erp.hrms.payments.TaxService;
+import com.erp.hrms.payments.leaveCutAmount;
+import com.erp.hrms.payments.leaveCutAmountService;
 import com.erp.hrms.payroll.dao.IPayRollRepo;
 import com.erp.hrms.payroll.dao.ISalaryCerti;
 import com.erp.hrms.payroll.entity.Allowances;
@@ -49,6 +51,22 @@ public class PayRollServiceImpl implements IPayRollService {
 
 	@Autowired
 	private ISalaryCerti certirepo;
+	
+	@Autowired
+	private leaveCutAmountService leaveCutAmount;
+	
+	
+	private  double deductionPercentForUnInformedleave() {
+		double deductionPercent =0;
+		
+		List<leaveCutAmount> list = leaveCutAmount.getall();
+		for(leaveCutAmount l1 : list) {
+			deductionPercent = l1.getSalaryCutAmountPercentage();
+			break;
+		}
+		
+		return deductionPercent;
+	}
 
 	private double leaveDayCut(AttendenceResponse fullAttendence, Double basicPay, PayRoll pl) {
 		double leaveDayCutAmount = 0;
@@ -78,8 +96,7 @@ public class PayRollServiceImpl implements IPayRollService {
 				- (casualleaveinmonth + medicalleaveinmonth); // 25 - 20 - (3) = 2
 
 		if (uninformedLeaves > 0) {
-			leaveDayCutAmount = uninformedLeaves * (onedayamount * 1.3); // Abhi 1.3 hardcoded hai, baad mai isse
-																			// dynamic karna hai
+			leaveDayCutAmount = uninformedLeaves * (onedayamount * deductionPercentForUnInformedleave()); // 1.3
 		}
 
 		if (totalcasualleavesTakenTillCurrentMonth > totalcasualleavesprovidedinyear) {
