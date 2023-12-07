@@ -18,7 +18,7 @@ public class JwtResponse implements Serializable {
 private static final long serialVersionUID = 1L;
 private String token;
 private String type = "Bearer";
-private Date expieryTime;
+private String expieryTime;
 private PersonalInfo info;
   
   public JwtResponse(String accessToken) {
