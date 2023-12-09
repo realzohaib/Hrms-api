@@ -16,4 +16,15 @@ public class LeaveType {
 	private Long leaveTypeId;
 	private String leaveName;
 	private Double leaveDays;
+
+	public LeaveType() {
+		super();
+	}
+
+	public LeaveType(String leaveName, Double leaveDays) {
+		super();
+		this.leaveName = leaveName;
+		this.leaveDays = leaveDays;
+	}
+
 }

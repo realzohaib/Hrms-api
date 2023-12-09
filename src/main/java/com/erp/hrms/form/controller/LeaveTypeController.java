@@ -1,6 +1,9 @@
 package com.erp.hrms.form.controller;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,17 @@ public class LeaveTypeController {
 
 	@Autowired
 	public ILeaveTypeService iLeaveTypeService;
+
+	@PostConstruct
+	public ResponseEntity<?> PredefinedLeaveType() {
+		try {
+			iLeaveTypeService.predefinedLeaveType();
+			return new ResponseEntity<>(new MessageResponse("Your predefined leave type save to database. "),
+					HttpStatus.OK);
+		} catch (DataIntegrityViolationException e) {
+			return new ResponseEntity<>(new MessageResponse("Duplicate Leave type found"), HttpStatus.BAD_REQUEST);
+		}
+	}
 
 	@PostMapping("/leave/type")
 	public ResponseEntity<?> createLeaveType(@RequestParam("leaveType") String leaveType) {

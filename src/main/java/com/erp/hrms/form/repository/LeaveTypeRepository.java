@@ -20,6 +20,13 @@ public class LeaveTypeRepository implements ILeaveTypeRepository {
 	EntityManager entityManager;
 
 	@Override
+	public void predefinedLeaveType(List<LeaveType> leaveTypes) {
+		for (LeaveType leaveType : leaveTypes) {
+			entityManager.persist(leaveType);
+		}
+	}
+
+	@Override
 	public void createLeaveType(LeaveType leaveType) {
 		entityManager.persist(leaveType);
 	}

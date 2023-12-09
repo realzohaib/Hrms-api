@@ -17,4 +17,8 @@ public class monthCycle {
 	private int startDate;
 	private int lastDate;
 	private String cycleName;
+<<<<<<< HEAD
 }	
+=======
+}
+>>>>>>> branch 'test' of https://github.com/realzohaib/Hrms-api.git

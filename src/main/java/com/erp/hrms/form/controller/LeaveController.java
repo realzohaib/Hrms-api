@@ -1,7 +1,6 @@
 package com.erp.hrms.form.controller;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
+import com.erp.hrms.entity.form.LeaveCountDTO;
+import com.erp.hrms.entity.form.LeaveDataDTO;
 import com.erp.hrms.entity.form.MarkedDate;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 import com.erp.hrms.form.service.ILeaveService;
@@ -47,7 +48,6 @@ public class LeaveController {
 //	This method for get the leave request by LeaveRequestId
 	@GetMapping("/leave/request/{leaveRequestId}")
 	public ResponseEntity<?> getleaveRequestById(@PathVariable Long leaveRequestId) throws IOException {
-
 		try {
 			LeaveApproval getleaveRequestById = iLeaveService.getleaveRequestById(leaveRequestId);
 			return ResponseEntity.ok(getleaveRequestById);
@@ -84,7 +84,8 @@ public class LeaveController {
 	@PutMapping("/leave/request/approvedByManager/{leaveRequestId}")
 	public ResponseEntity<?> approvedByManager(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
-			@RequestParam("medicalDocumentsName") MultipartFile medicalDocumentsName) throws IOException {
+			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
+			throws IOException {
 		try {
 			iLeaveService.approvedByManager(leaveRequestId, leaveApproval, medicalDocumentsName);
 			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By manager"),
@@ -99,7 +100,8 @@ public class LeaveController {
 	@PutMapping("/leave/request/approvedByhr/{leaveRequestId}")
 	public ResponseEntity<?> approvedOrDenyByHR(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
-			@RequestParam("medicalDocumentsName") MultipartFile medicalDocumentsName) throws IOException {
+			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
+			throws IOException {
 		try {
 			iLeaveService.approvedOrDenyByHR(leaveRequestId, leaveApproval, medicalDocumentsName);
 			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By HR"), HttpStatus.OK);
@@ -163,6 +165,7 @@ public class LeaveController {
 		}
 	}
 
+//	mujhe is me employee ka naam add karna hai
 //	This method is to calculate how many employees are on leave in a day.
 	@GetMapping("/leave-calendar")
 	public ResponseEntity<List<LeaveCalendarData>> getLeaveCalendar() {
@@ -184,17 +187,33 @@ public class LeaveController {
 		}
 	}
 
-//	This method is for get the data of a single month that how many leaves in this month of a employee
-	@GetMapping("/totalLeaveDays/{employeeId}/{year}/{month}")
-	public ResponseEntity<BigDecimal> calculateTotalLeaveDaysInMonth(@PathVariable Long employeeId,
-			@PathVariable int year, @PathVariable int month) {
+//	This method the total leaves in a year of particular employee
+	@GetMapping("/total/leaves/in-year/{employeeId}/{year}/{countryName}")
+	public List<LeaveCountDTO> getTotalLeavesByYear(@PathVariable int year, @PathVariable Long employeeId,
+			@PathVariable String countryName) {
+		return iLeaveService.getAllLeavesByEmployeeIdAndYear(employeeId, year, countryName);
+	}
+
+//	This method give the total leaves in a month of particular employee
+	@GetMapping("/total/leaves/in-month/{employeeId}/{year}/{month}/{countryName}")
+	public List<LeaveCountDTO> getTotalLeavesByInMonth(@PathVariable int year, @PathVariable int month,
+			@PathVariable Long employeeId, @PathVariable String countryName) {
+		return iLeaveService.getAllLeaveByMonthByEmployeeId(year, month, employeeId, countryName);
+	}
+
+//	This method give the total count of employee on leave on a particular date and also give the list of employee
+	@GetMapping("/by-date/{date}")
+	public ResponseEntity<LeaveDataDTO> getLeaveDataByDate(@PathVariable String date) {
 		try {
-			BigDecimal totalLeaveDays = iLeaveService
-					.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(employeeId, year, month);
-			return ResponseEntity.ok(totalLeaveDays);
+			LeaveDataDTO leaveData = iLeaveService.getLeaveDataByDate(date);
+			return new ResponseEntity<>(leaveData, HttpStatus.OK);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> branch 'test' of https://github.com/realzohaib/Hrms-api.git

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.LeaveApproval;
+import com.erp.hrms.entity.form.LeaveCountDTO;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 
 @Repository
@@ -42,7 +43,6 @@ public class LeaveRepository implements ILeaveRepository {
 		} catch (NoResultException e) {
 			return null;
 		}
-
 	}
 
 	@Override
@@ -190,4 +190,31 @@ public class LeaveRepository implements ILeaveRepository {
 		return entityManager.createQuery(query).getSingleResult();
 	}
 
+<<<<<<< HEAD
 }
+=======
+	@Override
+	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(Long employeeId, int year, int month) {
+		try {
+			TypedQuery<LeaveCountDTO> query = entityManager.createQuery(
+					"SELECT NEW com.erp.hrms.entity.form.LeaveCountDTO(l.leaveType.leaveName, SUM(l.numberOfDaysRequested)) "
+							+ "FROM LeaveApproval l "
+							+ "WHERE l.employeeId = :employeeId AND YEAR(l.startDate) = :year AND MONTH(l.startDate) = :month AND l.hrApprovalStatus = 'Accepted' "
+							+ "GROUP BY l.leaveType.leaveName",
+					LeaveCountDTO.class);
+
+			query.setParameter("employeeId", employeeId);
+			query.setParameter("year", year);
+			query.setParameter("month", month);
+
+			System.out
+					.println("Generated SQL Query: " + query.unwrap(org.hibernate.query.Query.class).getQueryString());
+
+			return query.getResultList();
+		} catch (NoResultException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+}
+>>>>>>> branch 'test' of https://github.com/realzohaib/Hrms-api.git

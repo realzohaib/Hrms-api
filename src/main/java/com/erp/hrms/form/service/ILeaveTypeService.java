@@ -7,6 +7,8 @@ import com.erp.hrms.entity.form.LeaveType;
 
 public interface ILeaveTypeService {
 
+	public void predefinedLeaveType();
+
 	public void createLeaveType(String leaveType) throws IOException;
 
 	public List<LeaveType> findAllLeaveType();

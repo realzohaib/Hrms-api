@@ -54,6 +54,9 @@ public class LeaveApproval {
 	private Double remainingCasualLeaves;
 
 
+	private Double remainingMedicalLeaves;
+	private Double remainingCasualLeaves;
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "leaveTypeLeaveApproval", referencedColumnName = "leaveTypeId")
 	private LeaveType leaveType;
