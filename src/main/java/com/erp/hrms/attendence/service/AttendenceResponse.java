@@ -25,6 +25,8 @@ public class AttendenceResponse {
 	
 	private int noOfDaysWorkedRegularHours;
 	
+	private int totalSalaryDays;
+	
 	private int totalTardyDays;
 	
 	private ShiftAssignment shift;

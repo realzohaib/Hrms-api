@@ -123,14 +123,20 @@ public class AttendenceServiceImpl implements IAttendenceService {
 				attendence.setWorkingHours(totalDurationInMillis);
 
 				// Constants for better readability and maintainability
-				final long FULL_SHIFT_DURATION = 11 * 60 * 60 * 1000; // 11 hours in milliseconds
+				final long FULL_SHIFT_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
 				final double HALF_DAY_THRESHOLD = 0.85;
 				final double HALF_DAY_THRESHOLD2 = 0.45;
 				final long ONE_HOUR = 60 * 60 * 1000;
 
 				// Set half day flag
-				if(totalDurationInMillis < HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION  && totalDurationInMillis > HALF_DAY_THRESHOLD2 * FULL_SHIFT_DURATION)
+				if(totalDurationInMillis <= HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION  && totalDurationInMillis >= HALF_DAY_THRESHOLD2 * FULL_SHIFT_DURATION)
 				attendence.setHalfDay(true);
+				
+				if(totalDurationInMillis >= HALF_DAY_THRESHOLD2 * FULL_SHIFT_DURATION) {
+					attendence.setCountable(true);					
+				}else {
+					attendence.setCountable(false);					
+				}
 				
 				//isme 45 % se kam hua to leave cut karnui hai , usme kaam karna hai
 
@@ -271,6 +277,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		long totalOvertimeHoursInMonth = 0;
 		int noOfDaysWorkedRegularHours = 0;
 		int tardyDays = 0;
+		int countableDays=0;
 
 		for (Attendence atd : attendanceForMonth) {
 			if (atd.isHalfDay()) {
@@ -292,6 +299,10 @@ public class AttendenceServiceImpl implements IAttendenceService {
 			if (atd.isHalfDay()) {
 				tardyDays++;
 			}
+			
+			if(atd.isCountable()) {
+				countableDays++;
+			}
 		}
 
 		attendenceResponse.setAttendence(attendanceForMonth);
@@ -302,6 +313,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		attendenceResponse.setShift(shift.currentShftById(employeeId));
 		attendenceResponse.setNoOfDaysWorkedRegularHours(noOfDaysWorkedRegularHours);
 		attendenceResponse.setTotalTardyDays(tardyDays);
+		attendenceResponse.setTotalSalaryDays(countableDays);
 
 		return attendenceResponse;
 	}

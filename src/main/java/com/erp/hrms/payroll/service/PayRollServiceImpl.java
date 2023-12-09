@@ -70,15 +70,11 @@ public class PayRollServiceImpl implements IPayRollService {
 
 	private double leaveDayCut(AttendenceResponse fullAttendence, Double basicPay, PayRoll pl) {
 		double leaveDayCutAmount = 0;
-		int totalDaysPresentInMonthI = 20;
+		int totalDaysPresentInMonthI = 20;//totalsalarydays aaenge yaha totalpresent nahi
 		double totalDaysPresentInMonth = totalDaysPresentInMonthI;
 		int totalWorkigDaysInMonthI = 25;
 		double totalWorkigDaysInMonth = totalWorkigDaysInMonthI;
-		// solving challenge 1
-		// for now this is not totalcasualleaves APPROVED IN YEAR this is total casual
-		// leaves taken till current month
 		double totalcasualleavesTakenTillCurrentMonth = 30;
-		// same as totalcasualleavesApproved
 		double totalmedicalleavesTakenTillCurrentMonth = 12;
 		double casualleaveinmonth = 2;
 		double medicalleaveinmonth = 2;

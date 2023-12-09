@@ -55,6 +55,8 @@ public class Attendence {
 	private boolean normalWorkingDay;// neither half day nor overtime
 	
 	private boolean tardyDay;
+	
+	private boolean Countable;
 
 	private long employeeId;
 
