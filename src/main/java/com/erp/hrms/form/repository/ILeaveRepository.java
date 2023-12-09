@@ -33,9 +33,5 @@ public interface ILeaveRepository {
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
 			int month);
 
-<<<<<<< HEAD
-}
-=======
 	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(Long employeeId, int year, int month);
 }
->>>>>>> branch 'test' of https://github.com/realzohaib/Hrms-api.git

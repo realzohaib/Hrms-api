@@ -190,9 +190,6 @@ public class LeaveRepository implements ILeaveRepository {
 		return entityManager.createQuery(query).getSingleResult();
 	}
 
-<<<<<<< HEAD
-}
-=======
 	@Override
 	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(Long employeeId, int year, int month) {
 		try {
@@ -217,4 +214,3 @@ public class LeaveRepository implements ILeaveRepository {
 		}
 	}
 }
->>>>>>> branch 'test' of https://github.com/realzohaib/Hrms-api.git

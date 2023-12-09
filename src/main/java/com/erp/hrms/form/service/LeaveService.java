@@ -624,9 +624,6 @@ public class LeaveService implements ILeaveService {
 		return iLeaveRepository.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(employeeId, year, month);
 	}
 
-<<<<<<< HEAD
-}
-=======
 //	This method find all leave in a year of particular employee 
 	@Override
 	public List<LeaveCountDTO> getAllLeavesByEmployeeIdAndYear(Long employeeId, int year, String countryName) {
@@ -762,4 +759,3 @@ public class LeaveService implements ILeaveService {
 
 	
 }
->>>>>>> branch 'test' of https://github.com/realzohaib/Hrms-api.git

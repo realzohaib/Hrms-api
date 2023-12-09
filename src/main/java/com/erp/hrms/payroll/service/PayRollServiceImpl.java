@@ -70,8 +70,8 @@ public class PayRollServiceImpl implements IPayRollService {
 
 	private double leaveDayCut(AttendenceResponse fullAttendence, Double basicPay, PayRoll pl) {
 		double leaveDayCutAmount = 0;
-		int totalDaysPresentInMonthI = 20;//totalsalarydays aaenge yaha totalpresent nahi
-		double totalDaysPresentInMonth = totalDaysPresentInMonthI;
+		int totalDaysForSalaryI = 20;//totalsalarydays aaenge yaha totalpresent nahi
+		double totalSalaryDaysInMonth = totalDaysForSalaryI;
 		int totalWorkigDaysInMonthI = 25;
 		double totalWorkigDaysInMonth = totalWorkigDaysInMonthI;
 		double totalcasualleavesTakenTillCurrentMonth = 30;
@@ -88,7 +88,7 @@ public class PayRollServiceImpl implements IPayRollService {
 		// For testing purposes , needs to be removed
 		double onedayamount = 500;
 
-		double uninformedLeaves = totalWorkigDaysInMonth - totalDaysPresentInMonth
+		double uninformedLeaves = totalWorkigDaysInMonth - totalSalaryDaysInMonth
 				- (casualleaveinmonth + medicalleaveinmonth); // 25 - 20 - (3) = 2
 
 		if (uninformedLeaves > 0) {

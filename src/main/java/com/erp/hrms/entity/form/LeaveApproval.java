@@ -49,10 +49,6 @@ public class LeaveApproval {
 
 	@Transient
 	private byte[] medicalDocumentData;
-	
-	private Double remainingMedicalLeaves;
-	private Double remainingCasualLeaves;
-
 
 	private Double remainingMedicalLeaves;
 	private Double remainingCasualLeaves;

@@ -211,9 +211,4 @@ public class LeaveController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> branch 'test' of https://github.com/realzohaib/Hrms-api.git

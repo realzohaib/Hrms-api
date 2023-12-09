@@ -226,7 +226,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	public List<Attendence> getAttendanceForMonth(Long employeeId, int year, int month) {
 		int startDay = 0;
 		int endDay = 0;
-		List<monthCycle> list = monthcycle.getmonthcycle();
+		List<monthCycle> list = monthcycle.getmonthlycycle();
 
 		for (monthCycle cycle : list) {
 			startDay = cycle.getStartDate();
@@ -254,7 +254,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	public AttendenceResponse fullAttendence(Long employeeId, int year, int month) {
 		int startDay = 0;
 		int endDay = 0;
-		List<monthCycle> list = monthcycle.getmonthcycle();
+		List<monthCycle> list = monthcycle.getmonthlycycle();
 
 		for (monthCycle cycle : list) {
 			startDay = cycle.getStartDate();
@@ -323,7 +323,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		int workingDays = 0;
 		int startDay = 0;
 		int endDay = 0;
-		List<monthCycle> list = monthcycle.getmonthcycle();
+		List<monthCycle> list = monthcycle.getmonthlycycle();
 
 		for (monthCycle cycle : list) {
 			startDay = cycle.getStartDate();
