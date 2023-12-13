@@ -482,7 +482,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					}
 				}
 
-				String passportScanName = personalInfo.getPsDetail().getPassportScan();
+				String passportScanName = null;
+				if (personalInfo.getPsDetail() != null) {
+					passportScanName = personalInfo.getPsDetail().getPassportScan();
+				}
+
 				if (passportScanName != null && !passportScanName.isEmpty()) {
 					byte[] passportScanData = personalInfoFileService.getFileData(passportScanName);
 					if (passportScanData != null) {
@@ -490,7 +494,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					}
 				}
 
-				String licensecopyName = personalInfo.getLicense().getLicensecopy();
+				String licensecopyName = null;
+				if (personalInfo.getLicense() != null) {
+					licensecopyName = personalInfo.getLicense().getLicensecopy();
+				}
 				if (licensecopyName != null && !licensecopyName.isEmpty()) {
 					byte[] licensecopyData = personalInfoFileService.getFileData(licensecopyName);
 					if (licensecopyData != null) {
@@ -516,7 +523,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					}
 				}
 
-				String visaDocsName = personalInfo.getVisainfo().getVisaDocs();
+				String visaDocsName = null;
+				if (personalInfo.getVisainfo() != null) {
+					visaDocsName = personalInfo.getVisainfo().getVisaDocs();
+				}
 				if (visaDocsName != null && !visaDocsName.isEmpty()) {
 					byte[] visaDocsData = personalInfoFileService.getFileData(visaDocsName);
 					if (visaDocsData != null) {
@@ -678,7 +688,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 			}
 
-			String passportScanName = personalInfoByEmail.getPsDetail().getPassportScan();
+			String passportScanName = null;
+			if (personalInfoByEmail.getPsDetail() != null) {
+				passportScanName = personalInfoByEmail.getPsDetail().getPassportScan();
+			}
+
 			if (passportScanName != null && !passportScanName.isEmpty()) {
 				byte[] passportScanData = personalInfoFileService.getFileData(passportScanName);
 				if (passportScanData != null) {
@@ -686,7 +700,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 			}
 
-			String licensecopyName = personalInfoByEmail.getLicense().getLicensecopy();
+			String licensecopyName = null;
+			if (personalInfoByEmail.getLicense() != null) {
+				licensecopyName = personalInfoByEmail.getLicense().getLicensecopy();
+			}
 			if (licensecopyName != null && !licensecopyName.isEmpty()) {
 				byte[] licensecopyData = personalInfoFileService.getFileData(licensecopyName);
 				if (licensecopyData != null) {
@@ -712,7 +729,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 			}
 
-			String visaDocsName = personalInfoByEmail.getVisainfo().getVisaDocs();
+			String visaDocsName = null;
+			if (personalInfoByEmail.getVisainfo() != null) {
+				visaDocsName = personalInfoByEmail.getVisainfo().getVisaDocs();
+			}
 			if (visaDocsName != null && !visaDocsName.isEmpty()) {
 				byte[] visaDocsData = personalInfoFileService.getFileData(visaDocsName);
 				if (visaDocsData != null) {
@@ -871,7 +891,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 			}
 
-			String passportScanName = personalInfoByEmployeeId.getPsDetail().getPassportScan();
+			String passportScanName = null;
+			if (personalInfoByEmployeeId.getPsDetail() != null) {
+				passportScanName = personalInfoByEmployeeId.getPsDetail().getPassportScan();
+			}
+
 			if (passportScanName != null && !passportScanName.isEmpty()) {
 				byte[] passportScanData = personalInfoFileService.getFileData(passportScanName);
 				if (passportScanData != null) {
@@ -879,7 +903,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 			}
 
-			String licensecopyName = personalInfoByEmployeeId.getLicense().getLicensecopy();
+			String licensecopyName = null;
+			if (personalInfoByEmployeeId.getLicense() != null) {
+				licensecopyName = personalInfoByEmployeeId.getLicense().getLicensecopy();
+			}
 			if (licensecopyName != null && !licensecopyName.isEmpty()) {
 				byte[] licensecopyData = personalInfoFileService.getFileData(licensecopyName);
 				if (licensecopyData != null) {
@@ -905,7 +932,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 			}
 
-			String visaDocsName = personalInfoByEmployeeId.getVisainfo().getVisaDocs();
+			String visaDocsName = null;
+			if (personalInfoByEmployeeId.getVisainfo() != null) {
+				visaDocsName = personalInfoByEmployeeId.getVisainfo().getVisaDocs();
+			}
 			if (visaDocsName != null && !visaDocsName.isEmpty()) {
 				byte[] visaDocsData = personalInfoFileService.getFileData(visaDocsName);
 				if (visaDocsData != null) {
