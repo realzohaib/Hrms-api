@@ -17,4 +17,5 @@ public class monthCycle {
 	private int startDate;
 	private int lastDate;
 	private String cycleName;
+
 }

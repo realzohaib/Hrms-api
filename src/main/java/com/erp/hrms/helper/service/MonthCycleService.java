@@ -1,5 +1,7 @@
 package com.erp.hrms.helper.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,11 @@ public class MonthCycleService implements IMonthCycleService {
 	@Override
 	public void saveMonthCycle(monthCycle monthCycle) {
 		cycleRepository.save(monthCycle);
+	}
+	
+	@Override
+	public List<monthCycle> getmonthlycycle() {
+		return cycleRepository.findAll();
 	}
 
 }

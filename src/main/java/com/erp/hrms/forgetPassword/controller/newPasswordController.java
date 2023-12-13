@@ -1,4 +1,4 @@
-package com.erp.hrms.forgetPassword.controller;
+	package com.erp.hrms.forgetPassword.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ import com.erp.hrms.forgetPassword.request.NewPassword;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/auth")
 public class newPasswordController {
 
 	@Autowired

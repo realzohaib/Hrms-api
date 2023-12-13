@@ -2,6 +2,8 @@ package com.erp.hrms.attendence.service;
 
 import java.util.List;
 
+import javax.persistence.Embeddable;
+
 import com.erp.hrms.attendence.entity.Attendence;
 import com.erp.hrms.shift.entity.ShiftAssignment;
 
@@ -20,6 +22,12 @@ public class AttendenceResponse {
 	private int totalHalfDaysInMonth;
 	
 	private long totalOvertimeHoursInMonth;
+	
+	private int noOfDaysWorkedRegularHours;
+	
+	private int totalSalaryDays;
+	
+	private int totalTardyDays;
 	
 	private ShiftAssignment shift;
 	

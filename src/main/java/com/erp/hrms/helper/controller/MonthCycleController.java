@@ -17,9 +17,9 @@ public class MonthCycleController {
 
 	@Autowired
 	private IMonthCycleService iMonthCycleService;
-	
+
 	@PostMapping("/save/month")
-	public ResponseEntity<?> saveMonthCycle(@RequestBody monthCycle monthCycle){
+	public ResponseEntity<?> saveMonthCycle(@RequestBody monthCycle monthCycle) {
 		iMonthCycleService.saveMonthCycle(monthCycle);
 		return ResponseEntity.ok(new MessageResponse("Your month cycle save."));
 	}

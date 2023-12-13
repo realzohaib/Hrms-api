@@ -19,7 +19,7 @@ import com.erp.hrms.forgetPassword.service.PassworfResetService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/auth")
 public class PasswordResetController {
 
 	@Autowired

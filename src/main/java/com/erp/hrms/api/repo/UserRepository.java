@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
 	Boolean existsByEmail(String email);
 	
-    UserEntity findByActivationToken(String activationToken);
+    UserEntity findByOtpAndUsername(String otp, String username);
     
     UserEntity getByUsername(String name);
 

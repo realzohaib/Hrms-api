@@ -11,7 +11,7 @@ public interface IAttendenceService {
 
 	public List<Attendence> getEmployeeAttendence(long employeeId);
 
-	public Attendence punchout(long id) throws AttendencenotRegistered;
+	public Attendence punchOut(long id) throws AttendencenotRegistered;
 
 	public Attendence breakStart(long Attendenceid);
 

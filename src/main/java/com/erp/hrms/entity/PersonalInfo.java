@@ -117,9 +117,9 @@ public class PersonalInfo implements Serializable {
 	@Column(name = "hobbies")
 	private String hobbies;
 
-	private String status;
+	private String status;//Active or InActive
 
-	private String empStatus;
+	private String empStatus;//old or new
 
 	private String verifyAndNotVerify;
 
@@ -130,6 +130,8 @@ public class PersonalInfo implements Serializable {
 	private BloodRelative relative;
 
 	private VisaDetail visainfo;
+	
+	private String onboardHrApprovalStatus;
 
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)

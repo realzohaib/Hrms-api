@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -434,6 +433,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						roles.add(subAdminRole);
 					}
 				});
+
 			}
 
 			UserEntity user = new UserEntity();
@@ -444,17 +444,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			user.setRoles(roles);
 			user.setEnabled(false);
 
-			String activationToken = UUID.randomUUID().toString();
-			user.setActivationToken(activationToken);
+			Random random = new Random();
+			int otpNumber = random.nextInt(900000) + 100000;
+			String otp = String.valueOf(otpNumber);
+
+			user.setOtp(otp);
 
 			PersonalInfo.setUserentity(user);
 
 			dao.savePersonalInfo(PersonalInfo);
 
-			String activationLink = url + "/activate?token=" + activationToken;
-
-			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(),
-					activationLink);
+			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp);
 		} catch (Exception e) {
 			throw new RuntimeException("An error occurred while saving personal information.", e);
 		}
@@ -1778,8 +1778,47 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		
 		System.out.println("abd");
 
+<<<<<<< HEAD
 		 PersonalInfo updatePersonalInfo = dao.updatePersonalInfo(email, existingPersonalInfo);
 		 return updatePersonalInfo;
+=======
+	public PersonalInfo updateVisaDetails(Long employeeId, String visaIssueDate, String visaExpiryDate) {
+		try {
+			PersonalInfo updateVisaDetails = null;
+			updateVisaDetails = dao.updateVisaDetails(employeeId, visaIssueDate, visaExpiryDate);
+			return updateVisaDetails;
+		} catch (Exception e) {
+			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
+		}
+
+	}
+
+	@Override
+	public List<NotificationHelper> getRequestedField() {
+		List<NotificationHelper> notificationFields = null;
+		try {
+			notificationFields = dao.getNotificationFields();
+			return notificationFields;
+		} catch (Exception e) {
+			throw new RuntimeException("Something went wrong. " + e);
+		}
+	}
+
+	public void sendAccountActivationEmail(String email, long employeeId, String name, String otp) {
+		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setTo(email);
+		mailMessage.setSubject("Account Activation ");
+
+		// Create the first-time password set email message with OTP
+		String emailText = "Dear Mr. " + name + ",\n\n" + "Welcome to our platform! Your employee ID is: " + employeeId
+				+ ".\n\n" + "To Activate your Account, please use the following One-Time Password (OTP):\n" + "OTP: "
+				+ otp + "\n\n" + "If you have any questions or need assistance, please contact our support team.\n\n"
+				+ "Best regards,\n" + "The SI Global Company Team";
+
+		mailMessage.setText(emailText);
+
+		sender.send(mailMessage);
+>>>>>>> branch 'check' of https://github.com/realzohaib/Hrms-api.git
 	}
 
 }

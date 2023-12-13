@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -16,7 +17,10 @@ import org.springframework.stereotype.Service;
 import com.erp.hrms.attendence.entity.Attendence;
 import com.erp.hrms.attendence.entity.Breaks;
 import com.erp.hrms.attendence.repo.IAttendencerepo;
+import com.erp.hrms.helper.entity.monthCycle;
+import com.erp.hrms.helper.service.IMonthCycleService;
 import com.erp.hrms.shift.Dao.ShiftAssignmentDaoImpl;
+import com.erp.hrms.shift.entity.ShiftAssignment;
 
 @Service
 public class AttendenceServiceImpl implements IAttendenceService {
@@ -26,16 +30,19 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	@Autowired
 	private ShiftAssignmentDaoImpl shift;
 
+	@Autowired
+	private IMonthCycleService monthcycle;
+
 	private boolean isWorkingDay(DayOfWeek dayOfWeek) {
 		// Implement your organization's working day criteria here
 		return dayOfWeek != DayOfWeek.SUNDAY;
 	}
 
 	// function to calculate time difference between two timestamp
-	public long calculateBreakDurationInMillis(Timestamp breakStart, Timestamp breakEnd) {
+	public long calculateBreakDurationInMillis(Timestamp timestamp1, Timestamp timestamp2) {
 		// Convert Timestamp to Instant
-		Instant startInstant = breakStart.toInstant();
-		Instant endInstant = breakEnd.toInstant();
+		Instant startInstant = timestamp1.toInstant();
+		Instant endInstant = timestamp2.toInstant();
 
 		// Calculate the duration between breakStart and breakEnd
 		Duration duration = Duration.between(startInstant, endInstant);
@@ -58,29 +65,42 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	@Override
 	public Attendence punchIn(Attendence attendence) throws AttendencenotRegistered {
 		try {
-			// date from request
+			// Extracting details from the request
 			LocalDate date = attendence.getDate();
 			long employeeId = attendence.getEmployeeId();
 
-			// day of week
+			// Retrieve the current shift assignment for the employee
+			ShiftAssignment currentShiftByOfEmployee = shift.currentShftById(employeeId);
+
+			// Extracting shift details
+			LocalTime scheduledStartTime = currentShiftByOfEmployee.getShift().getShiftStartTime();
+
+			// Adding a 20-minute buffer time
+			LocalTime allowedStartTime = scheduledStartTime.plusMinutes(20);
+
+			// Extracting the day of the week
 			DayOfWeek dayOfWeek = date.getDayOfWeek();
 
+			// Getting the current timestamp
 			Timestamp timestamp = time();
 
-			System.out.println(timestamp);
-
+			// Creating an Attendance object
 			Attendence obj = new Attendence();
-
 			obj.setDate(date);
 			obj.setDay(dayOfWeek);
 			obj.setPunchInTime(timestamp);
 			obj.setEmployeeId(employeeId);
 
+			// Checking for tardiness
+			LocalTime actualStartTime = timestamp.toLocalDateTime().toLocalTime();
+			obj.setTardyDay(actualStartTime.isAfter(allowedStartTime));
+
+			// Saving the attendance record
 			repo.save(obj);
 
 			return obj;
 		} catch (Exception e) {
-			throw new AttendencenotRegistered("Attendence not recorded");
+			throw new AttendencenotRegistered("Attendance not recorded");
 		}
 	}
 
@@ -91,32 +111,45 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	}
 
 	@Override
-	public Attendence punchout(long id) throws AttendencenotRegistered {
+	public Attendence punchOut(long id) throws AttendencenotRegistered {
 		try {
 			Attendence attendence = repo.getById(id);
-			Timestamp timestamp = time();
-			attendence.setPunchOutTime(timestamp);
+			Timestamp punchOutTime = time();
+			attendence.setPunchOutTime(punchOutTime);
 
 			Timestamp punchInTime = attendence.getPunchInTime();
-			Timestamp punchOutTime = attendence.getPunchOutTime();
-
-			if (punchInTime != null && punchOutTime != null) {
-// here the function name is calculateBreakDurationInMillis but we are calculating time difference between punchOut and punchIn
-// calculateTotalDurationInMillis means total working hrs from punch in to punch out i	   	
-				long calculateTotalDurationInMillis = calculateBreakDurationInMillis(punchInTime, punchOutTime);
-				attendence.setWorkingHours(calculateTotalDurationInMillis);
+			if (punchInTime != null) {
+				long totalDurationInMillis = calculateBreakDurationInMillis(punchInTime, punchOutTime);
+				attendence.setWorkingHours(totalDurationInMillis);
 
 				// Constants for better readability and maintainability
-				final long FULL_SHIFT_DURATION = 39600000; // 11 hours in milliseconds
+				final long FULL_SHIFT_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
 				final double HALF_DAY_THRESHOLD = 0.85;
-				final double ONE_HOUR = 3600000;
+				final double HALF_DAY_THRESHOLD2 = 0.45;
+				final long ONE_HOUR = 60 * 60 * 1000;
 
-				if (calculateTotalDurationInMillis < HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION) {
-					attendence.setHalfDay(true);
+				// Set half day flag
+				if(totalDurationInMillis <= HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION  && totalDurationInMillis >= HALF_DAY_THRESHOLD2 * FULL_SHIFT_DURATION)
+				attendence.setHalfDay(true);
+				
+				if(totalDurationInMillis >= HALF_DAY_THRESHOLD2 * FULL_SHIFT_DURATION) {
+					attendence.setCountable(true);					
+				}else {
+					attendence.setCountable(false);					
 				}
-//jab tak status apptoved nahi hai tab tak emp ke portal par nahi dikheaga overtimr
-				if (calculateTotalDurationInMillis > FULL_SHIFT_DURATION) {
-					long overtime = calculateTotalDurationInMillis - FULL_SHIFT_DURATION;
+				
+				//isme 45 % se kam hua to leave cut karnui hai , usme kaam karna hai
+
+				// Set normal working day flag
+				if (totalDurationInMillis >= HALF_DAY_THRESHOLD * FULL_SHIFT_DURATION
+						&& totalDurationInMillis < FULL_SHIFT_DURATION + ONE_HOUR) {
+					attendence.setNormalWorkingDay(true);
+				}
+
+				// jab tak status apptoved nahi hai tab tak emp ke portal par nahi dikheaga
+				// overtimr
+				if (totalDurationInMillis > FULL_SHIFT_DURATION) {
+					long overtime = totalDurationInMillis - (FULL_SHIFT_DURATION + ONE_HOUR);
 					if (overtime > ONE_HOUR) {
 						attendence.setOverTime(overtime);
 						attendence.setOvertimeStatus("PENDING");
@@ -126,7 +159,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 			return repo.save(attendence);
 		} catch (Exception e) {
-			throw new AttendencenotRegistered("Attendence not recorded");
+			throw new AttendencenotRegistered("Attendance not recorded");
 		}
 	}
 
@@ -191,40 +224,96 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 	@Override
 	public List<Attendence> getAttendanceForMonth(Long employeeId, int year, int month) {
-		LocalDate startDate = LocalDate.of(year, month, 1);
-		LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+		int startDay = 0;
+		int endDay = 0;
+		List<monthCycle> list = monthcycle.getmonthlycycle();
+
+		for (monthCycle cycle : list) {
+			startDay = cycle.getStartDate();
+			endDay = cycle.getLastDate();
+			break;
+		}
+
+		// Assuming the month cycle starts on the 27th of the last month
+		LocalDate startDate = LocalDate.of(year, month, startDay).minusMonths(1);
+		System.out.println("start date is " + startDate);
+
+		// Ensure endDay is not greater than the maximum day of the month
+		endDay = Math.min(endDay, startDate.plusMonths(1).lengthOfMonth());
+
+		// Calculate the end date by adding one month
+		LocalDate endDate = startDate.plusMonths(1);
+		endDate = endDate.withDayOfMonth(endDay);
+
+		System.out.println("end date is " + endDate);
+
 		return repo.findByEmployeeIdAndDateBetween(employeeId, startDate, endDate);
 	}
 
 	@Override
 	public AttendenceResponse fullAttendence(Long employeeId, int year, int month) {
+		int startDay = 0;
+		int endDay = 0;
+		List<monthCycle> list = monthcycle.getmonthlycycle();
+
+		for (monthCycle cycle : list) {
+			startDay = cycle.getStartDate();
+			endDay = cycle.getLastDate();
+			break;
+		}
+
+		LocalDate currentDate = LocalDate.now();
+		// LocalDate currentDate = LocalDate.of(2023, 11, 25);
+
+		if (currentDate.isAfter(currentDate.withDayOfMonth(endDay))) {
+			month++;
+		}
 		List<Attendence> attendanceForMonth = getAttendanceForMonth(employeeId, year, month);
 
 		AttendenceResponse attendenceResponse = new AttendenceResponse();
 		int workingDays = calculateWorkingDays(year, month);
-		int daysPresnt = 0;
+		int daysPresent = 0;
 		int halfDays = 0;
-		long totalOvertimehrsInMont = 0;
+		long totalOvertimeHoursInMonth = 0;
+		int noOfDaysWorkedRegularHours = 0;
+		int tardyDays = 0;
+		int countableDays=0;
 
 		for (Attendence atd : attendanceForMonth) {
-			if (atd.isHalfDay())
+			if (atd.isHalfDay()) {
 				halfDays++;
+			}
 
-			if (atd.getPunchInTime() != null && atd.getPunchOutTime() != null)
-				daysPresnt++;
+			if (atd.getPunchInTime() != null && atd.getPunchOutTime() != null) {
+				daysPresent++;
+			}
 
 			if ("APPROVED".equals(atd.getOvertimeStatus()) || "UPDATED".equals(atd.getOvertimeStatus())) {
-				long overTime = atd.getOverTime();
-				totalOvertimehrsInMont += overTime;
+				totalOvertimeHoursInMonth += atd.getOverTime();
+			}
+
+			if (atd.isNormalWorkingDay()) {
+				noOfDaysWorkedRegularHours++;
+			}
+
+			if (atd.isHalfDay()) {
+				tardyDays++;
+			}
+			
+			if(atd.isCountable()) {
+				countableDays++;
 			}
 		}
 
 		attendenceResponse.setAttendence(attendanceForMonth);
 		attendenceResponse.setTotalWorkigDaysInMonth(workingDays);
-		attendenceResponse.setTotalDaysPresentInMonth(daysPresnt);
+		attendenceResponse.setTotalDaysPresentInMonth(daysPresent);
 		attendenceResponse.setTotalHalfDaysInMonth(halfDays);
-		attendenceResponse.setTotalOvertimeHoursInMonth(totalOvertimehrsInMont);
+		attendenceResponse.setTotalOvertimeHoursInMonth(totalOvertimeHoursInMonth);
 		attendenceResponse.setShift(shift.currentShftById(employeeId));
+		attendenceResponse.setNoOfDaysWorkedRegularHours(noOfDaysWorkedRegularHours);
+		attendenceResponse.setTotalTardyDays(tardyDays);
+		attendenceResponse.setTotalSalaryDays(countableDays);
 
 		return attendenceResponse;
 	}
@@ -232,10 +321,35 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	@Override
 	public int calculateWorkingDays(int year, int month) {
 		int workingDays = 0;
-		LocalDate currentDate = LocalDate.now();
-		LocalDate startDate = LocalDate.of(year, month, 1);
+		int startDay = 0;
+		int endDay = 0;
+		List<monthCycle> list = monthcycle.getmonthlycycle();
 
-		while (!currentDate.isBefore(startDate) && currentDate.getMonthValue() == month) {
+		for (monthCycle cycle : list) {
+			startDay = cycle.getStartDate();
+			endDay = cycle.getLastDate();
+			break;
+		}
+		 LocalDate currentDate = LocalDate.now();
+		//LocalDate currentDate = LocalDate.of(2023, 12, 03);
+
+		LocalDate startDate = LocalDate.of(year, month, startDay).minusMonths(1);
+
+		// Check if currentDate is after endDay, then update startDate to be the day
+		// after endDay
+		if (currentDate.isAfter(startDate.withDayOfMonth(endDay))) {
+			startDate = startDate.withDayOfMonth(endDay).plusDays(1);
+		}
+
+		if (currentDate.isAfter(currentDate.withDayOfMonth(endDay)) || currentDate.getMonthValue() != month) {
+			if (!(currentDate.isBefore(startDate.withDayOfMonth(startDate.lengthOfMonth()))
+					|| currentDate.isEqual(startDate.withDayOfMonth(startDate.lengthOfMonth())))) {
+				currentDate = currentDate.withDayOfMonth(endDay).withMonth(month);
+			}
+
+		}
+
+		while (!currentDate.isBefore(startDate)) {
 			DayOfWeek dayOfWeek = startDate.getDayOfWeek();
 
 			// Check if the day is a working day based on your criteria
@@ -287,7 +401,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		// updating Information
 		atd.setOverTime(attendence.getOverTime());
 		atd.setOvertimeStatus("UPDATED");
-		// saving the object to db
+		// saving the object to dbs
 		repo.save(atd);
 
 		return atd;

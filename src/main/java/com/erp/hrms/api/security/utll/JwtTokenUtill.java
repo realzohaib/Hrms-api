@@ -3,6 +3,8 @@
  */
 package com.erp.hrms.api.security.utll;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.erp.hrms.api.security.response.JwtResponse;
 import com.erp.hrms.api.service.impl.UserDetailsImpl;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -68,14 +71,21 @@ public class JwtTokenUtill {
 
 	    String token = Jwts.builder()
 	        .setSubject(userPrincipal.getUsername())
+	        .claim("email", userPrincipal.getEmail())
 	        .setIssuedAt(new Date())
 	        .setExpiration(new Date(expirationTime))
 	        .signWith(SignatureAlgorithm.HS512, jwtSecret)
 	        .compact();
 
+	    Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+	    Date exp_Time = claims.getExpiration();
+	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+	    String formattedExpirationTime = dateFormat.format(exp_Time);
+
 	    jwtResponse.setToken(token);
-	    jwtResponse.setExpieryTime(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getExpiration());
 	    jwtResponse.setType("Bearer");
+	    jwtResponse.setExpieryTime(formattedExpirationTime);
+	    //jwtResponse.setExpieryTime(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getExpiration());
 
 	    return jwtResponse;
 	}
