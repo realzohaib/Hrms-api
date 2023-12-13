@@ -110,6 +110,7 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 	}
 
 	@Override
+	@Transactional
 	public PersonalInfo updatePersonalInfo(String email, PersonalInfo personalInfo) {
 		try {
 			personalInfo.setEmail(email);

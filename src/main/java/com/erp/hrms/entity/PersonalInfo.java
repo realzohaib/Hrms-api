@@ -132,7 +132,6 @@ public class PersonalInfo implements Serializable {
 	private VisaDetail visainfo;
 
 	@OneToMany(mappedBy = "personalinfo")
-//@OneToMany
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
 	private List<Education> educations;

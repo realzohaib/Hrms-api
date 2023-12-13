@@ -1092,8 +1092,46 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		return updatedPersonalInfo;
 	}
 
+	public PersonalInfo updateVisaDetails(Long employeeId, String visaIssueDate, String visaExpiryDate) {
+		try {
+			PersonalInfo updateVisaDetails = null;
+			updateVisaDetails = dao.updateVisaDetails(employeeId, visaIssueDate, visaExpiryDate);
+			return updateVisaDetails;
+		} catch (Exception e) {
+			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
+		}
+
+	}
+
 	@Override
-	public PersonalInfo updatePersonalInfo(String email, String PersonalInfo, MultipartFile passportSizePhoto,
+	public List<NotificationHelper> getRequestedField() {
+		List<NotificationHelper> notificationFields = null;
+		try {
+			notificationFields = dao.getNotificationFields();
+			return notificationFields;
+		} catch (Exception e) {
+			throw new RuntimeException("Something went wrong. " + e);
+		}
+	}
+
+	public void sendAccountActivationEmail(String email, long employeeId, String name, String activationLink) {
+		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setTo(email);
+		mailMessage.setSubject("Account Activation");
+
+		// Create the account activation email message
+		String emailText = "Dear Mr. " + name + ",\n\n" + "Welcome to our platform. Your employee ID is: " + employeeId
+				+ ".\n\n" + "To activate your account, please click on the following link:\n" + activationLink + "\n\n"
+				+ "If you have any questions or need assistance, please contact our support team.\n\n"
+				+ "Best regards,\n" + "The SI Global Company Team";
+
+		mailMessage.setText(emailText);
+
+		sender.send(mailMessage);
+	}
+
+	@Override
+	public PersonalInfo updatePersonalInfo(String email, String personalInfoJson, MultipartFile passportSizePhoto,
 			MultipartFile OtherIdProofDoc, MultipartFile passportScan, MultipartFile licensecopy,
 			MultipartFile relativeid, MultipartFile raddressproof, MultipartFile secondaryDocumentScan,
 			MultipartFile seniorSecondaryDocumentScan, MultipartFile graduationDocumentScan,
@@ -1102,7 +1140,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			MultipartFile CertificateUploadedForOutsource, MultipartFile visaDocs, MultipartFile diplomaDocumentScan,
 			MultipartFile declarationRequired, MultipartFile[] achievementsRewardsDocs) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		PersonalInfo personalInfo = mapper.readValue(PersonalInfo, PersonalInfo.class);
+		PersonalInfo personalInfo = mapper.readValue(personalInfoJson, PersonalInfo.class);
 
 		PersonalInfo existingPersonalInfo = dao.getPersonalInfoByEmailForUpdate(email);
 		if (existingPersonalInfo == null) {
@@ -1386,6 +1424,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 			}
 			existingPersonalInfo.setEducations(educations);
+			
+//			
 
 			List<OthersQualification> othersQualifications = existingPersonalInfo.getOthersQualifications();
 			if (personalInfo.getOthersQualifications() != null) {
@@ -1731,48 +1771,15 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				}
 				existingPersonalInfo.setBgcheck(bgcheck);
 			}
+
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong: " + e.getMessage());
 		}
-		return dao.updatePersonalInfo(email, existingPersonalInfo);
-	}
+		
+		System.out.println("abd");
 
-	public PersonalInfo updateVisaDetails(Long employeeId, String visaIssueDate, String visaExpiryDate) {
-		try {
-			PersonalInfo updateVisaDetails = null;
-			updateVisaDetails = dao.updateVisaDetails(employeeId, visaIssueDate, visaExpiryDate);
-			return updateVisaDetails;
-		} catch (Exception e) {
-			throw new RuntimeException("No personal information found for this employee ID: " + employeeId, e);
-		}
-
-	}
-
-	@Override
-	public List<NotificationHelper> getRequestedField() {
-		List<NotificationHelper> notificationFields = null;
-		try {
-			notificationFields = dao.getNotificationFields();
-			return notificationFields;
-		} catch (Exception e) {
-			throw new RuntimeException("Something went wrong. " + e);
-		}
-	}
-
-	public void sendAccountActivationEmail(String email, long employeeId, String name, String activationLink) {
-		SimpleMailMessage mailMessage = new SimpleMailMessage();
-		mailMessage.setTo(email);
-		mailMessage.setSubject("Account Activation");
-
-		// Create the account activation email message
-		String emailText = "Dear Mr. " + name + ",\n\n" + "Welcome to our platform. Your employee ID is: " + employeeId
-				+ ".\n\n" + "To activate your account, please click on the following link:\n" + activationLink + "\n\n"
-				+ "If you have any questions or need assistance, please contact our support team.\n\n"
-				+ "Best regards,\n" + "The SI Global Company Team";
-
-		mailMessage.setText(emailText);
-
-		sender.send(mailMessage);
+		 PersonalInfo updatePersonalInfo = dao.updatePersonalInfo(email, existingPersonalInfo);
+		 return updatePersonalInfo;
 	}
 
 }
