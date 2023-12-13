@@ -1,4 +1,4 @@
-package com.erp		.hrms;
+package com.erp	.hrms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

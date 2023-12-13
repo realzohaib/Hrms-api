@@ -3,6 +3,7 @@ package com.erp.hrms.payroll.service;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import com.erp.hrms.attendence.service.AttendenceResponse;
 import com.erp.hrms.attendence.service.AttendenceServiceImpl;
 import com.erp.hrms.entity.JobDetails;
 import com.erp.hrms.entity.PersonalInfo;
+import com.erp.hrms.entity.form.LeaveCountDTO;
+import com.erp.hrms.entity.form.LeaveType;
+import com.erp.hrms.form.service.ILeaveTypeService;
 import com.erp.hrms.form.service.LeaveService;
 import com.erp.hrms.payments.OverTimePay;
 import com.erp.hrms.payments.OvertimePayService;
@@ -51,73 +55,147 @@ public class PayRollServiceImpl implements IPayRollService {
 
 	@Autowired
 	private ISalaryCerti certirepo;
-	
+
 	@Autowired
 	private leaveCutAmountService leaveCutAmount;
-	
-	
-	private  double deductionPercentForUnInformedleave() {
-		double deductionPercent =0;
-		
-		List<leaveCutAmount> list = leaveCutAmount.getall();
-		for(leaveCutAmount l1 : list) {
-			deductionPercent = l1.getSalaryCutAmountPercentage();
-			break;
-		}
-		
-		return deductionPercent;
-	}
+
+	@Autowired
+	private ILeaveTypeService leavetype;
 
 	private double leaveDayCut(AttendenceResponse fullAttendence, Double basicPay, PayRoll pl) {
 		double leaveDayCutAmount = 0;
-		int totalDaysForSalaryI = 20;//totalsalarydays aaenge yaha totalpresent nahi
+
+		int totalDaysForSalaryI = 20;
 		double totalSalaryDaysInMonth = totalDaysForSalaryI;
 		int totalWorkigDaysInMonthI = 25;
 		double totalWorkigDaysInMonth = totalWorkigDaysInMonthI;
-		double totalcasualleavesTakenTillCurrentMonth = 30;
-		double totalmedicalleavesTakenTillCurrentMonth = 12;
-		double casualleaveinmonth = 2;
-		double medicalleaveinmonth = 2;
-		double totalcasualleavesprovidedinyear = 30;
-		double totalmedicalleavesprovidedinyear = 15;
 		double calculateOneDayAmount = calculateOneDayAmount(pl);
-
+		
 		// 1 day pay = (basic pay + allowances + benefits) / (30 - Sundays)
 		// double onedayamount = calculateOneDayAmount / totalWorkigDaysInMonth;
-
 		// For testing purposes , needs to be removed
+		
 		double onedayamount = 500;
+		List<LeaveCountDTO> leavesInMonth = new ArrayList<>();
+		leavesInMonth.add(new LeaveCountDTO("medical", 3.0));
+		leavesInMonth.add(new LeaveCountDTO("casual", 3.0));
 
-		double uninformedLeaves = totalWorkigDaysInMonth - totalSalaryDaysInMonth
-				- (casualleaveinmonth + medicalleaveinmonth); // 25 - 20 - (3) = 2
+		List<LeaveCountDTO> leavestillmonth = new ArrayList<>();
+		leavestillmonth.add(new LeaveCountDTO("casual", 31.0));
+		leavestillmonth.add(new LeaveCountDTO("medical", 17.0));
+
+		List<LeaveType> leavetype = new ArrayList<>();
+		leavetype.add(new LeaveType("casual", 30.0));
+		leavetype.add(new LeaveType("medical", 15.0));
+
+
+		double deductionPercent = deductionPercentForUnInformedleave();
+
+		double uninformedLeaves = totalWorkigDaysInMonth - totalSalaryDaysInMonth - totalleavesinmonth(leavesInMonth);
 
 		if (uninformedLeaves > 0) {
-			leaveDayCutAmount = uninformedLeaves * (onedayamount * deductionPercentForUnInformedleave()); // 1.3
+			leaveDayCutAmount = uninformedLeaves * (onedayamount * deductionPercent);
 		}
 
-		if (totalcasualleavesTakenTillCurrentMonth > totalcasualleavesprovidedinyear) {
-			double daysexceeedingcasualleavesprovided = totalcasualleavesTakenTillCurrentMonth - casualleaveinmonth;
-			if (daysexceeedingcasualleavesprovided < totalcasualleavesprovidedinyear) {
-				double noofdaysforamounttobededucted = totalcasualleavesTakenTillCurrentMonth
-						- totalcasualleavesprovidedinyear;
-				leaveDayCutAmount += onedayamount * noofdaysforamounttobededucted;
-			} else {
-				leaveDayCutAmount += onedayamount * casualleaveinmonth;
-			}
-		}
+		for (LeaveType l1 : leavetype) {
+			for (LeaveCountDTO l2 : leavestillmonth) {
+				for (LeaveCountDTO l3 : leavesInMonth) {
 
-		if (totalmedicalleavesTakenTillCurrentMonth > totalmedicalleavesprovidedinyear) {
-			double daysexceeedingmedicalleavesprovided = totalmedicalleavesTakenTillCurrentMonth - medicalleaveinmonth;
-			if (daysexceeedingmedicalleavesprovided < totalmedicalleavesprovidedinyear) {
-				double noofdaysforamounttobededucted = totalmedicalleavesTakenTillCurrentMonth
-						- totalmedicalleavesprovidedinyear;
-				leaveDayCutAmount += onedayamount * noofdaysforamounttobededucted;
-			} else {
-				leaveDayCutAmount += onedayamount * medicalleaveinmonth;
+					if (l1.getLeaveName().equals(l2.getLeaveName()) && l1.getLeaveName().equals(l3.getLeaveName())) {
+						double totalleavesTakenTillCurrentMonth = l2.getTotalLeaveDays();
+						double totalleavesTakenInMonth = l3.getTotalLeaveDays();
+						double totalleavesprovidedinyear = l1.getLeaveDays();
+
+						if (totalleavesTakenTillCurrentMonth > totalleavesprovidedinyear) {
+							double daysexceeedingmedicalleavesprovided = totalleavesTakenTillCurrentMonth
+									- totalleavesTakenInMonth;
+							if (daysexceeedingmedicalleavesprovided < totalleavesprovidedinyear) {
+								double noofdaysforamounttobededucted = totalleavesTakenTillCurrentMonth
+										- totalleavesprovidedinyear;
+								leaveDayCutAmount += onedayamount * noofdaysforamounttobededucted;
+							} else {
+								leaveDayCutAmount += onedayamount * totalleavesTakenInMonth;
+							}
+						}
+
+					}
+
+				}
+
 			}
+
 		}
 
 		return leaveDayCutAmount;
+	}
+
+	private static double totalleavesinmonth(List<LeaveCountDTO> leavesInMonth) {
+		double sum = leavesInMonth.stream().mapToDouble(LeaveCountDTO::getTotalLeaveDays).sum();
+		return sum;
+	}
+
+//	private double leaveDayCut(AttendenceResponse fullAttendence, Double basicPay, PayRoll pl) {
+//		double leaveDayCutAmount = 0;
+//		int totalDaysForSalaryI = 20;//totalsalarydays aaenge yaha totalpresent nahi
+//		double totalSalaryDaysInMonth = totalDaysForSalaryI;
+//		int totalWorkigDaysInMonthI = 25;
+//		double totalWorkigDaysInMonth = totalWorkigDaysInMonthI;
+//		double totalcasualleavesTakenTillCurrentMonth = 30;
+//		double totalmedicalleavesTakenTillCurrentMonth = 12;
+//		double casualleaveinmonth = 2;
+//		double medicalleaveinmonth = 2;
+//		double totalcasualleavesprovidedinyear = 30;
+//		double totalmedicalleavesprovidedinyear = 15;
+//		double calculateOneDayAmount = calculateOneDayAmount(pl);
+//
+//		// 1 day pay = (basic pay + allowances + benefits) / (30 - Sundays)
+//		// double onedayamount = calculateOneDayAmount / totalWorkigDaysInMonth;
+//
+//		// For testing purposes , needs to be removed
+//		double onedayamount = 500;
+//
+//		double uninformedLeaves = totalWorkigDaysInMonth - totalSalaryDaysInMonth
+//				- (casualleaveinmonth + medicalleaveinmonth); // 25 - 20 - (3) = 2
+//
+//		if (uninformedLeaves > 0) {
+//			leaveDayCutAmount = uninformedLeaves * (onedayamount * deductionPercentForUnInformedleave()); // 1.3
+//		}
+//
+//		if (totalcasualleavesTakenTillCurrentMonth > totalcasualleavesprovidedinyear) {
+//			double daysexceeedingcasualleavesprovided = totalcasualleavesTakenTillCurrentMonth - casualleaveinmonth;
+//			if (daysexceeedingcasualleavesprovided < totalcasualleavesprovidedinyear) {
+//				double noofdaysforamounttobededucted = totalcasualleavesTakenTillCurrentMonth
+//						- totalcasualleavesprovidedinyear;
+//				leaveDayCutAmount += onedayamount * noofdaysforamounttobededucted;
+//			} else {
+//				leaveDayCutAmount += onedayamount * casualleaveinmonth;
+//			}
+//		}
+//
+//		if (totalmedicalleavesTakenTillCurrentMonth > totalmedicalleavesprovidedinyear) {
+//			double daysexceeedingmedicalleavesprovided = totalmedicalleavesTakenTillCurrentMonth - medicalleaveinmonth;
+//			if (daysexceeedingmedicalleavesprovided < totalmedicalleavesprovidedinyear) {
+//				double noofdaysforamounttobededucted = totalmedicalleavesTakenTillCurrentMonth
+//						- totalmedicalleavesprovidedinyear;
+//				leaveDayCutAmount += onedayamount * noofdaysforamounttobededucted;
+//			} else {
+//				leaveDayCutAmount += onedayamount * medicalleaveinmonth;
+//			}
+//		}
+//
+//		return leaveDayCutAmount;
+//	}
+
+	private double deductionPercentForUnInformedleave() {
+		double deductionPercent = 0;
+
+		List<leaveCutAmount> list = leaveCutAmount.getall();
+		for (leaveCutAmount l1 : list) {
+			deductionPercent = l1.getSalaryCutAmountPercentage();
+			break;
+		}
+
+		return deductionPercent;
 	}
 
 	private double calculateOneDayAmount(PayRoll payRoll) {
@@ -349,7 +427,7 @@ public class PayRollServiceImpl implements IPayRollService {
 
 	@Override
 	public SalaryCerti getSalaryCerti(long empId, int year, int month) {
-		//need to add if condition
+		// need to add if condition
 		SalaryCerti salaryCerti = new SalaryCerti();
 
 		salaryCerti.setEmployeeId(empId);
@@ -359,11 +437,11 @@ public class PayRollServiceImpl implements IPayRollService {
 		return certirepo.save(salaryCerti);
 
 	}
-	
-	
+
 	@Override
 	public SalaryCerti updateSalaryCertiStatus(SalaryCerti certi) {
-		SalaryCerti salaryCerti = certirepo.findByEmployeeIdAndMonthAndYear(certi.getEmployeeId(), certi.getMonth(), certi.getYear());
+		SalaryCerti salaryCerti = certirepo.findByEmployeeIdAndMonthAndYear(certi.getEmployeeId(), certi.getMonth(),
+				certi.getYear());
 		salaryCerti.setManagerApprovalStatusForCerti(certi.getManagerApprovalStatusForCerti());
 		salaryCerti.setHrApprovalStatusForCerti(certi.getHrApprovalStatusForCerti());
 		return certirepo.save(salaryCerti);
@@ -374,7 +452,5 @@ public class PayRollServiceImpl implements IPayRollService {
 	public List<SalaryCerti> getAllRequest() {
 		return certirepo.findAll();
 	}
-	
-	
 
 }

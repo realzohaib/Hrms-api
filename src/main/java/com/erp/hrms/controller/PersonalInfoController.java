@@ -27,7 +27,7 @@ import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
-@RestController
+@RestController	
 @RequestMapping("/api/v1")
 @CrossOrigin("*")
 public class PersonalInfoController {
