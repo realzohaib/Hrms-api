@@ -104,19 +104,19 @@ public class WebSecurityConfig {
 //				.antMatchers("/api/v1/personal-info/update/email/{email}").hasAnyRole("ADMIN", "EMPLOYEE", "HR")
 //				.anyRequest().authenticated();
 				
-				//.anyRequest().permitAll();
+				.anyRequest().permitAll();
 
-				.antMatchers("/api/auth/**").permitAll()
-				.antMatchers("/api/v1/personal-info").hasAnyRole("ADMIN", "HR")
-				.antMatchers("/api/v1/personal-info/find/all/active").hasAnyRole("ADMIN", "HR")
-				.antMatchers("/api/v1/personal-info/email/{email}").hasAnyRole("ADMIN", "HR" ,"EMPLOYEE" )
-				.antMatchers("/api/v1/personal-info/employeeId/{employeeId}").hasAnyRole("ADMIN", "EMPLOYEE" , "HR")
-				.antMatchers("/api/v1/personal-info/delete/{email}").hasAnyRole("ADMIN", "HR")
-				.antMatchers("/api/v1/personal-info/update/email/{email}").hasAnyRole("ADMIN","HR" ,"EMPLOYEE")
-				.antMatchers("/api/v1/dashboard").permitAll()
-				.anyRequest().authenticated();
-
-		http.authenticationProvider(authenticationProvider());
+//				.antMatchers("/api/auth/**").permitAll()
+//				.antMatchers("/api/v1/personal-info").hasAnyRole("ADMIN", "HR")
+//				.antMatchers("/api/v1/personal-info/find/all/active").hasAnyRole("ADMIN", "HR")
+//				.antMatchers("/api/v1/personal-info/email/{email}").hasAnyRole("ADMIN", "HR" ,"EMPLOYEE" )
+//				.antMatchers("/api/v1/personal-info/employeeId/{employeeId}").hasAnyRole("ADMIN", "EMPLOYEE" , "HR")
+//				.antMatchers("/api/v1/personal-info/delete/{email}").hasAnyRole("ADMIN", "HR")
+//				.antMatchers("/api/v1/personal-info/update/email/{email}").hasAnyRole("ADMIN","HR" ,"EMPLOYEE")
+//				.antMatchers("/api/v1/dashboard").permitAll()
+//				.anyRequest().authenticated();
+//
+//		http.authenticationProvider(authenticationProvider());
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 

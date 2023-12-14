@@ -6,6 +6,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+//import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,6 +22,10 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+
+//import org.apache.xmlbeans.impl.xb.xsdschema.All;
+//import org.hibernate.annotations.Cascade;
+//import org.hibernate.annotations.CascadeType;
 
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -132,6 +137,8 @@ public class PersonalInfo implements Serializable {
 	private VisaDetail visainfo;
 	
 	private String onboardHrApprovalStatus;
+	
+	private boolean filledForm;
 
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
@@ -142,6 +149,10 @@ public class PersonalInfo implements Serializable {
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
 	private List<OthersQualification> othersQualifications;
+	
+//	@OneToMany(cascade =CascadeType.ALL, fetch = FetchType.EAGER)
+////	@JoinColumn(name = "otQId")
+//	private List<OthersQualification> othersQualifications;
 
 	@JsonManagedReference
 	@OneToMany(mappedBy = "personalinfo")
@@ -168,12 +179,51 @@ public class PersonalInfo implements Serializable {
 	@JsonManagedReference
 	private List<JobDetails> jobDetails;
 
+//	@OneToMany(cascade =CascadeType.ALL, fetch = FetchType.EAGER)
+////	@Cascade(CascadeType.ALL)
+//	@JsonManagedReference
+//	private List<Education> educations;
+
+//	@OneToMany(mappedBy = "personalinfo")
+//	@Cascade(CascadeType.ALL)
+//	@JsonManagedReference
+//	private List<OthersQualification> othersQualifications;
+	
+//	@OneToMany(cascade =CascadeType.ALL, fetch = FetchType.EAGER)
+////	@JoinColumn(name = "otQId")
+//	private List<OthersQualification> othersQualifications;
+//
+//	@JsonManagedReference
+//	@OneToMany(cascade =CascadeType.ALL, fetch = FetchType.EAGER)
+////	@Cascade(CascadeType.ALL)
+//	private List<ProfessionalQualification> professionalQualifications;
+//
+//	@JsonManagedReference
+//	@OneToMany(cascade =CascadeType.ALL, fetch = FetchType.EAGER)
+////	@Cascade(CascadeType.ALL)
+//	private List<PreviousEmployee> oldEmployee;
+//
+//	@JsonManagedReference
+//	@OneToOne(cascade =CascadeType.ALL, fetch = FetchType.EAGER)
+////	@Cascade(CascadeType.ALL)
+//	private BackgroundCheck bgcheck;
+//
+//	@JsonManagedReference
+//	@OneToMany(cascade =CascadeType.ALL, fetch = FetchType.EAGER)
+////	@Cascade(CascadeType.ALL)
+//	private List<Trainingdetails> training;
+//
+//	@OneToMany(cascade =CascadeType.ALL, fetch = FetchType.EAGER)
+////	@Cascade(CascadeType.ALL)
+//	@JsonManagedReference
+//	private List<JobDetails> jobDetails;
+	
 	@ManyToOne
 	@JoinColumn(name = "departmentId", referencedColumnName = "departmentId")
 	private Department department;
 
 	@OneToOne(mappedBy = "personalinfo")
-	@Cascade(CascadeType.ALL)
+//	@Cascade(CascadeType.ALL)
 	private UserEntity userentity;
 
 	@PostLoad

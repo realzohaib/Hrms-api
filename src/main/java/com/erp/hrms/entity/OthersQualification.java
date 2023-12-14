@@ -38,7 +38,7 @@ public class OthersQualification {
 	private byte[] othersDocumentScanData;
 
 	@ManyToOne
-	@JoinColumn(name = "employee_id ")
+	@JoinColumn(name = "employee_id")
 	@JsonBackReference
 	private PersonalInfo personalinfo;
 
