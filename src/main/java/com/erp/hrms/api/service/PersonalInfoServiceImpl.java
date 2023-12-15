@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -1164,15 +1165,15 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			existingPersonalInfo.setDateOfBirth(personalInfo.getDateOfBirth());
 			existingPersonalInfo.setAge(personalInfo.getAge());
 			existingPersonalInfo.setMaritalStatus(personalInfo.getMaritalStatus());
+			existingPersonalInfo.setFilledForm(personalInfo.isFilledForm());
+			existingPersonalInfo.setOnboardHrApprovalStatus(personalInfo.getOnboardHrApprovalStatus());
 
 			if (passportSizePhoto != null && !passportSizePhoto.isEmpty()) {
-				// Delete the old passportSizePhoto file if it exists
 				if (existingPersonalInfo.getPassportSizePhoto() != null) {
 					Path oldPassportSizePhotoPath = Paths.get(uplaodDirectory,
 							existingPersonalInfo.getPassportSizePhoto());
 					Files.deleteIfExists(oldPassportSizePhotoPath);
 				}
-				// Save the new passportSizePhoto file
 				String passportoriginalFileName = passportSizePhoto.getOriginalFilename();
 				String passportfileNameWithUniqueIdentifier = employeeId + "-" + passportoriginalFileName;
 				Path passportSizePhotoNameWithPath = Paths.get(uplaodDirectory, passportfileNameWithUniqueIdentifier);
@@ -1182,12 +1183,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			existingPersonalInfo.setPersonalContactNo(personalInfo.getPersonalContactNo());
 			existingPersonalInfo.setCitizenship(personalInfo.getCitizenship());
 			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
-				// Delete the old OtherIdProofDoc file if it exists
 				if (existingPersonalInfo.getOtherIdProofDoc() != null) {
 					Path oldOtherIdProofDocPath = Paths.get(uplaodDirectory, existingPersonalInfo.getOtherIdProofDoc());
 					Files.deleteIfExists(oldOtherIdProofDocPath);
 				}
-				// Save the new OtherIdProofDoc file
 				String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename();
 				String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-" + OtherIdProoforiginalFileName;
 				Path OtherIdProofDocNameWithData = Paths.get(uplaodDirectory,
@@ -1210,24 +1209,24 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				passportDetails = new PassportDetails();
 				existingPersonalInfo.setPsDetail(passportDetails);
 			}
-//			if (personalInfo.getPsDetail() != null) {
+
 			passportDetails.setPassportNumber(personalInfo.getPsDetail().getPassportNumber());
 			passportDetails.setPassportIssuingCountry(personalInfo.getPsDetail().getPassportIssuingCountry());
 			passportDetails.setPassportExpiryDate(personalInfo.getPsDetail().getPassportExpiryDate());
 			if (passportScan != null && !passportScan.isEmpty()) {
-				// Delete the old passportScan file if it exists
+
 				if (passportDetails.getPassportScan() != null) {
 					Path oldpassportScanPath = Paths.get(uplaodDirectory, passportDetails.getPassportScan());
 					Files.deleteIfExists(oldpassportScanPath);
 				}
-				// Save the new passportScan file
+
 				String passportScanoriginalFileName = passportScan.getOriginalFilename();
 				String passportScanfileNameWithUniqueIdentifier = employeeId + "-" + passportScanoriginalFileName;
 				Path passportScanNameWithData = Paths.get(uplaodDirectory, passportScanfileNameWithUniqueIdentifier);
 				Files.write(passportScanNameWithData, passportScan.getBytes());
 				passportDetails.setPassportScan(passportScanfileNameWithUniqueIdentifier);
 			}
-//			}
+
 			existingPersonalInfo.setPsDetail(passportDetails);
 
 			DrivingLicense drivingLicense = existingPersonalInfo.getLicense();
@@ -1235,24 +1234,20 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				drivingLicense = new DrivingLicense();
 				existingPersonalInfo.setLicense(drivingLicense);
 			}
-//			if (personalInfo.getLicense() != null) {
 			drivingLicense.setDrivinglicense(personalInfo.getLicense().getDrivinglicense());
 			drivingLicense.setOwnvehicle(personalInfo.getLicense().getOwnvehicle());
 			drivingLicense.setLicenseType(personalInfo.getLicense().getLicenseType());
 			if (licensecopy != null && !licensecopy.isEmpty()) {
-				// Delete the old licensecopy file if it exists
 				if (drivingLicense.getLicensecopy() != null) {
 					Path oldlicensecopyPath = Paths.get(uplaodDirectory, drivingLicense.getLicensecopy());
 					Files.deleteIfExists(oldlicensecopyPath);
 				}
-				// Save the new licensecopy file
 				String licensecopyoriginalFileName = licensecopy.getOriginalFilename();
 				String licensecopyfileNameWithUniqueIdentifier = employeeId + "-" + licensecopyoriginalFileName;
 				Path licensecopyNameWithData = Paths.get(uplaodDirectory, licensecopyfileNameWithUniqueIdentifier);
 				Files.write(licensecopyNameWithData, licensecopy.getBytes());
 				drivingLicense.setLicensecopy(licensecopyfileNameWithUniqueIdentifier);
 			}
-//			}
 			existingPersonalInfo.setLicense(drivingLicense);
 
 			BloodRelative bloodRelative = existingPersonalInfo.getRelative();
@@ -1270,12 +1265,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			bloodRelative.setRelationship(personalInfo.getRelative().getRelationship());
 
 			if (relativeid != null && !relativeid.isEmpty()) {
-				// Delete the old relativeid file if it exists
 				if (bloodRelative.getRelativeid() != null) {
 					Path oldrelativeidPath = Paths.get(uplaodDirectory, bloodRelative.getRelativeid());
 					Files.deleteIfExists(oldrelativeidPath);
 				}
-				// Save the new relativeid file
 				String relativeidoriginalFileName = relativeid.getOriginalFilename();
 				String relativeidfileNameWithUniqueIdentifier = employeeId + "-" + relativeidoriginalFileName;
 				Path relativeidNameWithData = Paths.get(uplaodDirectory, relativeidfileNameWithUniqueIdentifier);
@@ -1283,12 +1276,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				bloodRelative.setRelativeid(relativeidfileNameWithUniqueIdentifier);
 			}
 			if (raddressproof != null && !raddressproof.isEmpty()) {
-				// Delete the old raddressproof file if it exists
 				if (bloodRelative.getRaddressproof() != null) {
 					Path oldraddressproofPath = Paths.get(uplaodDirectory, bloodRelative.getRaddressproof());
 					Files.deleteIfExists(oldraddressproofPath);
 				}
-				// Save the new raddressproof file
 				String raddressprooforiginalFileName = raddressproof.getOriginalFilename();
 				String raddressprooffileNameWithUniqueIdentifier = employeeId + "-" + raddressprooforiginalFileName;
 				Path raddressproofNameWithData = Paths.get(uplaodDirectory, raddressprooffileNameWithUniqueIdentifier);
@@ -1303,7 +1294,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				visaDetail = new VisaDetail();
 				existingPersonalInfo.setVisainfo(visaDetail);
 			}
-//			if (personalInfo.getVisainfo() != null) {
 			visaDetail.setWorkVisaEmirateId(personalInfo.getVisainfo().getWorkVisaEmirateId());
 			visaDetail.setCategoryOfVisa(personalInfo.getVisainfo().getCategoryOfVisa());
 			visaDetail.setVisaType(personalInfo.getVisainfo().getVisaType());
@@ -1311,19 +1301,16 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			visaDetail.setVisaIssueyDate(personalInfo.getVisainfo().getVisaIssueyDate());
 			visaDetail.setVisaExpiryDate(personalInfo.getVisainfo().getVisaExpiryDate());
 			if (visaDocs != null && !visaDocs.isEmpty()) {
-				// Delete the old visaDocs file if it exists
 				if (visaDetail.getVisaDocs() != null) {
 					Path oldvisaDocsPath = Paths.get(uplaodDirectory, visaDetail.getVisaDocs());
 					Files.deleteIfExists(oldvisaDocsPath);
 				}
-				// Save the new visaDocs file
 				String visaDocsoriginalFileName = visaDocs.getOriginalFilename();
 				String visaDocsfileNameWithUniqueIdentifier = employeeId + "-" + visaDocsoriginalFileName;
 				Path visaDocsNameWithData = Paths.get(uplaodDirectory, visaDocsfileNameWithUniqueIdentifier);
 				Files.write(visaDocsNameWithData, visaDocs.getBytes());
 				visaDetail.setVisaDocs(visaDocsfileNameWithUniqueIdentifier);
 			}
-//			}
 			existingPersonalInfo.setVisainfo(visaDetail);
 
 			List<Education> educations = existingPersonalInfo.getEducations();
@@ -1354,13 +1341,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					existingEducation.setDiplomaMarksOrGrade(newEducation.getDiplomaMarksOrGrade());
 					existingEducation.setDiplomaYear(newEducation.getDiplomaYear());
 					if (secondaryDocumentScan != null && !secondaryDocumentScan.isEmpty()) {
-						// Delete the old secondaryDocumentScan file if it exists
 						if (existingEducation.getSecondaryDocumentScan() != null) {
 							Path oldsecondaryDocumentScanPath = Paths.get(uplaodDirectory,
 									existingEducation.getSecondaryDocumentScan());
 							Files.deleteIfExists(oldsecondaryDocumentScanPath);
 						}
-						// Save the new secondaryDocumentScan file
 						String secondaryDocumentScanoriginalFileName = secondaryDocumentScan.getOriginalFilename();
 						String secondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
 								+ secondaryDocumentScanoriginalFileName;
@@ -1370,13 +1355,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						existingEducation.setSecondaryDocumentScan(secondaryDocumentScanfileNameWithUniqueIdentifier);
 					}
 					if (seniorSecondaryDocumentScan != null && !seniorSecondaryDocumentScan.isEmpty()) {
-						// Delete the old seniorSecondaryDocumentScan file if it exists
 						if (existingEducation.getSeniorSecondaryDocumentScan() != null) {
 							Path oldseniorSecondaryDocumentScanPath = Paths.get(uplaodDirectory,
 									existingEducation.getSeniorSecondaryDocumentScan());
 							Files.deleteIfExists(oldseniorSecondaryDocumentScanPath);
 						}
-						// Save the new seniorSecondaryDocumentScan file
 						String seniorSecondaryDocumentScanoriginalFileName = seniorSecondaryDocumentScan
 								.getOriginalFilename();
 						String seniorSecondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
@@ -1388,13 +1371,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 								seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
 					}
 					if (graduationDocumentScan != null && !graduationDocumentScan.isEmpty()) {
-						// Delete the old graduationDocumentScan file if it exists
 						if (existingEducation.getGraduationDocumentScan() != null) {
 							Path oldGraduationDocumentScanPath = Paths.get(uplaodDirectory,
 									existingEducation.getGraduationDocumentScan());
 							Files.deleteIfExists(oldGraduationDocumentScanPath);
 						}
-						// Save the new graduationDocumentScan file
 						String graduationDocumentScanoriginalFileName = graduationDocumentScan.getOriginalFilename();
 						String graduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
 								+ graduationDocumentScanoriginalFileName;
@@ -1404,13 +1385,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						existingEducation.setGraduationDocumentScan(graduationDocumentScanfileNameWithUniqueIdentifier);
 					}
 					if (postGraduationDocumentScan != null && !postGraduationDocumentScan.isEmpty()) {
-						// Delete the old postGraduationDocumentScan file if it exists
 						if (existingEducation.getPostGraduationDocumentScan() != null) {
 							Path oldpostGraduationDocumentScanPath = Paths.get(uplaodDirectory,
 									existingEducation.getPostGraduationDocumentScan());
 							Files.deleteIfExists(oldpostGraduationDocumentScanPath);
 						}
-						// Save the new postGraduationDocumentScan file
 						String postGraduationDocumentScanoriginalFileName = postGraduationDocumentScan
 								.getOriginalFilename();
 						String postGraduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
@@ -1422,13 +1401,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 								.setPostGraduationDocumentScan(postGraduationDocumentScanfileNameWithUniqueIdentifier);
 					}
 					if (diplomaDocumentScan != null && !diplomaDocumentScan.isEmpty()) {
-						// Delete the old diplomaDocumentScan file if it exists
 						if (existingEducation.getDiplomaDocumentScan() != null) {
 							Path olddiplomaDocumentScanPath = Paths.get(uplaodDirectory,
 									existingEducation.getDiplomaDocumentScan());
 							Files.deleteIfExists(olddiplomaDocumentScanPath);
 						}
-						// Save the new diplomaDocumentScan file
 						String diplomaDocumentScanoriginalFileName = diplomaDocumentScan.getOriginalFilename();
 						String diplomaDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
 								+ diplomaDocumentScanoriginalFileName;
@@ -1441,289 +1418,719 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			}
 			existingPersonalInfo.setEducations(educations);
 
-			List<OthersQualification> othersQualifications = existingPersonalInfo.getOthersQualifications();
+			List<OthersQualification> existingOthersQualifications = existingPersonalInfo.getOthersQualifications();
 
 			if (personalInfo.getOthersQualifications() != null) {
-				List<OthersQualification> newOthersQualification = personalInfo.getOthersQualifications();
-				if (othersQualifications.size() != newOthersQualification.size()) {
-					return existingPersonalInfo;
-				}
-				for (int i = 0; i < othersQualifications.size(); i++) {
-					OthersQualification existingOthersQualification = othersQualifications.get(i);
-					OthersQualification updateOthersQualification = newOthersQualification.get(i);
-					existingOthersQualification.setOthers(updateOthersQualification.getOthers());
-					existingOthersQualification
-							.setOthersIssuingAuthority(updateOthersQualification.getOthersIssuingAuthority());
-					existingOthersQualification
-							.setOthersMarksOrGrade(updateOthersQualification.getOthersMarksOrGrade());
-					existingOthersQualification.setOthersYear(updateOthersQualification.getOthersYear());
+				List<OthersQualification> newOthersQualifications = personalInfo.getOthersQualifications();
 
-					if (othersDocumentScan != null && i < othersDocumentScan.length) {
-						MultipartFile file = othersDocumentScan[i]; 
-						if (file != null && !file.isEmpty()) {
-							// Check and delete the old others document scan file if it exists
-							if (existingOthersQualification.getOthersDocumentScan() != null) {
-								Path oldOthersDocumentScanPath = Paths.get(uplaodDirectory,
-										existingOthersQualification.getOthersDocumentScan());
-								Files.deleteIfExists(oldOthersDocumentScanPath);
-							}
-							// Save the new othersDocumentScan file
-							String othersDocumentScanoriginalFileName = file.getOriginalFilename();
-							String othersDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-									+ othersDocumentScanoriginalFileName;
-							Path othersDocumentScanNameWithData = Paths.get(uplaodDirectory,
-									othersDocumentScanfileNameWithUniqueIdentifier);
-							Files.write(othersDocumentScanNameWithData, file.getBytes());
+				for (int i = 0; i < newOthersQualifications.size(); i++) {
+					OthersQualification newOthersQualification = newOthersQualifications.get(i);
+
+					boolean qualificationExists = false;
+
+					for (OthersQualification existingOthersQualification : existingOthersQualifications) {
+						if (Objects.equals(existingOthersQualification.getId(), newOthersQualification.getId())) {
+							existingOthersQualification.setOthers(newOthersQualification.getOthers());
 							existingOthersQualification
-									.setOthersDocumentScan(othersDocumentScanfileNameWithUniqueIdentifier);
-						}
-					}
-				}
-			}
-			existingPersonalInfo.setOthersQualifications(othersQualifications);
+									.setOthersIssuingAuthority(newOthersQualification.getOthersIssuingAuthority());
+							existingOthersQualification
+									.setOthersMarksOrGrade(newOthersQualification.getOthersMarksOrGrade());
+							existingOthersQualification.setOthersYear(newOthersQualification.getOthersYear());
+							existingOthersQualification.setPersonalinfo(existingPersonalInfo);
 
-			List<ProfessionalQualification> professionalQualifications = existingPersonalInfo
-					.getProfessionalQualifications();
-			if (personalInfo.getProfessionalQualifications() != null) {
-				List<ProfessionalQualification> newProfessionalQualifications = personalInfo
-						.getProfessionalQualifications();
-				if (professionalQualifications.size() != newProfessionalQualifications.size()) {
-					return existingPersonalInfo;
-				}
-				for (int i = 0; i < professionalQualifications.size(); i++) {
-					ProfessionalQualification existingProfessionalQualification = professionalQualifications.get(i);
-					ProfessionalQualification newProfessionalQualification = newProfessionalQualifications.get(i);
-					existingProfessionalQualification.setGrade(newProfessionalQualification.getGrade());
-					existingProfessionalQualification
-							.setIssuingAuthority(newProfessionalQualification.getIssuingAuthority());
-					existingProfessionalQualification.setGradingSystem(newProfessionalQualification.getGradingSystem());
-					existingProfessionalQualification.setQualification(newProfessionalQualification.getQualification());
-					existingProfessionalQualification
-							.setYearOfQualification(newProfessionalQualification.getYearOfQualification());
-					if (degreeScan != null && i < degreeScan.length) {
-						MultipartFile file = degreeScan[i];
-						if (file != null && !file.isEmpty()) {
-							// Check and delete the old degreeScan file if it exists
-							if (existingProfessionalQualification.getDegreeScan() != null) {
-								Path olddegreeScanPath = Paths.get(uplaodDirectory,
-										existingProfessionalQualification.getDegreeScan());
-								Files.deleteIfExists(olddegreeScanPath);
-							}
-							// Save the new degreeScan file
-							String degreeScanoriginalFileName = file.getOriginalFilename();
-							String degreeScanfileNameWithUniqueIdentifier = employeeId + "-"
-									+ degreeScanoriginalFileName;
-							Path degreeScanNameWithData = Paths.get(uplaodDirectory,
-									degreeScanfileNameWithUniqueIdentifier);
-							Files.write(degreeScanNameWithData, file.getBytes());
-							existingProfessionalQualification.setDegreeScan(degreeScanfileNameWithUniqueIdentifier);
-						}
-					}
-				}
-			}
-			existingPersonalInfo.setProfessionalQualifications(professionalQualifications);
+							if (othersDocumentScan != null && i < othersDocumentScan.length) {
+								MultipartFile file = othersDocumentScan[i];
 
-			List<PreviousEmployee> previousEmployees = existingPersonalInfo.getOldEmployee();
-			if (personalInfo.getOldEmployee() != null) {
-				List<PreviousEmployee> newPreviousEmployees = personalInfo.getOldEmployee();
-				if (previousEmployees.size() != newPreviousEmployees.size()) {
-					return existingPersonalInfo;
-				}
-				for (int i = 0; i < previousEmployees.size(); i++) {
-					PreviousEmployee existingPreviousEmployee = previousEmployees.get(i);
-					PreviousEmployee newPreviousEmployee = newPreviousEmployees.get(i);
-					existingPreviousEmployee.setCompanyName(newPreviousEmployee.getCompanyName());
-					existingPreviousEmployee.setCompanyAddress(newPreviousEmployee.getCompanyAddress());
-					existingPreviousEmployee.setDesignation(newPreviousEmployee.getDesignation());
-					existingPreviousEmployee.setDescription(newPreviousEmployee.getDescription());
-					existingPreviousEmployee.setDateFrom(newPreviousEmployee.getDateFrom());
-					existingPreviousEmployee.setDateTo(newPreviousEmployee.getDateTo());
-					if (payslipScan != null && !payslipScan.isEmpty()) {
-						// Check and delete the old payslipScan file if it exists
-						if (existingPreviousEmployee.getPayslipScan() != null) {
-							Path oldpayslipScanPath = Paths.get(uplaodDirectory,
-									existingPreviousEmployee.getPayslipScan());
-							Files.deleteIfExists(oldpayslipScanPath);
-						}
-						// Save the new payslipScan file
-						String payslipScanoriginalFileName = payslipScan.getOriginalFilename();
-						String payslipScanfileNameWithUniqueIdentifier = employeeId + "-" + payslipScanoriginalFileName;
-						Path payslipScanNameWithData = Paths.get(uplaodDirectory,
-								payslipScanfileNameWithUniqueIdentifier);
-						Files.write(payslipScanNameWithData, payslipScan.getBytes());
-						existingPreviousEmployee.setPayslipScan(payslipScanfileNameWithUniqueIdentifier);
-					}
-
-					existingPreviousEmployee.setPreviousHRContact(newPreviousEmployee.getPreviousHRContact());
-					existingPreviousEmployee.setPreviousHRName(newPreviousEmployee.getPreviousHRName());
-					existingPreviousEmployee.setPreviousManagerContact(newPreviousEmployee.getPreviousManagerContact());
-					existingPreviousEmployee.setPreviousManagerName(newPreviousEmployee.getPreviousManagerName());
-					existingPreviousEmployee.setLastWithdrawnSalary(newPreviousEmployee.getLastWithdrawnSalary());
-
-					List<EmpAchievement> empAchievements = existingPreviousEmployee.getEmpAchievements();
-					if (newPreviousEmployee.getEmpAchievements() != null) {
-						List<EmpAchievement> newEmpAchievements = newPreviousEmployee.getEmpAchievements();
-						if (empAchievements.size() != newEmpAchievements.size()) {
-							return existingPersonalInfo;
-						}
-						for (int j = 0; j < empAchievements.size(); j++) {
-							EmpAchievement existingAchievement = empAchievements.get(j);
-							EmpAchievement newAchievement = newEmpAchievements.get(j);
-							existingAchievement.setAchievementRewardsName(newAchievement.getAchievementRewardsName());
-							if (achievementsRewardsDocs != null && i < achievementsRewardsDocs.length) {
-								MultipartFile file = achievementsRewardsDocs[i];
 								if (file != null && !file.isEmpty()) {
-									// Check and delete the old achievementsRewardsDocs file if it exists
-									if (existingAchievement.getAchievementsRewardsDocs() != null) {
-										Path oldachievementsRewardsDocsPath = Paths.get(uplaodDirectory,
-												existingAchievement.getAchievementsRewardsDocs());
-										Files.deleteIfExists(oldachievementsRewardsDocsPath);
+									try {
+										if (existingOthersQualification.getOthersDocumentScan() != null) {
+											Path oldOthersDocumentScanPath = Paths.get(uplaodDirectory,
+													existingOthersQualification.getOthersDocumentScan());
+											Files.deleteIfExists(oldOthersDocumentScanPath);
+										}
+
+										String othersDocumentScanoriginalFileName = file.getOriginalFilename();
+										String othersDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+												+ othersDocumentScanoriginalFileName;
+										Path othersDocumentScanNameWithData = Paths.get(uplaodDirectory,
+												othersDocumentScanfileNameWithUniqueIdentifier);
+										Files.write(othersDocumentScanNameWithData, file.getBytes());
+										existingOthersQualification
+												.setOthersDocumentScan(othersDocumentScanfileNameWithUniqueIdentifier);
+									} catch (IOException e) {
+										e.printStackTrace();
 									}
-									// Save the new achievementsRewardsDocs file
-									String achievementsRewardsDocsoriginalFileName = file.getOriginalFilename();
-									String achievementsRewardsDocsfileNameWithUniqueIdentifier = employeeId + "-"
-											+ achievementsRewardsDocsoriginalFileName;
-									Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
-											achievementsRewardsDocsfileNameWithUniqueIdentifier);
-									Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
-									existingAchievement.setAchievementsRewardsDocs(
-											achievementsRewardsDocsfileNameWithUniqueIdentifier);
+								}
+							}
+
+							qualificationExists = true;
+							break;
+						}
+					}
+
+					if (!qualificationExists) {
+						OthersQualification newQualification = new OthersQualification();
+						newQualification.setOthers(newOthersQualification.getOthers());
+						newQualification.setOthersIssuingAuthority(newOthersQualification.getOthersIssuingAuthority());
+						newQualification.setOthersMarksOrGrade(newOthersQualification.getOthersMarksOrGrade());
+						newQualification.setOthersYear(newOthersQualification.getOthersYear());
+
+						newQualification.setPersonalinfo(existingPersonalInfo);
+
+						if (othersDocumentScan != null && i < othersDocumentScan.length) {
+							MultipartFile file = othersDocumentScan[i];
+
+							if (file != null && !file.isEmpty()) {
+								try {
+									String othersDocumentScanoriginalFileName = file.getOriginalFilename();
+									String othersDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+											+ othersDocumentScanoriginalFileName;
+									Path othersDocumentScanNameWithData = Paths.get(uplaodDirectory,
+											othersDocumentScanfileNameWithUniqueIdentifier);
+									Files.write(othersDocumentScanNameWithData, file.getBytes());
+									newQualification
+											.setOthersDocumentScan(othersDocumentScanfileNameWithUniqueIdentifier);
+								} catch (IOException e) {
+									e.printStackTrace();
 								}
 							}
 						}
+
+						existingOthersQualifications.add(newQualification);
 					}
-					existingPreviousEmployee.setEmpAchievements(empAchievements);
 				}
+
+				existingPersonalInfo.setOthersQualifications(existingOthersQualifications);
 			}
-			existingPersonalInfo.setOldEmployee(previousEmployees);
+
+			List<ProfessionalQualification> professionalQualifications = existingPersonalInfo
+					.getProfessionalQualifications();
+
+			if (personalInfo.getProfessionalQualifications() != null) {
+				List<ProfessionalQualification> newProfessionalQualifications = personalInfo
+						.getProfessionalQualifications();
+
+				for (int i = 0; i < newProfessionalQualifications.size(); i++) {
+					ProfessionalQualification newProfessionalQualification = newProfessionalQualifications.get(i);
+
+					boolean qualificationExists = false;
+
+					for (ProfessionalQualification existingProfessionalQualification : professionalQualifications) {
+						if (Objects.equals(existingProfessionalQualification.getId(),
+								newProfessionalQualification.getId())) {
+							existingProfessionalQualification.setGrade(newProfessionalQualification.getGrade());
+							existingProfessionalQualification
+									.setIssuingAuthority(newProfessionalQualification.getIssuingAuthority());
+							existingProfessionalQualification
+									.setGradingSystem(newProfessionalQualification.getGradingSystem());
+							existingProfessionalQualification
+									.setQualification(newProfessionalQualification.getQualification());
+							existingProfessionalQualification
+									.setYearOfQualification(newProfessionalQualification.getYearOfQualification());
+							existingProfessionalQualification.setPersonalinfo(existingPersonalInfo);
+
+							if (degreeScan != null && i < degreeScan.length) {
+								MultipartFile file = degreeScan[i];
+
+								if (file != null && !file.isEmpty()) {
+									try {
+										if (existingProfessionalQualification.getDegreeScan() != null) {
+											Path oldDegreeScanPath = Paths.get(uplaodDirectory,
+													existingProfessionalQualification.getDegreeScan());
+											Files.deleteIfExists(oldDegreeScanPath);
+										}
+
+										String degreeScanOriginalFileName = file.getOriginalFilename();
+										String degreeScanFileNameWithUniqueIdentifier = employeeId + "-"
+												+ degreeScanOriginalFileName;
+										Path degreeScanNameWithData = Paths.get(uplaodDirectory,
+												degreeScanFileNameWithUniqueIdentifier);
+										Files.write(degreeScanNameWithData, file.getBytes());
+										existingProfessionalQualification
+												.setDegreeScan(degreeScanFileNameWithUniqueIdentifier);
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
+								}
+							}
+
+							qualificationExists = true;
+							break;
+						}
+					}
+
+					if (!qualificationExists) {
+						ProfessionalQualification newQualification = new ProfessionalQualification();
+						newQualification.setGrade(newProfessionalQualification.getGrade());
+						newQualification.setIssuingAuthority(newProfessionalQualification.getIssuingAuthority());
+						newQualification.setGradingSystem(newProfessionalQualification.getGradingSystem());
+						newQualification.setQualification(newProfessionalQualification.getQualification());
+						newQualification.setYearOfQualification(newProfessionalQualification.getYearOfQualification());
+						newQualification.setPersonalinfo(existingPersonalInfo);
+
+						if (degreeScan != null && i < degreeScan.length) {
+							MultipartFile file = degreeScan[i];
+
+							if (file != null && !file.isEmpty()) {
+								try {
+									// Save the new degreeScan file
+									String degreeScanOriginalFileName = file.getOriginalFilename();
+									String degreeScanFileNameWithUniqueIdentifier = employeeId + "-"
+											+ degreeScanOriginalFileName;
+									Path degreeScanNameWithData = Paths.get(uplaodDirectory,
+											degreeScanFileNameWithUniqueIdentifier);
+									Files.write(degreeScanNameWithData, file.getBytes());
+									newQualification.setDegreeScan(degreeScanFileNameWithUniqueIdentifier);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+
+						professionalQualifications.add(newQualification);
+					}
+				}
+
+				existingPersonalInfo.setProfessionalQualifications(professionalQualifications);
+			}
+
+			List<PreviousEmployee> existingPreviousEmployees = existingPersonalInfo.getOldEmployee();
+			if (personalInfo.getOldEmployee() != null) {
+				List<PreviousEmployee> newPreviousEmployees = personalInfo.getOldEmployee();
+
+				for (int i = 0; i < newPreviousEmployees.size(); i++) {
+					PreviousEmployee newPreviousEmployee = newPreviousEmployees.get(i);
+					boolean previousExists = false;
+
+					for (PreviousEmployee existingPreviousEmployee : existingPreviousEmployees) {
+						if (Objects.equals(existingPreviousEmployee.getPreviousId(),
+								newPreviousEmployee.getPreviousId())) {
+							existingPreviousEmployee.setCompanyName(newPreviousEmployee.getCompanyName());
+							existingPreviousEmployee.setCompanyAddress(newPreviousEmployee.getCompanyAddress());
+							existingPreviousEmployee.setDesignation(newPreviousEmployee.getDesignation());
+							existingPreviousEmployee.setDescription(newPreviousEmployee.getDescription());
+							existingPreviousEmployee.setDateFrom(newPreviousEmployee.getDateFrom());
+							existingPreviousEmployee.setDateTo(newPreviousEmployee.getDateTo());
+							existingPreviousEmployee.setPreviousHRContact(newPreviousEmployee.getPreviousHRContact());
+							existingPreviousEmployee.setPreviousHRName(newPreviousEmployee.getPreviousHRName());
+							existingPreviousEmployee
+									.setPreviousManagerContact(newPreviousEmployee.getPreviousManagerContact());
+							existingPreviousEmployee
+									.setPreviousManagerName(newPreviousEmployee.getPreviousManagerName());
+							existingPreviousEmployee
+									.setLastWithdrawnSalary(newPreviousEmployee.getLastWithdrawnSalary());
+							existingPreviousEmployee
+									.setPreviousManagerPhoneCode(newPreviousEmployee.getPreviousManagerPhoneCode());
+							existingPreviousEmployee
+									.setPreviousHRPhoneCode(newPreviousEmployee.getPreviousHRPhoneCode());
+							existingPreviousEmployee.setPersonalinfo(existingPersonalInfo);
+
+							if (payslipScan != null && !payslipScan.isEmpty()) {
+								try {
+									if (existingPreviousEmployee.getPayslipScan() != null) {
+										Path oldpayslipScanPath = Paths.get(uplaodDirectory,
+												existingPreviousEmployee.getPayslipScan());
+										Files.deleteIfExists(oldpayslipScanPath);
+									}
+									String payslipScanoriginalFileName = payslipScan.getOriginalFilename();
+									String payslipScanfileNameWithUniqueIdentifier = employeeId + "-"
+											+ payslipScanoriginalFileName;
+									Path payslipScanNameWithData = Paths.get(uplaodDirectory,
+											payslipScanfileNameWithUniqueIdentifier);
+									Files.write(payslipScanNameWithData, payslipScan.getBytes());
+									existingPreviousEmployee.setPayslipScan(payslipScanfileNameWithUniqueIdentifier);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+
+							}
+
+							List<EmpAchievement> empAchievements = existingPreviousEmployee.getEmpAchievements();
+
+							if (newPreviousEmployee.getEmpAchievements() != null) {
+								List<EmpAchievement> newEmpAchievements = newPreviousEmployee.getEmpAchievements();
+
+								for (int j = 0; j < newEmpAchievements.size(); j++) {
+									EmpAchievement newAchievement = newEmpAchievements.get(j);
+
+									boolean achievementExists = false;
+
+									for (EmpAchievement existingAchievement : empAchievements) {
+										if (Objects.equals(existingAchievement.getId(), newAchievement.getId())) {
+											existingAchievement.setAchievementRewardsName(
+													newAchievement.getAchievementRewardsName());
+											existingAchievement.setPreviousEmployee(existingPreviousEmployee);
+
+											if (achievementsRewardsDocs != null && j < achievementsRewardsDocs.length) {
+												MultipartFile file = achievementsRewardsDocs[j];
+												if (file != null && !file.isEmpty()) {
+													try {
+														if (existingAchievement.getAchievementsRewardsDocs() != null) {
+															Path oldAchievementsRewardsDocsPath = Paths.get(
+																	uplaodDirectory,
+																	existingAchievement.getAchievementsRewardsDocs());
+															Files.deleteIfExists(oldAchievementsRewardsDocsPath);
+														}
+
+														String achievementsRewardsDocsOriginalFileName = file
+																.getOriginalFilename();
+														String achievementsRewardsDocsFileNameWithUniqueIdentifier = employeeId
+																+ "-" + achievementsRewardsDocsOriginalFileName;
+														Path achievementsRewardsDocsNameWithData = Paths.get(
+																uplaodDirectory,
+																achievementsRewardsDocsFileNameWithUniqueIdentifier);
+														Files.write(achievementsRewardsDocsNameWithData,
+																file.getBytes());
+														existingAchievement.setAchievementsRewardsDocs(
+																achievementsRewardsDocsFileNameWithUniqueIdentifier);
+													} catch (IOException e) {
+														e.printStackTrace();
+													}
+												}
+											}
+
+											achievementExists = true;
+											break;
+										}
+									}
+
+									if (!achievementExists) {
+										EmpAchievement newAchievementInstance = new EmpAchievement();
+										newAchievementInstance
+												.setAchievementRewardsName(newAchievement.getAchievementRewardsName());
+										newAchievementInstance.setPreviousEmployee(existingPreviousEmployee);
+
+										if (achievementsRewardsDocs != null && j < achievementsRewardsDocs.length) {
+											MultipartFile file = achievementsRewardsDocs[j];
+											if (file != null && !file.isEmpty()) {
+												try {
+													String achievementsRewardsDocsOriginalFileName = file
+															.getOriginalFilename();
+													String achievementsRewardsDocsFileNameWithUniqueIdentifier = employeeId
+															+ "-" + achievementsRewardsDocsOriginalFileName;
+													Path achievementsRewardsDocsNameWithData = Paths.get(
+															uplaodDirectory,
+															achievementsRewardsDocsFileNameWithUniqueIdentifier);
+													Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
+													newAchievementInstance.setAchievementsRewardsDocs(
+															achievementsRewardsDocsFileNameWithUniqueIdentifier);
+												} catch (IOException e) {
+													e.printStackTrace();
+												}
+											}
+										}
+
+										empAchievements.add(newAchievementInstance);
+									}
+								}
+							}
+
+							existingPreviousEmployee.setEmpAchievements(empAchievements);
+						}
+						previousExists = true;
+						break;
+
+					}
+					if (!previousExists) {
+						PreviousEmployee newDataPreviousEmployee = new PreviousEmployee();
+						newDataPreviousEmployee.setCompanyName(newPreviousEmployee.getCompanyName());
+						newDataPreviousEmployee.setCompanyAddress(newPreviousEmployee.getCompanyAddress());
+						newDataPreviousEmployee.setDesignation(newPreviousEmployee.getDesignation());
+						newDataPreviousEmployee.setDescription(newPreviousEmployee.getDescription());
+						newDataPreviousEmployee.setDateFrom(newPreviousEmployee.getDateFrom());
+						newDataPreviousEmployee.setDateTo(newPreviousEmployee.getDateTo());
+						newDataPreviousEmployee.setPreviousHRContact(newPreviousEmployee.getPreviousHRContact());
+						newDataPreviousEmployee.setPreviousHRName(newPreviousEmployee.getPreviousHRName());
+						newDataPreviousEmployee
+								.setPreviousManagerContact(newPreviousEmployee.getPreviousManagerContact());
+						newDataPreviousEmployee.setPreviousManagerName(newPreviousEmployee.getPreviousManagerName());
+						newDataPreviousEmployee.setLastWithdrawnSalary(newPreviousEmployee.getLastWithdrawnSalary());
+						newDataPreviousEmployee
+								.setPreviousManagerPhoneCode(newPreviousEmployee.getPreviousManagerPhoneCode());
+						newDataPreviousEmployee.setPreviousHRPhoneCode(newPreviousEmployee.getPreviousHRPhoneCode());
+						newDataPreviousEmployee.setPersonalinfo(existingPersonalInfo);
+
+						if (payslipScan != null && !payslipScan.isEmpty()) {
+							try {
+								if (newDataPreviousEmployee.getPayslipScan() != null) {
+									Path oldpayslipScanPath = Paths.get(uplaodDirectory,
+											newDataPreviousEmployee.getPayslipScan());
+									Files.deleteIfExists(oldpayslipScanPath);
+								}
+
+								String payslipScanoriginalFileName = payslipScan.getOriginalFilename();
+								String payslipScanfileNameWithUniqueIdentifier = employeeId + "-"
+										+ payslipScanoriginalFileName;
+								Path payslipScanNameWithData = Paths.get(uplaodDirectory,
+										payslipScanfileNameWithUniqueIdentifier);
+								Files.write(payslipScanNameWithData, payslipScan.getBytes());
+								newDataPreviousEmployee.setPayslipScan(payslipScanfileNameWithUniqueIdentifier);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+
+						}
+						List<EmpAchievement> empAchievements = newDataPreviousEmployee.getEmpAchievements();
+
+						if (newPreviousEmployee.getEmpAchievements() != null) {
+							List<EmpAchievement> newEmpAchievements = newPreviousEmployee.getEmpAchievements();
+
+							for (int j = 0; j < newEmpAchievements.size(); j++) {
+								EmpAchievement newAchievement = newEmpAchievements.get(j);
+
+								boolean achievementExists = false;
+
+								for (EmpAchievement existingAchievement : empAchievements) {
+									if (Objects.equals(existingAchievement.getId(), newAchievement.getId())) {
+										existingAchievement
+												.setAchievementRewardsName(newAchievement.getAchievementRewardsName());
+										existingAchievement.setPreviousEmployee(newDataPreviousEmployee);
+
+										if (achievementsRewardsDocs != null && j < achievementsRewardsDocs.length) {
+											MultipartFile file = achievementsRewardsDocs[j];
+											if (file != null && !file.isEmpty()) {
+												try {
+													if (existingAchievement.getAchievementsRewardsDocs() != null) {
+														Path oldAchievementsRewardsDocsPath = Paths.get(uplaodDirectory,
+																existingAchievement.getAchievementsRewardsDocs());
+														Files.deleteIfExists(oldAchievementsRewardsDocsPath);
+													}
+
+													String achievementsRewardsDocsOriginalFileName = file
+															.getOriginalFilename();
+													String achievementsRewardsDocsFileNameWithUniqueIdentifier = employeeId
+															+ "-" + achievementsRewardsDocsOriginalFileName;
+													Path achievementsRewardsDocsNameWithData = Paths.get(
+															uplaodDirectory,
+															achievementsRewardsDocsFileNameWithUniqueIdentifier);
+													Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
+													existingAchievement.setAchievementsRewardsDocs(
+															achievementsRewardsDocsFileNameWithUniqueIdentifier);
+												} catch (IOException e) {
+													e.printStackTrace();
+												}
+											}
+										}
+
+										achievementExists = true;
+										break;
+									}
+								}
+
+								if (!achievementExists) {
+									EmpAchievement newAchievementInstance = new EmpAchievement();
+									newAchievementInstance
+											.setAchievementRewardsName(newAchievement.getAchievementRewardsName());
+									newAchievementInstance.setPreviousEmployee(newDataPreviousEmployee);
+
+									// Save the new achievementsRewardsDocs file
+									if (achievementsRewardsDocs != null && j < achievementsRewardsDocs.length) {
+										MultipartFile file = achievementsRewardsDocs[j];
+										if (file != null && !file.isEmpty()) {
+											try {
+												String achievementsRewardsDocsOriginalFileName = file
+														.getOriginalFilename();
+												String achievementsRewardsDocsFileNameWithUniqueIdentifier = employeeId
+														+ "-" + achievementsRewardsDocsOriginalFileName;
+												Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
+														achievementsRewardsDocsFileNameWithUniqueIdentifier);
+												Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
+												newAchievementInstance.setAchievementsRewardsDocs(
+														achievementsRewardsDocsFileNameWithUniqueIdentifier);
+											} catch (IOException e) {
+												e.printStackTrace();
+											}
+										}
+									}
+
+									empAchievements.add(newAchievementInstance);
+								}
+							}
+						}
+
+						newDataPreviousEmployee.setEmpAchievements(empAchievements);
+
+						existingPreviousEmployees.add(newDataPreviousEmployee);
+					}
+				}
+
+				existingPersonalInfo.setOldEmployee(existingPreviousEmployees);
+			}
 
 			List<Trainingdetails> trainingdetails = existingPersonalInfo.getTraining();
+
 			if (personalInfo.getTraining() != null) {
-				List<Trainingdetails> newtrainingdetails = personalInfo.getTraining();
-				if (trainingdetails.size() != newtrainingdetails.size()) {
-					return existingPersonalInfo;
-				}
-				for (int i = 0; i < trainingdetails.size(); i++) {
-					Trainingdetails existingTrainingdetail = trainingdetails.get(i);
-					Trainingdetails newtrainingdetail = newtrainingdetails.get(i);
-					existingTrainingdetail.setInHouseOutsource(newtrainingdetail.getInHouseOutsource());
-					existingTrainingdetail.setPaidUnpaid(newtrainingdetail.getPaidUnpaid());
-					existingTrainingdetail.setTrainingType(newtrainingdetail.getTrainingType());
-					existingTrainingdetail.setTrainerName(newtrainingdetail.getTrainerName());
-					existingTrainingdetail.setTrainerPost(newtrainingdetail.getTrainerPost());
-					existingTrainingdetail.setTrainerPhoneCode(newtrainingdetail.getTrainerPhoneCode());
-					existingTrainingdetail.setTrainerPhoneNo(newtrainingdetail.getTrainerPhoneNo());
-					existingTrainingdetail.setTrainerDepartment(newtrainingdetail.getTrainerDepartment());
-					existingTrainingdetail.setTrainerFeedback(newtrainingdetail.getTrainerFeedback());
-					existingTrainingdetail.setTrainingStartDate(newtrainingdetail.getTrainingStartDate());
-					existingTrainingdetail.setTrainingEndDate(newtrainingdetail.getTrainingEndDate());
-					if (CertificateUploadedForOutsource != null && !CertificateUploadedForOutsource.isEmpty()) {
-						// Check and delete the old CertificateUploadedForOutsource file if it exists
-						if (existingTrainingdetail.getCertificateUploadedForOutsource() != null) {
-							Path oldCertificateUploadedForOutsourcePath = Paths.get(uplaodDirectory,
-									existingTrainingdetail.getCertificateUploadedForOutsource());
-							Files.deleteIfExists(oldCertificateUploadedForOutsourcePath);
+				List<Trainingdetails> newTrainingdetails = personalInfo.getTraining();
+
+				for (int i = 0; i < newTrainingdetails.size(); i++) {
+					Trainingdetails newTrainingdetail = newTrainingdetails.get(i);
+
+					boolean trainingExists = false;
+
+					for (Trainingdetails existingTrainingdetail : trainingdetails) {
+						if (Objects.equals(existingTrainingdetail.getId(), newTrainingdetail.getId())) {
+							existingTrainingdetail.setInHouseOutsource(newTrainingdetail.getInHouseOutsource());
+							existingTrainingdetail.setPaidUnpaid(newTrainingdetail.getPaidUnpaid());
+							existingTrainingdetail.setTrainingType(newTrainingdetail.getTrainingType());
+							existingTrainingdetail.setTrainerName(newTrainingdetail.getTrainerName());
+							existingTrainingdetail.setTrainerPost(newTrainingdetail.getTrainerPost());
+							existingTrainingdetail.setTrainerPhoneCode(newTrainingdetail.getTrainerPhoneCode());
+							existingTrainingdetail.setTrainerPhoneNo(newTrainingdetail.getTrainerPhoneNo());
+							existingTrainingdetail.setTrainerDepartment(newTrainingdetail.getTrainerDepartment());
+							existingTrainingdetail.setTrainerFeedback(newTrainingdetail.getTrainerFeedback());
+							existingTrainingdetail.setTrainingStartDate(newTrainingdetail.getTrainingStartDate());
+							existingTrainingdetail.setTrainingEndDate(newTrainingdetail.getTrainingEndDate());
+							existingTrainingdetail.setPersonalinfo(existingPersonalInfo);
+
+							if (CertificateUploadedForOutsource != null && !CertificateUploadedForOutsource.isEmpty()) {
+								try {
+									if (existingTrainingdetail.getCertificateUploadedForOutsource() != null) {
+										Path oldCertificateUploadedForOutsourcePath = Paths.get(uplaodDirectory,
+												existingTrainingdetail.getCertificateUploadedForOutsource());
+										Files.deleteIfExists(oldCertificateUploadedForOutsourcePath);
+									}
+
+									String certificateUploadedForOutsourceOriginalFileName = CertificateUploadedForOutsource
+											.getOriginalFilename();
+									String certificateUploadedForOutsourceFileNameWithUniqueIdentifier = employeeId
+											+ "-" + certificateUploadedForOutsourceOriginalFileName;
+									Path certificateUploadedForOutsourceNameWithData = Paths.get(uplaodDirectory,
+											certificateUploadedForOutsourceFileNameWithUniqueIdentifier);
+									Files.write(certificateUploadedForOutsourceNameWithData,
+											CertificateUploadedForOutsource.getBytes());
+									existingTrainingdetail.setCertificateUploadedForOutsource(
+											certificateUploadedForOutsourceFileNameWithUniqueIdentifier);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+
+							if (PaidTrainingDocumentProof != null && !PaidTrainingDocumentProof.isEmpty()) {
+								try {
+									if (existingTrainingdetail.getPaidTrainingDocumentProof() != null) {
+										Path oldPaidTrainingDocumentProofPath = Paths.get(uplaodDirectory,
+												existingTrainingdetail.getPaidTrainingDocumentProof());
+										Files.deleteIfExists(oldPaidTrainingDocumentProofPath);
+									}
+
+									String paidTrainingDocumentProofOriginalFileName = PaidTrainingDocumentProof
+											.getOriginalFilename();
+									String paidTrainingDocumentProoffileNameWithUniqueIdentifier = employeeId + "-"
+											+ paidTrainingDocumentProofOriginalFileName;
+									Path paidTrainingDocumentProofNameWithData = Paths.get(uplaodDirectory,
+											paidTrainingDocumentProoffileNameWithUniqueIdentifier);
+									Files.write(paidTrainingDocumentProofNameWithData,
+											PaidTrainingDocumentProof.getBytes());
+									existingTrainingdetail.setPaidTrainingDocumentProof(
+											paidTrainingDocumentProoffileNameWithUniqueIdentifier);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+
+							trainingExists = true;
+							break;
 						}
-						// Save the new CertificateUploadedForOutsource file
-						String CertificateUploadedForOutsourceoriginalFileName = CertificateUploadedForOutsource
-								.getOriginalFilename();
-						String CertificateUploadedForOutsourcefileNameWithUniqueIdentifier = employeeId + "-"
-								+ CertificateUploadedForOutsourceoriginalFileName;
-						Path CertificateUploadedForOutsourceNameWithData = Paths.get(uplaodDirectory,
-								CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
-						Files.write(CertificateUploadedForOutsourceNameWithData,
-								CertificateUploadedForOutsource.getBytes());
-						existingTrainingdetail.setCertificateUploadedForOutsource(
-								CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
 					}
-					if (PaidTrainingDocumentProof != null && !PaidTrainingDocumentProof.isEmpty()) {
-						// Check and delete the old PaidTrainingDocumentProof file if it exists
-						if (existingTrainingdetail.getPaidTrainingDocumentProof() != null) {
-							Path oldPaidTrainingDocumentProofPath = Paths.get(uplaodDirectory,
-									existingTrainingdetail.getPaidTrainingDocumentProof());
-							Files.deleteIfExists(oldPaidTrainingDocumentProofPath);
+
+					if (!trainingExists) {
+						Trainingdetails newTrainingdetailInstance = new Trainingdetails();
+						newTrainingdetailInstance.setInHouseOutsource(newTrainingdetail.getInHouseOutsource());
+						newTrainingdetailInstance.setPaidUnpaid(newTrainingdetail.getPaidUnpaid());
+						newTrainingdetailInstance.setTrainingType(newTrainingdetail.getTrainingType());
+						newTrainingdetailInstance.setTrainerName(newTrainingdetail.getTrainerName());
+						newTrainingdetailInstance.setTrainerPost(newTrainingdetail.getTrainerPost());
+						newTrainingdetailInstance.setTrainerPhoneCode(newTrainingdetail.getTrainerPhoneCode());
+						newTrainingdetailInstance.setTrainerPhoneNo(newTrainingdetail.getTrainerPhoneNo());
+						newTrainingdetailInstance.setTrainerDepartment(newTrainingdetail.getTrainerDepartment());
+						newTrainingdetailInstance.setTrainerFeedback(newTrainingdetail.getTrainerFeedback());
+						newTrainingdetailInstance.setTrainingStartDate(newTrainingdetail.getTrainingStartDate());
+						newTrainingdetailInstance.setTrainingEndDate(newTrainingdetail.getTrainingEndDate());
+						newTrainingdetailInstance.setPersonalinfo(existingPersonalInfo);
+
+						if (CertificateUploadedForOutsource != null && !CertificateUploadedForOutsource.isEmpty()) {
+							try {
+								String certificateUploadedForOutsourceOriginalFileName = CertificateUploadedForOutsource
+										.getOriginalFilename();
+								String certificateUploadedForOutsourceFileNameWithUniqueIdentifier = employeeId + "-"
+										+ certificateUploadedForOutsourceOriginalFileName;
+								Path certificateUploadedForOutsourceNameWithData = Paths.get(uplaodDirectory,
+										certificateUploadedForOutsourceFileNameWithUniqueIdentifier);
+								Files.write(certificateUploadedForOutsourceNameWithData,
+										CertificateUploadedForOutsource.getBytes());
+								newTrainingdetailInstance.setCertificateUploadedForOutsource(
+										certificateUploadedForOutsourceFileNameWithUniqueIdentifier);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
-						// Save the new PaidTrainingDocumentProof file
-						String PaidTrainingDocumentProoforiginalFileName = PaidTrainingDocumentProof
-								.getOriginalFilename();
-						String PaidTrainingDocumentProoffileNameWithUniqueIdentifier = employeeId + "-"
-								+ PaidTrainingDocumentProoforiginalFileName;
-						Path PaidTrainingDocumentProofNameWithData = Paths.get(uplaodDirectory,
-								PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
-						Files.write(PaidTrainingDocumentProofNameWithData, PaidTrainingDocumentProof.getBytes());
-						existingTrainingdetail
-								.setPaidTrainingDocumentProof(PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
+
+						if (PaidTrainingDocumentProof != null && !PaidTrainingDocumentProof.isEmpty()) {
+							try {
+								String paidTrainingDocumentProofOriginalFileName = PaidTrainingDocumentProof
+										.getOriginalFilename();
+								String paidTrainingDocumentProoffileNameWithUniqueIdentifier = employeeId + "-"
+										+ paidTrainingDocumentProofOriginalFileName;
+								Path paidTrainingDocumentProofNameWithData = Paths.get(uplaodDirectory,
+										paidTrainingDocumentProoffileNameWithUniqueIdentifier);
+								Files.write(paidTrainingDocumentProofNameWithData,
+										PaidTrainingDocumentProof.getBytes());
+								newTrainingdetailInstance.setPaidTrainingDocumentProof(
+										paidTrainingDocumentProoffileNameWithUniqueIdentifier);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+
+						trainingdetails.add(newTrainingdetailInstance);
 					}
 				}
+
+				existingPersonalInfo.setTraining(trainingdetails);
 			}
-			existingPersonalInfo.setTraining(trainingdetails);
 
 			List<JobDetails> jobDetails = existingPersonalInfo.getJobDetails();
+
 			if (personalInfo.getJobDetails() != null) {
 				List<JobDetails> newJobDetails = personalInfo.getJobDetails();
-				if (jobDetails.size() != newJobDetails.size()) {
-					return existingPersonalInfo;
+
+				for (int i = 0; i < newJobDetails.size(); i++) {
+					JobDetails newJobDetail = newJobDetails.get(i);
+
+					boolean jobDetailExists = false;
+
+					for (JobDetails existingJobDetails : jobDetails) {
+						if (Objects.equals(existingJobDetails.getId(), newJobDetail.getId())) {
+							existingJobDetails.setJobPostDesignation(newJobDetail.getJobPostDesignation());
+							existingJobDetails.setCompanyEmailIdProvided(newJobDetail.getCompanyEmailIdProvided());
+							existingJobDetails.setCompanyEmailId(newJobDetail.getCompanyEmailId());
+							existingJobDetails.setJobLevel(newJobDetail.getJobLevel());
+							existingJobDetails.setPostedLocation(newJobDetail.getPostedLocation());
+							existingJobDetails.setBasicPay(newJobDetail.getBasicPay());
+							existingJobDetails.setHouseRentAllowance(newJobDetail.getHouseRentAllowance());
+							existingJobDetails.setHouseRentAmount(newJobDetail.getHouseRentAmount());
+							existingJobDetails.setFoodAllowance(newJobDetail.getFoodAllowance());
+							existingJobDetails.setFoodAllowanceAmount(newJobDetail.getFoodAllowanceAmount());
+							existingJobDetails.setEducationalAllowance(newJobDetail.getEducationalAllowance());
+							existingJobDetails
+									.setEducationalAllowanceAmount(newJobDetail.getEducationalAllowanceAmount());
+							existingJobDetails.setTravellingAllowances(newJobDetail.getTravellingAllowances());
+							existingJobDetails
+									.setTravellingAllowancesAmount(newJobDetail.getTravellingAllowancesAmount());
+							existingJobDetails.setUniformAllowance(newJobDetail.getUniformAllowance());
+							existingJobDetails.setUniformAllowanceAmount(newJobDetail.getUniformAllowanceAmount());
+							existingJobDetails.setVehicleAllowance(newJobDetail.getVehicleAllowance());
+							existingJobDetails.setVehicleAllowanceAmount(newJobDetail.getVehicleAllowanceAmount());
+							existingJobDetails.setOtherAllowance(newJobDetail.getOtherAllowance());
+							existingJobDetails.setOtherAllowanceAmount(newJobDetail.getOtherAllowanceAmount());
+							existingJobDetails.setVehicle(newJobDetail.getVehicle());
+							existingJobDetails.setVehicleNumber(newJobDetail.getVehicleNumber());
+							existingJobDetails.setVehicleModelName(newJobDetail.getVehicleModelName());
+							existingJobDetails.setVehicleModelYear(newJobDetail.getVehicleModelYear());
+							existingJobDetails.setIsVehicleNewOrPreowned(newJobDetail.getIsVehicleNewOrPreowned());
+							existingJobDetails.setMobileIssuedOrNot(newJobDetail.getMobileIssuedOrNot());
+							existingJobDetails.setSimIssuedOrNot(newJobDetail.getSimIssuedOrNot());
+							existingJobDetails.setFlightFacilities(newJobDetail.getFlightFacilities());
+							existingJobDetails.setHowMuchTime(newJobDetail.getHowMuchTime());
+							existingJobDetails.setFamilyTicketsAlsoProvidedOrNot(
+									newJobDetail.getFamilyTicketsAlsoProvidedOrNot());
+							existingJobDetails.setOthersAccomandation(newJobDetail.getOthersAccomandation());
+							existingJobDetails.setHealthInsuranceCoverage(newJobDetail.getHealthInsuranceCoverage());
+							existingJobDetails.setMaximumAmountGiven(newJobDetail.getMaximumAmountGiven());
+							existingJobDetails.setFamilyHealthInsuranceGivenOrNot(
+									newJobDetail.getFamilyHealthInsuranceGivenOrNot());
+							existingJobDetails
+									.setFamilyHealthInsuranceType(newJobDetail.getFamilyHealthInsuranceType());
+							existingJobDetails.setPunchingMachineYesOrNo(newJobDetail.getPunchingMachineYesOrNo());
+							existingJobDetails.setJoiningDate(newJobDetail.getJoiningDate());
+							existingJobDetails.setAccommodationYesOrNo(newJobDetail.getAccommodationYesOrNo());
+							existingJobDetails.setIsShredOrSeparate(newJobDetail.getIsShredOrSeparate());
+							existingJobDetails
+									.setIsExeutiveOrLabourFacility(newJobDetail.getIsExeutiveOrLabourFacility());
+							existingJobDetails
+									.setElectricityAllocationYesOrNo(newJobDetail.getElectricityAllocationYesOrNo());
+							existingJobDetails
+									.setElectricityAllocationAmount(newJobDetail.getElectricityAllocationAmount());
+							existingJobDetails.setRentAllocationYesOrNo(newJobDetail.getRentAllocationYesOrNo());
+							existingJobDetails.setRentAllocationAmount(newJobDetail.getRentAllocationAmount());
+							existingJobDetails.setCashOrChipFacility(newJobDetail.getCashOrChipFacility());
+							existingJobDetails.setChipNumber(newJobDetail.getChipNumber());
+							existingJobDetails.setReferredBy(newJobDetail.getReferredBy());
+							existingJobDetails.setByWhom(newJobDetail.getByWhom());
+							existingJobDetails.setCashAmount(newJobDetail.getCashAmount());
+							existingJobDetails.setPersonalinfo(existingPersonalInfo);
+
+							jobDetailExists = true;
+							break;
+						}
+					}
+
+					if (!jobDetailExists) {
+						JobDetails newJobDetailInstance = new JobDetails();
+						newJobDetailInstance.setJobPostDesignation(newJobDetail.getJobPostDesignation());
+						newJobDetailInstance.setCompanyEmailIdProvided(newJobDetail.getCompanyEmailIdProvided());
+						newJobDetailInstance.setCompanyEmailId(newJobDetail.getCompanyEmailId());
+						newJobDetailInstance.setJobLevel(newJobDetail.getJobLevel());
+						newJobDetailInstance.setPostedLocation(newJobDetail.getPostedLocation());
+						newJobDetailInstance.setBasicPay(newJobDetail.getBasicPay());
+						newJobDetailInstance.setHouseRentAllowance(newJobDetail.getHouseRentAllowance());
+						newJobDetailInstance.setHouseRentAmount(newJobDetail.getHouseRentAmount());
+						newJobDetailInstance.setFoodAllowance(newJobDetail.getFoodAllowance());
+						newJobDetailInstance.setFoodAllowanceAmount(newJobDetail.getFoodAllowanceAmount());
+						newJobDetailInstance.setEducationalAllowance(newJobDetail.getEducationalAllowance());
+						newJobDetailInstance
+								.setEducationalAllowanceAmount(newJobDetail.getEducationalAllowanceAmount());
+						newJobDetailInstance.setTravellingAllowances(newJobDetail.getTravellingAllowances());
+						newJobDetailInstance
+								.setTravellingAllowancesAmount(newJobDetail.getTravellingAllowancesAmount());
+						newJobDetailInstance.setUniformAllowance(newJobDetail.getUniformAllowance());
+						newJobDetailInstance.setUniformAllowanceAmount(newJobDetail.getUniformAllowanceAmount());
+						newJobDetailInstance.setVehicleAllowance(newJobDetail.getVehicleAllowance());
+						newJobDetailInstance.setVehicleAllowanceAmount(newJobDetail.getVehicleAllowanceAmount());
+						newJobDetailInstance.setOtherAllowance(newJobDetail.getOtherAllowance());
+						newJobDetailInstance.setOtherAllowanceAmount(newJobDetail.getOtherAllowanceAmount());
+						newJobDetailInstance.setVehicle(newJobDetail.getVehicle());
+						newJobDetailInstance.setVehicleNumber(newJobDetail.getVehicleNumber());
+						newJobDetailInstance.setVehicleModelName(newJobDetail.getVehicleModelName());
+						newJobDetailInstance.setVehicleModelYear(newJobDetail.getVehicleModelYear());
+						newJobDetailInstance.setIsVehicleNewOrPreowned(newJobDetail.getIsVehicleNewOrPreowned());
+						newJobDetailInstance.setMobileIssuedOrNot(newJobDetail.getMobileIssuedOrNot());
+						newJobDetailInstance.setSimIssuedOrNot(newJobDetail.getSimIssuedOrNot());
+						newJobDetailInstance.setFlightFacilities(newJobDetail.getFlightFacilities());
+						newJobDetailInstance.setHowMuchTime(newJobDetail.getHowMuchTime());
+						newJobDetailInstance
+								.setFamilyTicketsAlsoProvidedOrNot(newJobDetail.getFamilyTicketsAlsoProvidedOrNot());
+						newJobDetailInstance.setOthersAccomandation(newJobDetail.getOthersAccomandation());
+						newJobDetailInstance.setHealthInsuranceCoverage(newJobDetail.getHealthInsuranceCoverage());
+						newJobDetailInstance.setMaximumAmountGiven(newJobDetail.getMaximumAmountGiven());
+						newJobDetailInstance
+								.setFamilyHealthInsuranceGivenOrNot(newJobDetail.getFamilyHealthInsuranceGivenOrNot());
+						newJobDetailInstance.setFamilyHealthInsuranceType(newJobDetail.getFamilyHealthInsuranceType());
+						newJobDetailInstance.setPunchingMachineYesOrNo(newJobDetail.getPunchingMachineYesOrNo());
+						newJobDetailInstance.setJoiningDate(newJobDetail.getJoiningDate());
+						newJobDetailInstance.setAccommodationYesOrNo(newJobDetail.getAccommodationYesOrNo());
+						newJobDetailInstance.setIsShredOrSeparate(newJobDetail.getIsShredOrSeparate());
+						newJobDetailInstance
+								.setIsExeutiveOrLabourFacility(newJobDetail.getIsExeutiveOrLabourFacility());
+						newJobDetailInstance
+								.setElectricityAllocationYesOrNo(newJobDetail.getElectricityAllocationYesOrNo());
+						newJobDetailInstance
+								.setElectricityAllocationAmount(newJobDetail.getElectricityAllocationAmount());
+						newJobDetailInstance.setRentAllocationYesOrNo(newJobDetail.getRentAllocationYesOrNo());
+						newJobDetailInstance.setRentAllocationAmount(newJobDetail.getRentAllocationAmount());
+						newJobDetailInstance.setCashOrChipFacility(newJobDetail.getCashOrChipFacility());
+						newJobDetailInstance.setChipNumber(newJobDetail.getChipNumber());
+						newJobDetailInstance.setReferredBy(newJobDetail.getReferredBy());
+						newJobDetailInstance.setByWhom(newJobDetail.getByWhom());
+						newJobDetailInstance.setCashAmount(newJobDetail.getCashAmount());
+						newJobDetailInstance.setPersonalinfo(existingPersonalInfo);
+
+						jobDetails.add(newJobDetailInstance);
+					}
 				}
-				for (int i = 0; i < jobDetails.size(); i++) {
-					JobDetails existingJobDetails = jobDetails.get(i);
-					JobDetails updateJobDetails = newJobDetails.get(i);
-					existingJobDetails.setJobPostDesignation(updateJobDetails.getJobPostDesignation());
-					existingJobDetails.setCompanyEmailIdProvided(updateJobDetails.getCompanyEmailIdProvided());
-					existingJobDetails.setCompanyEmailId(updateJobDetails.getCompanyEmailId());
-					existingJobDetails.setJobLevel(updateJobDetails.getJobLevel());
-					existingJobDetails.setPostedLocation(updateJobDetails.getPostedLocation());
-					existingJobDetails.setBasicPay(updateJobDetails.getBasicPay());
-					existingJobDetails.setHouseRentAllowance(updateJobDetails.getHouseRentAllowance());
-					existingJobDetails.setHouseRentAmount(updateJobDetails.getHouseRentAmount());
-					existingJobDetails.setFoodAllowance(updateJobDetails.getFoodAllowance());
-					existingJobDetails.setFoodAllowanceAmount(updateJobDetails.getFoodAllowanceAmount());
-					existingJobDetails.setEducationalAllowance(updateJobDetails.getEducationalAllowance());
-					existingJobDetails.setEducationalAllowanceAmount(updateJobDetails.getEducationalAllowanceAmount());
-					existingJobDetails.setTravellingAllowances(updateJobDetails.getTravellingAllowances());
-					existingJobDetails.setTravellingAllowancesAmount(updateJobDetails.getTravellingAllowancesAmount());
-					existingJobDetails.setUniformAllowance(updateJobDetails.getUniformAllowance());
-					existingJobDetails.setUniformAllowanceAmount(updateJobDetails.getUniformAllowanceAmount());
-					existingJobDetails.setVehicleAllowance(updateJobDetails.getVehicleAllowance());
-					existingJobDetails.setVehicleAllowanceAmount(updateJobDetails.getVehicleAllowanceAmount());
-					existingJobDetails.setOtherAllowance(updateJobDetails.getOtherAllowance());
-					existingJobDetails.setOtherAllowanceAmount(updateJobDetails.getOtherAllowanceAmount());
-					existingJobDetails.setVehicle(updateJobDetails.getVehicle());
-					existingJobDetails.setVehicleNumber(updateJobDetails.getVehicleNumber());
-					existingJobDetails.setVehicleModelName(updateJobDetails.getVehicleModelName());
-					existingJobDetails.setVehicleModelYear(updateJobDetails.getVehicleModelYear());
-					existingJobDetails.setIsVehicleNewOrPreowned(updateJobDetails.getIsVehicleNewOrPreowned());
-					existingJobDetails.setMobileIssuedOrNot(updateJobDetails.getMobileIssuedOrNot());
-					existingJobDetails.setSimIssuedOrNot(updateJobDetails.getSimIssuedOrNot());
-					existingJobDetails.setFlightFacilities(updateJobDetails.getFlightFacilities());
-					existingJobDetails.setHowMuchTime(updateJobDetails.getHowMuchTime());
-					existingJobDetails
-							.setFamilyTicketsAlsoProvidedOrNot(updateJobDetails.getFamilyTicketsAlsoProvidedOrNot());
-					existingJobDetails.setOthersAccomandation(updateJobDetails.getOthersAccomandation());
-					existingJobDetails.setHealthInsuranceCoverage(updateJobDetails.getHealthInsuranceCoverage());
-					existingJobDetails.setMaximumAmountGiven(updateJobDetails.getMaximumAmountGiven());
-					existingJobDetails
-							.setFamilyHealthInsuranceGivenOrNot(updateJobDetails.getFamilyHealthInsuranceGivenOrNot());
-					existingJobDetails.setFamilyHealthInsuranceType(updateJobDetails.getFamilyHealthInsuranceType());
-					existingJobDetails.setPunchingMachineYesOrNo(updateJobDetails.getPunchingMachineYesOrNo());
-					existingJobDetails.setJoiningDate(updateJobDetails.getJoiningDate());
-					existingJobDetails.setAccommodationYesOrNo(updateJobDetails.getAccommodationYesOrNo());
-					existingJobDetails.setIsShredOrSeparate(updateJobDetails.getIsShredOrSeparate());
-					existingJobDetails.setIsExeutiveOrLabourFacility(updateJobDetails.getIsExeutiveOrLabourFacility());
-					existingJobDetails
-							.setElectricityAllocationYesOrNo(updateJobDetails.getElectricityAllocationYesOrNo());
-					existingJobDetails
-							.setElectricityAllocationAmount(updateJobDetails.getElectricityAllocationAmount());
-					existingJobDetails.setRentAllocationYesOrNo(updateJobDetails.getRentAllocationYesOrNo());
-					existingJobDetails.setRentAllocationAmount(updateJobDetails.getRentAllocationAmount());
-					existingJobDetails.setCashOrChipFacility(updateJobDetails.getCashOrChipFacility());
-					existingJobDetails.setChipNumber(updateJobDetails.getChipNumber());
-					existingJobDetails.setReferredBy(updateJobDetails.getReferredBy());
-					existingJobDetails.setByWhom(updateJobDetails.getByWhom());
-					existingJobDetails.setCashAmount(updateJobDetails.getCashAmount());
-				}
+
 				existingPersonalInfo.setJobDetails(jobDetails);
 			}
-
 			Department newDepartment = new Department();
 			if (personalInfo.getDepartment() != null) {
 				newDepartment.setDepartmentId(personalInfo.getDepartment().getDepartmentId());
@@ -1737,7 +2144,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				bgcheck = new BackgroundCheck();
 				existingPersonalInfo.setBgcheck(bgcheck);
 			}
-//			if (personalInfo.getBgcheck() != null) {
+
 			bgcheck.setStatus(personalInfo.getBgcheck().getStatus());
 			bgcheck.setDoneBy(personalInfo.getBgcheck().getDoneBy());
 			bgcheck.setInternalConcernedManager(personalInfo.getBgcheck().getInternalConcernedManager());
@@ -1761,12 +2168,12 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			bgcheck.setExternalPhoneCode(personalInfo.getBgcheck().getExternalPhoneCode());
 			bgcheck.setExternalPhoneNo(personalInfo.getBgcheck().getExternalPhoneNo());
 			if (recordsheet != null && !recordsheet.isEmpty()) {
-				// Check and delete the old recordsheet file if it exists
+
 				if (bgcheck.getRecordsheet() != null) {
 					Path oldrecordsheetPath = Paths.get(uplaodDirectory, bgcheck.getRecordsheet());
 					Files.deleteIfExists(oldrecordsheetPath);
 				}
-				// Save the new recordsheet file
+
 				String recordsheetoriginalFileName = recordsheet.getOriginalFilename();
 				String recordsheetfileNameWithUniqueIdentifier = employeeId + "-" + recordsheetoriginalFileName;
 				Path recordsheetNameWithData = Paths.get(uplaodDirectory, recordsheetfileNameWithUniqueIdentifier);
@@ -1774,12 +2181,12 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				bgcheck.setRecordsheet(recordsheetfileNameWithUniqueIdentifier);
 			}
 			if (declarationRequired != null && !declarationRequired.isEmpty()) {
-				// Check and delete the old declarationRequired file if it exists
+
 				if (bgcheck.getDeclarationRequired() != null) {
 					Path olddeclarationRequiredPath = Paths.get(uplaodDirectory, bgcheck.getDeclarationRequired());
 					Files.deleteIfExists(olddeclarationRequiredPath);
 				}
-				// Save the new declarationRequired file
+
 				String declarationRequiredoriginalFileName = declarationRequired.getOriginalFilename();
 				String declarationRequiredfileNameWithUniqueIdentifier = employeeId + "-"
 						+ declarationRequiredoriginalFileName;
@@ -1789,7 +2196,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				bgcheck.setDeclarationRequired(declarationRequiredfileNameWithUniqueIdentifier);
 			}
 			existingPersonalInfo.setBgcheck(bgcheck);
-//			}
 
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong: " + e.getMessage());
@@ -1799,7 +2205,5 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		return updatePersonalInfo;
 
 	}
-	
-	
 
 }

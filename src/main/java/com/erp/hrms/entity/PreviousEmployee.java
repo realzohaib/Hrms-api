@@ -24,7 +24,7 @@ import lombok.Data;
 @Data
 @Table(name = "previous_employee")
 public class PreviousEmployee {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long previousId;
@@ -43,7 +43,7 @@ public class PreviousEmployee {
 	private double lastWithdrawnSalary;
 
 	private String payslipScan;
-	
+
 	@Transient
 	private byte[] payslipScanData;
 
