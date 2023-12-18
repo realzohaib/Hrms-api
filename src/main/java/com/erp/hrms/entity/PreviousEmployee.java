@@ -2,6 +2,7 @@ package com.erp.hrms.entity;
 
 import java.util.List;
 
+//import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -56,4 +57,9 @@ public class PreviousEmployee {
 	@JoinColumn(name = "employee_id")
 	@JsonBackReference
 	private PersonalInfo personalinfo;
+	
+//	@ManyToOne(cascade = CascadeType.ALL)
+//	@JoinColumn(name = "personal_info_id")
+//	@JsonBackReference
+//	private PersonalInfo personalinfo;
 }

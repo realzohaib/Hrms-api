@@ -115,6 +115,7 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 		try {
 			personalInfo.setEmail(email);
 			entityManager.merge(personalInfo);
+//			entityManager.persist(personalInfo);
 			return personalInfo;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
