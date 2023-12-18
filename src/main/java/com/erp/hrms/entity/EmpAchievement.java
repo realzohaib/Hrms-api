@@ -28,12 +28,12 @@ public class EmpAchievement {
 	private String achievementRewardsName;
 
 	private String achievementsRewardsDocs;
-	
+
 	@Transient
 	private byte[] achievementsRewardsDocsData;
 
 	@ManyToOne
-	@JoinColumn(name = "previous_id")
+	@JoinColumn(name = "employee_id")
 	@JsonBackReference
-	private PreviousEmployee previousEmployee;
+	private PersonalInfo personalinfo;
 }

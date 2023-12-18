@@ -159,6 +159,11 @@ public class PersonalInfo implements Serializable {
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
 	private List<PreviousEmployee> oldEmployee;
+	
+	@OneToMany(mappedBy = "personalinfo")
+	@Cascade(CascadeType.ALL)
+	@JsonManagedReference
+	private List<EmpAchievement> empAchievements;
 
 	@JsonManagedReference
 	@OneToOne(mappedBy = "personalinfo")

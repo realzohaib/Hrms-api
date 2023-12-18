@@ -37,7 +37,7 @@ public class Education {
 	@Transient
 	private byte[] secondaryDocumentScanData;
 
-	// for 12th updated later
+	// for 12th
 	@Column(name = "Senior_Secondary_issuing_authority")
 	private String seniorSecondaryIssuingAuthority;
 

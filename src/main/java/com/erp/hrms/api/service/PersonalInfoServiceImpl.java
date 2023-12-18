@@ -322,31 +322,32 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					}
 
 					oldemp.setPersonalinfo(PersonalInfo);
-					// Retrieve the empAchievements list from the oldemp entity
-					List<EmpAchievement> empAchievements = oldemp.getEmpAchievements();
-					if (empAchievements != null) {
-						for (int i = 0; i < empAchievements.size(); i++) {
-							EmpAchievement achievement = empAchievements.get(i);
-							if (achievementsRewardsDocs != null && i < achievementsRewardsDocs.length) {
-								MultipartFile file = achievementsRewardsDocs[i];
-								if (file != null && !file.isEmpty()) {
-									String achievementsRewardsDocsoriginalFileName = file.getOriginalFilename();
-									String achievementsRewardsDocsfileNameWithUniqueIdentifier = employeeId + "-"
-											+ achievementsRewardsDocsoriginalFileName;
-									Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
-											achievementsRewardsDocsfileNameWithUniqueIdentifier);
-									Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
-									achievement.setAchievementsRewardsDocs(
-											achievementsRewardsDocsfileNameWithUniqueIdentifier);
-								}
-							}
-							achievement.setPreviousEmployee(oldemp);
-						}
-					}
-					oldemp.setEmpAchievements(empAchievements);
+
 				}
 			}
 			PersonalInfo.setOldEmployee(oldEmployee);
+
+			List<EmpAchievement> empAchievements = PersonalInfo.getEmpAchievements();
+			if (empAchievements != null) {
+				for (int i = 0; i < empAchievements.size(); i++) {
+					EmpAchievement achievement = empAchievements.get(i);
+					if (achievementsRewardsDocs != null && i < achievementsRewardsDocs.length) {
+						MultipartFile file = achievementsRewardsDocs[i];
+						if (file != null && !file.isEmpty()) {
+							String achievementsRewardsDocsoriginalFileName = file.getOriginalFilename();
+							String achievementsRewardsDocsfileNameWithUniqueIdentifier = employeeId + "-"
+									+ achievementsRewardsDocsoriginalFileName;
+							Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
+									achievementsRewardsDocsfileNameWithUniqueIdentifier);
+							Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
+							achievement.setAchievementsRewardsDocs(achievementsRewardsDocsfileNameWithUniqueIdentifier);
+						}
+					}
+					achievement.setPersonalinfo(PersonalInfo);
+				}
+			}
+			PersonalInfo.setEmpAchievements(empAchievements);
+
 			BackgroundCheck bgcheck = PersonalInfo.getBgcheck();
 			if (bgcheck != null) {
 				if (recordsheet != null && !recordsheet.isEmpty()) {
@@ -617,17 +618,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 							previousEmployee.setPayslipScanData(degreeScanData);
 						}
 					}
-					for (EmpAchievement empAchievement : previousEmployee.getEmpAchievements()) {
 
-						String achievementsRewardsDocsName = empAchievement.getAchievementsRewardsDocs();
-						if (achievementsRewardsDocsName != null && !achievementsRewardsDocsName.isEmpty()) {
-							byte[] achievementsRewardsDocsData = personalInfoFileService
-									.getFileData(achievementsRewardsDocsName);
-							if (achievementsRewardsDocsData != null) {
-								empAchievement.setAchievementsRewardsDocsData(achievementsRewardsDocsData);
-							}
-						}
-					}
 				}
 
 				String recordsheetName = personalInfo.getBgcheck().getRecordsheet();
@@ -643,6 +634,18 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					byte[] declarationRequiredData = personalInfoFileService.getFileData(declarationRequiredName);
 					if (declarationRequiredData != null) {
 						personalInfo.getBgcheck().setDeclarationRequiredData(declarationRequiredData);
+					}
+				}
+
+				for (EmpAchievement empAchievement : personalInfo.getEmpAchievements()) {
+
+					String achievementsRewardsDocsName = empAchievement.getAchievementsRewardsDocs();
+					if (achievementsRewardsDocsName != null && !achievementsRewardsDocsName.isEmpty()) {
+						byte[] achievementsRewardsDocsData = personalInfoFileService
+								.getFileData(achievementsRewardsDocsName);
+						if (achievementsRewardsDocsData != null) {
+							empAchievement.setAchievementsRewardsDocsData(achievementsRewardsDocsData);
+						}
 					}
 				}
 
@@ -821,15 +824,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						previousEmployee.setPayslipScanData(degreeScanData);
 					}
 				}
-				for (EmpAchievement empAchievement : previousEmployee.getEmpAchievements()) {
 
-					String achievementsRewardsDocsName = empAchievement.getAchievementsRewardsDocs();
-					if (achievementsRewardsDocsName != null && !achievementsRewardsDocsName.isEmpty()) {
-						byte[] achievementsRewardsDocsData = personalInfoFileService
-								.getFileData(achievementsRewardsDocsName);
-						if (achievementsRewardsDocsData != null) {
-							empAchievement.setAchievementsRewardsDocsData(achievementsRewardsDocsData);
-						}
+			}
+
+			for (EmpAchievement empAchievement : personalInfoByEmail.getEmpAchievements()) {
+
+				String achievementsRewardsDocsName = empAchievement.getAchievementsRewardsDocs();
+				if (achievementsRewardsDocsName != null && !achievementsRewardsDocsName.isEmpty()) {
+					byte[] achievementsRewardsDocsData = personalInfoFileService
+							.getFileData(achievementsRewardsDocsName);
+					if (achievementsRewardsDocsData != null) {
+						empAchievement.setAchievementsRewardsDocsData(achievementsRewardsDocsData);
 					}
 				}
 			}
@@ -1024,15 +1029,17 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						previousEmployee.setPayslipScanData(degreeScanData);
 					}
 				}
-				for (EmpAchievement empAchievement : previousEmployee.getEmpAchievements()) {
 
-					String achievementsRewardsDocsName = empAchievement.getAchievementsRewardsDocs();
-					if (achievementsRewardsDocsName != null && !achievementsRewardsDocsName.isEmpty()) {
-						byte[] achievementsRewardsDocsData = personalInfoFileService
-								.getFileData(achievementsRewardsDocsName);
-						if (achievementsRewardsDocsData != null) {
-							empAchievement.setAchievementsRewardsDocsData(achievementsRewardsDocsData);
-						}
+			}
+
+			for (EmpAchievement empAchievement : personalInfoByEmployeeId.getEmpAchievements()) {
+
+				String achievementsRewardsDocsName = empAchievement.getAchievementsRewardsDocs();
+				if (achievementsRewardsDocsName != null && !achievementsRewardsDocsName.isEmpty()) {
+					byte[] achievementsRewardsDocsData = personalInfoFileService
+							.getFileData(achievementsRewardsDocsName);
+					if (achievementsRewardsDocsData != null) {
+						empAchievement.setAchievementsRewardsDocsData(achievementsRewardsDocsData);
 					}
 				}
 			}
@@ -1535,20 +1542,60 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 			}
 
-//			List<PreviousEmployee> olddata = existingPersonalInfo.getOldEmployee();
-//			List<PreviousEmployee> newdaata = personalInfo.getOldEmployee();
-//
-//			for (PreviousEmployee oldemp : olddata) {
-//				boolean updated = false;
-//				for (PreviousEmployee newemp : newdaata) {
-//					if (oldemp.getPreviousId().equals(newemp.getPreviousId())) {
-//
-//						List<EmpAchievement> list1 = oldemp.getEmpAchievements();
-//						List<EmpAchievement> list2 = newemp.getEmpAchievements();
-//
-//					}
-//				}
-//			}
+			List<EmpAchievement> existingEmpAchievements = existingPersonalInfo.getEmpAchievements();
+
+			if (personalInfo.getEmpAchievements() != null) {
+				List<EmpAchievement> newEmpAchievements = personalInfo.getEmpAchievements();
+
+				Map<String, EmpAchievement> existingAchievementMap = new HashMap<>();
+				for (EmpAchievement existingEmpAchievement : existingEmpAchievements) {
+					String key = generateUniqueKey(existingEmpAchievement);
+
+					existingAchievementMap.put(key, existingEmpAchievement);
+				}
+
+				for (int i = 0; i < newEmpAchievements.size(); i++) {
+					EmpAchievement newAchievement = newEmpAchievements.get(i);
+					String key = generateUniqueKey(newAchievement);
+
+					EmpAchievement existingAchievemet = existingAchievementMap.get(key);
+					if (existingAchievemet != null && existingAchievemet.getId().equals(newAchievement.getId())) {
+
+						updateExistingAchievement(existingAchievemet, newAchievement);
+						continue;
+					} else {
+
+						EmpAchievement newAchievementToAdd = addEmpAchievement(newAchievement, existingPersonalInfo);
+
+						if (achievementsRewardsDocs != null && i < achievementsRewardsDocs.length) {
+							MultipartFile file = achievementsRewardsDocs[i];
+
+							if (file != null && !file.isEmpty()) {
+								try {
+									if (existingAchievemet != null
+											&& existingAchievemet.getAchievementsRewardsDocs() != null) {
+										Path oldDocumentPath = Paths.get(uplaodDirectory,
+												existingAchievemet.getAchievementsRewardsDocs());
+										Files.deleteIfExists(oldDocumentPath);
+									}
+
+									String originalFileName = file.getOriginalFilename();
+									String fileNameWithUniqueId = employeeId + "-" + originalFileName;
+									Path newDocumentPath = Paths.get(uplaodDirectory, fileNameWithUniqueId);
+									Files.write(newDocumentPath, file.getBytes());
+
+									newAchievementToAdd.setAchievementsRewardsDocs(fileNameWithUniqueId);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+						existingEmpAchievements.add(newAchievementToAdd);
+					}
+				}
+
+				existingPersonalInfo.setOthersQualifications(existingOthersQualifications);
+			}
 
 			List<PreviousEmployee> existingPreviousEmployees = existingPersonalInfo.getOldEmployee();
 			if (personalInfo.getOldEmployee() != null) {
@@ -1601,65 +1648,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 							}
 
-							List<EmpAchievement> empAchievements = existingPreviousEmployee.getEmpAchievements();
-
-							if (newPreviousEmployee.getEmpAchievements() != null) {
-								List<EmpAchievement> newEmpAchievements = newPreviousEmployee.getEmpAchievements();
-
-								Map<String, EmpAchievement> existingAchievementsMap = new HashMap<>();
-								for (EmpAchievement existingAchievement : empAchievements) {
-									String key = generateUniqueKey(existingAchievement);
-									existingAchievementsMap.put(key, existingAchievement);
-								}
-
-								for (int j = 0; j < newEmpAchievements.size(); j++) {
-
-									EmpAchievement newAchievement = newEmpAchievements.get(j);
-									String key = generateUniqueKey(newAchievement);
-
-									EmpAchievement existingAchievement = existingAchievementsMap.get(key);
-									if (existingAchievement != null
-											&& existingAchievement.getId().equals(newAchievement.getId())) {
-
-										updateExistingAchievement(existingAchievement, newAchievement);
-										continue;
-									} else {
-										EmpAchievement newEmpAChievementToAdd = addEmpAchievement(newAchievement,
-												existingPreviousEmployee);
-
-										if (achievementsRewardsDocs != null && j < achievementsRewardsDocs.length) {
-											MultipartFile file = achievementsRewardsDocs[j];
-											if (file != null && !file.isEmpty()) {
-												try {
-													if (existingAchievement.getAchievementsRewardsDocs() != null) {
-														Path oldAchievementsRewardsDocsPath = Paths.get(uplaodDirectory,
-																existingAchievement.getAchievementsRewardsDocs());
-														Files.deleteIfExists(oldAchievementsRewardsDocsPath);
-													}
-
-													String achievementsRewardsDocsOriginalFileName = file
-															.getOriginalFilename();
-													String achievementsRewardsDocsFileNameWithUniqueIdentifier = employeeId
-															+ "-" + achievementsRewardsDocsOriginalFileName;
-													Path achievementsRewardsDocsNameWithData = Paths.get(
-															uplaodDirectory,
-															achievementsRewardsDocsFileNameWithUniqueIdentifier);
-													Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
-													newEmpAChievementToAdd.setAchievementsRewardsDocs(
-															achievementsRewardsDocsFileNameWithUniqueIdentifier);
-												} catch (IOException e) {
-													e.printStackTrace();
-												}
-											}
-										}
-										empAchievements.add(newEmpAChievementToAdd);
-									}
-								}
-
-							}
-
-							existingPreviousEmployee.setEmpAchievements(empAchievements);
-
 						}
 						previousExists = true;
 						break;
@@ -1704,65 +1692,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 							}
 
 						}
-						List<EmpAchievement> empAchievements = newDataPreviousEmployee.getEmpAchievements();
-
-						List<EmpAchievement> empAchievement = newDataPreviousEmployee.getEmpAchievements();
-
-						if (newPreviousEmployee.getEmpAchievements() != null) {
-							List<EmpAchievement> newEmpAchievements = newPreviousEmployee.getEmpAchievements();
-
-							Map<String, EmpAchievement> existingAchievementsMap = new HashMap<>();
-							for (EmpAchievement existingAchievement : empAchievement) {
-								String key = generateUniqueKey(existingAchievement);
-								existingAchievementsMap.put(key, existingAchievement);
-							}
-
-							for (int j = 0; j < newEmpAchievements.size(); j++) {
-
-								EmpAchievement newAchievement = newEmpAchievements.get(j);
-								String key = generateUniqueKey(newAchievement);
-
-								EmpAchievement existingAchievement = existingAchievementsMap.get(key);
-								if (existingAchievement != null
-										&& existingAchievement.getId().equals(newAchievement.getId())) {
-
-									updateExistingAchievement(existingAchievement, newAchievement);
-									continue;
-								} else {
-									EmpAchievement newEmpAChievementToAdd = addEmpAchievement(newAchievement,
-											newDataPreviousEmployee);
-
-									if (achievementsRewardsDocs != null && j < achievementsRewardsDocs.length) {
-										MultipartFile file = achievementsRewardsDocs[j];
-										if (file != null && !file.isEmpty()) {
-											try {
-												if (existingAchievement.getAchievementsRewardsDocs() != null) {
-													Path oldAchievementsRewardsDocsPath = Paths.get(uplaodDirectory,
-															existingAchievement.getAchievementsRewardsDocs());
-													Files.deleteIfExists(oldAchievementsRewardsDocsPath);
-												}
-
-												String achievementsRewardsDocsOriginalFileName = file
-														.getOriginalFilename();
-												String achievementsRewardsDocsFileNameWithUniqueIdentifier = employeeId
-														+ "-" + achievementsRewardsDocsOriginalFileName;
-												Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
-														achievementsRewardsDocsFileNameWithUniqueIdentifier);
-												Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
-												newEmpAChievementToAdd.setAchievementsRewardsDocs(
-														achievementsRewardsDocsFileNameWithUniqueIdentifier);
-											} catch (IOException e) {
-												e.printStackTrace();
-											}
-										}
-									}
-									empAchievement.add(newEmpAChievementToAdd);
-								}
-							}
-
-						}
-
-						newDataPreviousEmployee.setEmpAchievements(empAchievements);
 
 						existingPreviousEmployees.add(newDataPreviousEmployee);
 					}
@@ -2179,8 +2108,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		return newProfessionalQualifications;
 	}
 
-	private String generateUniqueKey(EmpAchievement empAchievement) {
-		return String.format("%s-%s", empAchievement.getId(), empAchievement.getAchievementRewardsName());
+	private String generateUniqueKey(EmpAchievement achievement) {
+		return String.format("%s-%s", achievement.getId(), achievement.getAchievementRewardsName());
 	}
 
 	private void updateExistingAchievement(EmpAchievement existingEmpAchievement, EmpAchievement newEmpAchievement) {
@@ -2189,15 +2118,13 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 	}
 
-	private EmpAchievement addEmpAchievement(EmpAchievement newEmpAchievement,
-			PreviousEmployee existingPreviousEmployee) {
+	private EmpAchievement addEmpAchievement(EmpAchievement newEmpAchievement, PersonalInfo existingPersonalInfo) {
 		EmpAchievement newEmpAchievements = new EmpAchievement();
 
 		newEmpAchievements.setAchievementRewardsName(newEmpAchievement.getAchievementRewardsName());
 
-		newEmpAchievements.setPreviousEmployee(existingPreviousEmployee);
+		newEmpAchievements.setPersonalinfo(existingPersonalInfo);
 
 		return newEmpAchievements;
 	}
-
 }
