@@ -8,5 +8,5 @@ import com.erp.hrms.entity.form.LeaveRecords;
 @Repository
 public interface LeaveRecordsRepository extends JpaRepository<LeaveRecords, Long> {
 
-	public LeaveRecords findByLeaveRecordsId(Long id);
+//	public LeaveRecords findById(Long id);
 }

@@ -2050,9 +2050,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	}
 
 	private String generateUniqueKey(OthersQualification qualification) {
-		return String.format("%s-%s-%s-%s-%s", qualification.getId(), qualification.getOthers(),
-				qualification.getOthersIssuingAuthority(), qualification.getOthersMarksOrGrade(),
-				qualification.getOthersYear());
+		return String.format("%s", qualification.getId());
 	}
 
 	private void updateExistingQualification(OthersQualification existingQualification,
@@ -2078,10 +2076,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	}
 
 	private String generateUniqueKey(ProfessionalQualification professionalQualification) {
-		return String.format("%s-%s-%s-%s-%s-%s", professionalQualification.getId(),
-				professionalQualification.getQualification(), professionalQualification.getIssuingAuthority(),
-				professionalQualification.getGradingSystem(), professionalQualification.getYearOfQualification(),
-				professionalQualification.getGrade());
+		return String.format("%s", professionalQualification.getId());
 	}
 
 	private void updateExistingQualification(ProfessionalQualification existingProfessionalQualification,
@@ -2109,7 +2104,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	}
 
 	private String generateUniqueKey(EmpAchievement achievement) {
-		return String.format("%s-%s", achievement.getId(), achievement.getAchievementRewardsName());
+		return String.format("%s", achievement.getId());
 	}
 
 	private void updateExistingAchievement(EmpAchievement existingEmpAchievement, EmpAchievement newEmpAchievement) {

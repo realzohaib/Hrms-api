@@ -20,11 +20,11 @@ public class LeaveRecordsServiceImpl implements ILeaveRecordsService {
 		return leaveRecordsRepository.save(leaveRecords);
 	}
 
-	@Override
-	public LeaveRecords findByIdLeaveRecords(Long id) {
-		
-		return leaveRecordsRepository.findByLeaveRecordsId(id);
-	}
+//	@Override
+//	public LeaveRecords findByIdLeaveRecords(Long id) {
+//		
+//		return leaveRecordsRepository.findByLeaveRecordsId(id);
+//	}
 
 	@Override
 	public List<LeaveRecords> findAllLeaveRecords() {

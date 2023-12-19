@@ -8,7 +8,7 @@ public interface ILeaveRecordsService {
 
 	public LeaveRecords saveLeaveRecords(LeaveRecords leaveRecords);
 
-	public LeaveRecords findByIdLeaveRecords(Long id);
+//	public LeaveRecords findByIdLeaveRecords(Long id);
 
 	public List<LeaveRecords> findAllLeaveRecords();
 
