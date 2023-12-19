@@ -82,9 +82,6 @@ public class LeaveService implements ILeaveService {
 	@Autowired
 	private CalendarRepository calendarRepository;
 
-	@Autowired
-	private ILeaveTypeService leavetype;
-
 //	This method for send the leave request to manager and send email to manager and admin
 	@Override
 	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException {
@@ -103,6 +100,7 @@ public class LeaveService implements ILeaveService {
 				leaveApprovalJson.setRemainingCasualLeaves(existingEmployee.getRemainingCasualLeaves());
 			} else {
 				// Employee does not exist, set default values
+				LeaveType leaveType=new LeaveType();
 				leaveApprovalJson.setRemainingMedicalLeaves(15.0);
 				leaveApprovalJson.setRemainingCasualLeaves(30.0);
 			}
@@ -757,5 +755,4 @@ public class LeaveService implements ILeaveService {
 		return new LeaveDataDTO(leaveApprovals, employeeIdCount);
 	}
 
-	
 }
