@@ -23,6 +23,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import com.erp.hrms.api.security.entity.UserEntity;
+import com.erp.hrms.weekOffEntity.WeekOff;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
@@ -132,6 +133,8 @@ public class PersonalInfo implements Serializable {
 	private VisaDetail visainfo;
 	
 	private String onboardHrApprovalStatus;
+	
+	private boolean filledForm;
 
 	@OneToMany(mappedBy = "personalinfo")
 //@OneToMany
@@ -176,6 +179,7 @@ public class PersonalInfo implements Serializable {
 	@OneToOne(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
 	private UserEntity userentity;
+	
 
 	@PostLoad
 	private void calculateAge() {

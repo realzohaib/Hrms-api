@@ -21,6 +21,8 @@ import com.erp.hrms.helper.entity.monthCycle;
 import com.erp.hrms.helper.service.IMonthCycleService;
 import com.erp.hrms.shift.Dao.ShiftAssignmentDaoImpl;
 import com.erp.hrms.shift.entity.ShiftAssignment;
+import com.erp.hrms.weekOff.service.IweekOffService;
+import com.erp.hrms.weekOffEntity.WeekOff;
 
 @Service
 public class AttendenceServiceImpl implements IAttendenceService {
@@ -32,10 +34,19 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 	@Autowired
 	private IMonthCycleService monthcycle;
+	
+	@Autowired
+	private IweekOffService weekoff;
+	
+	/*
+	 * check admin notes in mobile
+	 */	public static long totalshifthrs= 0 ;
 
-	private boolean isWorkingDay(DayOfWeek dayOfWeek) {
-		// Implement your organization's working day criteria here
-		return dayOfWeek != DayOfWeek.SUNDAY;
+	private boolean isWorkingDay(DayOfWeek dayOfWeek , long emp) {
+		WeekOff getweekOff = weekoff.getweekOff(emp);
+		String individualDayOff = getweekOff.getIndividualDayOff();
+		DayOfWeek off = DayOfWeek.valueOf(individualDayOff);
+		return dayOfWeek != off;
 	}
 
 	// function to calculate time difference between two timestamp
@@ -71,10 +82,19 @@ public class AttendenceServiceImpl implements IAttendenceService {
 
 			// Retrieve the current shift assignment for the employee
 			ShiftAssignment currentShiftByOfEmployee = shift.currentShftById(employeeId);
+						
 
 			// Extracting shift details
 			LocalTime scheduledStartTime = currentShiftByOfEmployee.getShift().getShiftStartTime();
-
+			
+			// Extracting shift details
+			LocalTime shiftEndTime = currentShiftByOfEmployee.getShift().getShiftEndTime();
+			
+			//it has no use here , it is being used in shift hrs calculation , it has implementation in punch out.
+	        Duration duration = Duration.between(scheduledStartTime, shiftEndTime);
+	        long millis = duration.toMillis();
+	        totalshifthrs=millis;
+	        
 			// Adding a 20-minute buffer time
 			LocalTime allowedStartTime = scheduledStartTime.plusMinutes(20);
 
@@ -121,9 +141,11 @@ public class AttendenceServiceImpl implements IAttendenceService {
 			if (punchInTime != null) {
 				long totalDurationInMillis = calculateBreakDurationInMillis(punchInTime, punchOutTime);
 				attendence.setWorkingHours(totalDurationInMillis);
+				
 
 				// Constants for better readability and maintainability
-				final long FULL_SHIFT_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+//				final long FULL_SHIFT_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+				final long FULL_SHIFT_DURATION = totalshifthrs;
 				final double HALF_DAY_THRESHOLD = 0.85;
 				final double HALF_DAY_THRESHOLD2 = 0.45;
 				final long ONE_HOUR = 60 * 60 * 1000;
@@ -271,13 +293,13 @@ public class AttendenceServiceImpl implements IAttendenceService {
 		List<Attendence> attendanceForMonth = getAttendanceForMonth(employeeId, year, month);
 
 		AttendenceResponse attendenceResponse = new AttendenceResponse();
-		int workingDays = calculateWorkingDays(year, month);
+		int workingDays = calculateWorkingDays(year, month , employeeId);
 		int daysPresent = 0;
 		int halfDays = 0;
 		long totalOvertimeHoursInMonth = 0;
 		int noOfDaysWorkedRegularHours = 0;
 		int tardyDays = 0;
-		int countableDays=0;
+		int countableDays=0;//ye sirf salary count ke liye use hoga , agar vo half day se pehle chala gaya to attendence ka record to rakhenge but uski leave maanninjayegi.
 
 		for (Attendence atd : attendanceForMonth) {
 			if (atd.isHalfDay()) {
@@ -319,7 +341,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 	}
 
 	@Override
-	public int calculateWorkingDays(int year, int month) {
+	public int calculateWorkingDays(int year, int month , long employeeId) {
 		int workingDays = 0;
 		int startDay = 0;
 		int endDay = 0;
@@ -353,7 +375,7 @@ public class AttendenceServiceImpl implements IAttendenceService {
 			DayOfWeek dayOfWeek = startDate.getDayOfWeek();
 
 			// Check if the day is a working day based on your criteria
-			if (isWorkingDay(dayOfWeek)) {
+			if (isWorkingDay(dayOfWeek , employeeId)) {
 				workingDays++;
 			}
 

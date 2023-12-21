@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -39,6 +40,8 @@ import com.erp.hrms.entity.VisaDetail;
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
+import com.erp.hrms.weekOff.service.weekOffserviceImpl;
+import com.erp.hrms.weekOffEntity.WeekOff;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -54,6 +57,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	public static long concatenateIdWithRandomNumber(long id, int randomPart) {
 		return (id * 10000L) + randomPart;
 	}
+	
 
 	@Autowired
 	IRoleRepository roleRepository;
@@ -66,7 +70,13 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 	@Autowired
 	private JavaMailSender sender;
+	
+	@Autowired
+	private weekOffserviceImpl weekoff;
 
+	/**
+	 *
+	 */
 	@Override
 	public void savedata(String personalinfo, String SignupRequest, String url, MultipartFile passportSizePhoto,
 			MultipartFile OtherIdProofDoc, MultipartFile passportScan, MultipartFile licensecopy,
@@ -451,10 +461,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			user.setOtp(otp);
 
 			PersonalInfo.setUserentity(user);
-
+			
 			dao.savePersonalInfo(PersonalInfo);
 
 			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp);
+			
 		} catch (Exception e) {
 			throw new RuntimeException("An error occurred while saving personal information.", e);
 		}
