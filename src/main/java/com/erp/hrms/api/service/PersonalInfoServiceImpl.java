@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -17,12 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
-import com.erp.hrms.api.repo.IRoleRepository;
-import com.erp.hrms.api.request.SignupRequest;
-import com.erp.hrms.api.security.entity.RoleEntity;
+import com.erp.hrms.api.repo.IjobLevelRepo;
+import com.erp.hrms.api.security.entity.JobLevel;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
-import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
 import com.erp.hrms.entity.Department;
@@ -41,7 +39,6 @@ import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 import com.erp.hrms.weekOff.service.weekOffserviceImpl;
-import com.erp.hrms.weekOffEntity.WeekOff;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -60,9 +57,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	
 
 	@Autowired
-	IRoleRepository roleRepository;
-
-	@Autowired
 	private IPersonalInfoDAO dao;
 
 	@Autowired
@@ -73,6 +67,9 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	
 	@Autowired
 	private weekOffserviceImpl weekoff;
+	
+	@Autowired
+	private IjobLevelRepo joblevel;
 
 	/**
 	 *
@@ -89,7 +86,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
-		SignupRequest Signuprequest = mapper.readValue(SignupRequest, SignupRequest.class);
+		com.erp.hrms.api.request.SignupRequest Signuprequest = mapper.readValue(SignupRequest, com.erp.hrms.api.request.SignupRequest.class);
 
 		String email = PersonalInfo.getEmail();
 		if (dao.existsByEmail(email)) {
@@ -405,53 +402,23 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				PersonalInfo.setTraining(training);
 			}
 
-			Set<String> strRoles = Signuprequest.getRole();
-			Set<RoleEntity> roles = new HashSet<>();
-
-			System.out.println(strRoles);
-
-			if (strRoles == null) {
-				RoleEntity userRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(userRole);
-			} else {
-				strRoles.forEach(role -> {
-					switch (role) {
-					case "admin":
-						RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(adminRole);
-						break;
-					case "employee":
-						RoleEntity empRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(empRole);
-						break;
-					case "manager":
-						RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MANAGER)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(modRole);
-						break;
-					case "hr":
-						RoleEntity hrRole = roleRepository.findByName(ERole.ROLE_HR)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(hrRole);
-						break;
-					case "subadmin":
-						RoleEntity subAdminRole = roleRepository.findByName(ERole.ROLE_SUBADMIN)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-						roles.add(subAdminRole);
-					}
-				});
-
+			//List<JobLevel> strLevel = Arrays.asList(new JobLevel(1, "LEVEL_1"));
+			Set<JobLevel> strLevel = Signuprequest.getJobLevel();
+			Set<JobLevel> joblevel = new HashSet<>();
+			for(JobLevel level : strLevel) {
+				Integer jobLevelId = level.getId();
+				JobLevel Job = this.joblevel.findByJoblevel(level.getJoblevel());
+				joblevel.add(level);
+				
 			}
+			System.out.println(strLevel);
 
 			UserEntity user = new UserEntity();
 
 			user.setEmail(PersonalInfo.getEmail());
 			user.setUsername(String.valueOf(employeeId));
 			user.setPersonalinfo(PersonalInfo);
-			user.setRoles(roles);
+			user.setJoblevel(joblevel);
 			user.setEnabled(false);
 
 			Random random = new Random();

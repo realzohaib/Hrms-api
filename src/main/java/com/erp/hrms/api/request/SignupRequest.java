@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.validation.constraints.*;
 
+import com.erp.hrms.api.security.entity.JobLevel;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +36,7 @@ public class SignupRequest  implements Serializable {
   @Email
   private String email;
 
-  private Set<String> role;
+  private Set<JobLevel> jobLevel;
 
   @NotBlank
   @Size(min = 6, max = 40)

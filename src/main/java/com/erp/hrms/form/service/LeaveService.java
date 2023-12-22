@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.erp.hrms.AcademicCalendar.calendarRepository.CalendarRepository;
 import com.erp.hrms.AcademicCalendar.entity.AcademicCalendar;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
+import com.erp.hrms.api.security.entity.JobLevel;
 import com.erp.hrms.api.security.entity.RoleEntity;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -85,75 +86,77 @@ public class LeaveService implements ILeaveService {
 	@Autowired
 	private ILeaveTypeService leavetype;
 
-//	This method for send the leave request to manager and send email to manager and admin
-	@Override
+////	This method for send the leave request to manager and send email to manager and admin
+//	@Override
 	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException {
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
-
-			LeaveApproval existingEmployee = entityManager
-					.createQuery("SELECT la FROM LeaveApproval la WHERE la.employeeId = :employeeId",
-							LeaveApproval.class)
-					.setParameter("employeeId", leaveApprovalJson.getEmployeeId()).getResultList().stream()
-					.max(Comparator.comparingLong(LeaveApproval::getLeaveRequestId)).orElse(null);
-			if (existingEmployee != null) {
-				// Employee already exists, fetch and set existing values
-				leaveApprovalJson.setRemainingMedicalLeaves(existingEmployee.getRemainingMedicalLeaves());
-				leaveApprovalJson.setRemainingCasualLeaves(existingEmployee.getRemainingCasualLeaves());
-			} else {
-				// Employee does not exist, set default values
-				leaveApprovalJson.setRemainingMedicalLeaves(15.0);
-				leaveApprovalJson.setRemainingCasualLeaves(30.0);
-			}
-
-			LeaveType leaveType = entityManager.find(LeaveType.class,
-					leaveApprovalJson.getLeaveType().getLeaveTypeId());
-			leaveApprovalJson.setLeaveType(leaveType);
-
-			// Fetch admin and manager email addresses based on roles
-			String managerEmail = null;
-
-			List<UserEntity> userList = userService.getUsers();
-			for (UserEntity user : userList) {
-				Set<RoleEntity> roles = user.getRoles();
-				for (RoleEntity role : roles) {
-
-					if (role.getName() == ERole.ROLE_MANAGER) {
-						managerEmail = user.getEmail();
-					}
-				}
-				// If managerEmail are found, you can break out of the loop.
-				if (managerEmail != null) {
-					break;
-				}
-			}
-
-			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
-				String uniqueIdentifier = UUID.randomUUID().toString();
-				String originalFileName = medicalDocumentsName.getOriginalFilename();
-				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
-
-				Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
-				Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
-				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
-			}
-
-			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
-
-			if (managerEmail != null) {
-				// If only manager email is found, send the email to the manager
-				sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
-			} else {
-				logger.warn("Neither HR nor manager email found. Leave request email not sent.");
-			}
-
-//		 Send an email to the employee who requested the leave
-			String employeeEmail = leaveApprovalJson.getEmail();
-			sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
-		} catch (Exception e) {
-			throw new RuntimeException("An error occurred while send your request." + e);
-		}
+//		try {
+//			ObjectMapper mapper = new ObjectMapper();
+//			LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
+//
+//			LeaveApproval existingEmployee = entityManager
+//					.createQuery("SELECT la FROM LeaveApproval la WHERE la.employeeId = :employeeId",
+//							LeaveApproval.class)
+//					.setParameter("employeeId", leaveApprovalJson.getEmployeeId()).getResultList().stream()
+//					.max(Comparator.comparingLong(LeaveApproval::getLeaveRequestId)).orElse(null);
+//			if (existingEmployee != null) {
+//				// Employee already exists, fetch and set existing values
+//				leaveApprovalJson.setRemainingMedicalLeaves(existingEmployee.getRemainingMedicalLeaves());
+//				leaveApprovalJson.setRemainingCasualLeaves(existingEmployee.getRemainingCasualLeaves());
+//			} else {
+//				// Employee does not exist, set default values
+//				leaveApprovalJson.setRemainingMedicalLeaves(15.0);
+//				leaveApprovalJson.setRemainingCasualLeaves(30.0);
+//			}
+//
+//			LeaveType leaveType = entityManager.find(LeaveType.class,
+//					leaveApprovalJson.getLeaveType().getLeaveTypeId());
+//			leaveApprovalJson.setLeaveType(leaveType);
+//
+//			// Fetch admin and manager email addresses based on roles
+//			String managerEmail = null;
+//
+////			List<UserEntity> userList = userService.getUsers();
+////			for (UserEntity user : userList) {
+//////				Set<RoleEntity> roles = user.getRoles();
+////				Set<JobLevel> roles = user.getJoblevel();
+////
+////				for (JobLevel role : roles) {
+////
+////					if (role.getName() == ERole.ROLE_MANAGER) {
+////						managerEmail = user.getEmail();
+////					}
+////				}
+////				// If managerEmail are found, you can break out of the loop.
+////				if (managerEmail != null) {
+////					break;
+////				}
+//			}
+//
+//			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+//				String uniqueIdentifier = UUID.randomUUID().toString();
+//				String originalFileName = medicalDocumentsName.getOriginalFilename();
+//				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
+//
+//				Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
+//				Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
+//				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
+//			}
+//
+//			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
+//
+//			if (managerEmail != null) {
+//				// If only manager email is found, send the email to the manager
+//				sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
+//			} else {
+//				logger.warn("Neither HR nor manager email found. Leave request email not sent.");
+//			}
+//
+////		 Send an email to the employee who requested the leave
+//			String employeeEmail = leaveApprovalJson.getEmail();
+//			sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
+//		} catch (Exception e) {
+//			throw new RuntimeException("An error occurred while send your request." + e);
+//		}
 	}
 
 //	This method for find the data of leave by leave request id
@@ -269,18 +272,18 @@ public class LeaveService implements ILeaveService {
 			// Fetch hr and manager email addresses based on roles
 			String hrEmail = null;
 
-			List<UserEntity> userList = userService.getUsers();
-			for (UserEntity user : userList) {
-				Set<RoleEntity> roles = user.getRoles();
-				for (RoleEntity role : roles) {
-					if (role.getName() == ERole.ROLE_HR) {
-						hrEmail = user.getEmail();
-					}
-				}
-				if (hrEmail != null) {
-					break;
-				}
-			}
+//			List<UserEntity> userList = userService.getUsers();
+//			for (UserEntity user : userList) {
+//				Set<RoleEntity> roles = user.getRoles();
+//				for (RoleEntity role : roles) {
+//					if (role.getName() == ERole.ROLE_HR) {
+//						hrEmail = user.getEmail();
+//					}
+//				}
+//				if (hrEmail != null) {
+//					break;
+//				}
+//			}
 
 			// Send emails to hr
 			sendLeaveRequestEmailApproved(hrEmail, "Leave Request status by the manager", leaveApprovalJson);
