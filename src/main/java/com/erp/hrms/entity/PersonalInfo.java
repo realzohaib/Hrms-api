@@ -6,6 +6,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+//import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,8 +23,11 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+//import org.apache.xmlbeans.impl.xb.xsdschema.All;
+//import org.hibernate.annotations.Cascade;
+//import org.hibernate.annotations.CascadeType;
+
 import com.erp.hrms.api.security.entity.UserEntity;
-import com.erp.hrms.weekOffEntity.WeekOff;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
@@ -118,9 +122,9 @@ public class PersonalInfo implements Serializable {
 	@Column(name = "hobbies")
 	private String hobbies;
 
-	private String status;//Active or InActive
+	private String status;// Active or InActive
 
-	private String empStatus;//old or new
+	private String empStatus;// old or new
 
 	private String verifyAndNotVerify;
 
@@ -131,13 +135,12 @@ public class PersonalInfo implements Serializable {
 	private BloodRelative relative;
 
 	private VisaDetail visainfo;
-	
+
 	private String onboardHrApprovalStatus;
-	
+
 	private boolean filledForm;
 
 	@OneToMany(mappedBy = "personalinfo")
-//@OneToMany
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
 	private List<Education> educations;
@@ -156,6 +159,11 @@ public class PersonalInfo implements Serializable {
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
 	private List<PreviousEmployee> oldEmployee;
+
+	@OneToMany(mappedBy = "personalinfo")
+	@Cascade(CascadeType.ALL)
+	@JsonManagedReference
+	private List<EmpAchievement> empAchievements;
 
 	@JsonManagedReference
 	@OneToOne(mappedBy = "personalinfo")
@@ -179,7 +187,6 @@ public class PersonalInfo implements Serializable {
 	@OneToOne(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
 	private UserEntity userentity;
-	
 
 	@PostLoad
 	private void calculateAge() {

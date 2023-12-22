@@ -37,12 +37,12 @@ public class Trainingdetails {
 	private String trainerPhoneNo;
 
 	private String PaidTrainingDocumentProof;
-	
+
 	@Transient
 	private byte[] PaidTrainingDocumentProofData;
-	
+
 	private String CertificateUploadedForOutsource;
-	
+
 	@Transient
 	private byte[] CertificateUploadedForOutsourceData;
 

@@ -110,10 +110,12 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 	}
 
 	@Override
+	@Transactional
 	public PersonalInfo updatePersonalInfo(String email, PersonalInfo personalInfo) {
 		try {
 			personalInfo.setEmail(email);
 			entityManager.merge(personalInfo);
+//			entityManager.persist(personalInfo);
 			return personalInfo;
 		} catch (Exception e) {
 			throw new RuntimeException(e);

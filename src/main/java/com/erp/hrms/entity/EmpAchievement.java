@@ -11,11 +11,14 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
 @Table(name = "Employee_Achievement")
+@ToString
 public class EmpAchievement {
 
 	@Id
@@ -25,12 +28,12 @@ public class EmpAchievement {
 	private String achievementRewardsName;
 
 	private String achievementsRewardsDocs;
-	
+
 	@Transient
 	private byte[] achievementsRewardsDocsData;
 
 	@ManyToOne
-	@JoinColumn(name = "previous_id")
+	@JoinColumn(name = "employee_id")
 	@JsonBackReference
-	private PreviousEmployee previousEmployee;
+	private PersonalInfo personalinfo;
 }

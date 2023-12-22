@@ -764,9 +764,9 @@ public class Helper {
 					professionalqual.add(professionalQualification);
 					personalInfo.setProfessionalQualifications(professionalqual);
 
-					empAchievement.setPreviousEmployee(previousEmployee);
-					empachivmnt.add(empAchievement);
-					previousEmployee.setEmpAchievements(empachivmnt);
+//					empAchievement.setPreviousEmployee(previousEmployee);
+//					empachivmnt.add(empAchievement);
+//					previousEmployee.setEmpAchievements(empachivmnt);
 
 					previousEmployee.setPersonalinfo(personalInfo);
 					previousemp.add(previousEmployee);
