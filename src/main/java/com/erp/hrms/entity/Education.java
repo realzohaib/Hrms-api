@@ -102,7 +102,6 @@ public class Education {
 //	@JsonBackReference
 //	private PersonalInfo personalinfo;
 //	
-	@JoinColumn(name = "employee_Id")
 	@ManyToOne
 	@JoinColumn(name = "employee_Id")
 	@JsonBackReference
