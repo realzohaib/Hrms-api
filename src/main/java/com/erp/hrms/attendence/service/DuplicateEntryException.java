@@ -6,7 +6,7 @@ public class DuplicateEntryException extends Exception {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private String message;
 
 	public DuplicateEntryException(String message) {
@@ -14,8 +14,7 @@ public class DuplicateEntryException extends Exception {
 		this.message = message;
 	}
 
-	public DuplicateEntryException() {}
-
-
+	public DuplicateEntryException() {
+	}
 
 }

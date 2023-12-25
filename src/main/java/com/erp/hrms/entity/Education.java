@@ -6,8 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -32,13 +32,12 @@ public class Education {
 	@Column(name = "Secondary_year")
 	private String secondaryyear;
 
+	private String secondaryDocumentScan;
 
-	@Column(name = "secondary_supporting_document", length = 2147483647)
-	
-	@Lob
-	private byte[] secondaryDocumentScan;
+	@Transient
+	private byte[] secondaryDocumentScanData;
 
-	// for 12th updated later
+	// for 12th
 	@Column(name = "Senior_Secondary_issuing_authority")
 	private String seniorSecondaryIssuingAuthority;
 
@@ -48,10 +47,10 @@ public class Education {
 	@Column(name = "Senior_Secondary_year")
 	private String seniorSecondaryYear;
 
+	private String seniorSecondaryDocumentScan;
 
-	@Column(name = "Senior_Secondary_supporting_document", length = 2147483647)
-	@Lob
-	private byte[] seniorSecondaryDocumentScan;
+	@Transient
+	private byte[] seniorSecondaryDocumentScanData;
 
 	// for graduation
 	@Column(name = "Graduation_issuing_authority")
@@ -63,10 +62,10 @@ public class Education {
 	@Column(name = "Graduation_year")
 	private String graduationYear;
 
+	private String graduationDocumentScan;
 
-	@Column(name = "Graduation_supporting_document", length = 2147483647)
-	@Lob
-	private byte[] graduationDocumentScan;
+	@Transient
+	private byte[] graduationDocumentScanData;
 
 	// for PG
 	@Column(name = "Post_Graduation_issuing_authority")
@@ -78,12 +77,10 @@ public class Education {
 	@Column(name = "post_Graduation_year")
 	private String postGraduationYear;
 
+	private String postGraduationDocumentScan;
 
-
-	@Column(name = "post_Graduation_supporting_document", length = 2147483647)
-	@Lob
-	private byte[] postGraduationDocumentScan;
-
+	@Transient
+	private byte[] postGraduationDocumentScanData;
 
 // diploma certificates
 	@Column(name = "diploma_issuing_authority")
@@ -95,15 +92,20 @@ public class Education {
 	@Column(name = "diploma_year")
 	private String diplomaYear;
 
-	// dynamic
-	@Column(name = "diploma_document_scan", length = 2147483647)
+	private String diplomaDocumentScan;
 
-	@Lob
-	private byte[] diplomaDocumentScan;
+	@Transient
+	private byte[] diplomaDocumentScanData;
 
+//	@ManyToOne
+//	@JoinColumn(name = "employee_Id" , referencedColumnName = "employeeId")
+//	@JsonBackReference
+//	private PersonalInfo personalinfo;
+//	
 	@ManyToOne
-	@JoinColumn(name = "employee_id ")
+	@JoinColumn(name = "employee_Id")
 	@JsonBackReference
 	private PersonalInfo personalinfo;
 
 }
+

@@ -26,6 +26,8 @@ public interface IPersonalInfoDAO {
 
 	public PersonalInfo updatePersonalInfo(String email, PersonalInfo personalInfo);
 
+	public PersonalInfo updateVisaDetails(Long employeeId, String visaIssueDate, String visaExpiryDate);
+	
 	public void update20and60daysBeforeVisaEmail(String email);
 
 	public void update10and30daysBeforeVisaEmail(String email);
@@ -37,8 +39,6 @@ public interface IPersonalInfoDAO {
 	public void update2daysBeforeVisaEmailSend(String email);
 
 	public void update1dayBeforeVisaEmailSend(String email);
-
-	public PersonalInfo updateVisaDetails(Long employeeId, String visaIssueDate, String visaExpiryDate);
-
+	
 	public List<NotificationHelper> getNotificationFields();
 }

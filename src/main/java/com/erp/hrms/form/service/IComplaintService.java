@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import com.erp.hrms.entity.form.ComplaintForm;
-import com.erp.hrms.entity.form.LeaveApproval;
 
 public interface IComplaintService {
 

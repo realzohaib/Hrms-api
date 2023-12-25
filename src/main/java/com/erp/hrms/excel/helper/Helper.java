@@ -98,7 +98,7 @@ public class Helper {
 						String cellValue = "";
 						if (currentCell.getCellType() == CellType.STRING) {
 							cellValue = currentCell.getStringCellValue().trim();
-						}else if (currentCell.getCellType() == CellType.NUMERIC) {
+						} else if (currentCell.getCellType() == CellType.NUMERIC) {
 							cellValue = String.valueOf(currentCell.getNumericCellValue());
 						} else if (currentCell.getCellType() == CellType.NUMERIC) {
 							cellValue = String.valueOf(currentCell.getNumericCellValue());
@@ -567,7 +567,7 @@ public class Helper {
 							break;
 
 						case 115:
-							jobDetails.setBasicAllowance(currentCell.getStringCellValue());
+							jobDetails.setBasicPay(currentCell.getStringCellValue());
 							break;
 
 						case 116:
@@ -731,7 +731,7 @@ public class Helper {
 							break;
 
 						case 156:
-							jobDetails.setJobdepartment(currentCell.getStringCellValue());
+//							jobDetails.setJobdepartment(currentCell.getStringCellValue());
 							break;
 
 						case 157:
@@ -764,9 +764,9 @@ public class Helper {
 					professionalqual.add(professionalQualification);
 					personalInfo.setProfessionalQualifications(professionalqual);
 
-					empAchievement.setPreviousEmployee(previousEmployee);
-					empachivmnt.add(empAchievement);
-					previousEmployee.setEmpAchievements(empachivmnt);
+//					empAchievement.setPreviousEmployee(previousEmployee);
+//					empachivmnt.add(empAchievement);
+//					previousEmployee.setEmpAchievements(empachivmnt);
 
 					previousEmployee.setPersonalinfo(personalInfo);
 					previousemp.add(previousEmployee);
@@ -797,3 +797,4 @@ public class Helper {
 	}
 
 }
+

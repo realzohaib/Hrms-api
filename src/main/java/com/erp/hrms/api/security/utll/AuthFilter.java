@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package com.erp.hrms.api.security.utll;
 
 import java.io.IOException;
@@ -41,8 +39,8 @@ public class AuthFilter  extends OncePerRequestFilter {
 
 	  @Override
 	  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-	      throws ServletException, IOException {
-//		  System.out.println(request);
+	      throws ServletException, IOException {	
+		  //System.out.println(request.getHeaderNames());
 	    try {
 	      String jwt = parseJwt(request);
 	      if (jwt != null && jwtTokenUtill.validateJwtToken(jwt)) {

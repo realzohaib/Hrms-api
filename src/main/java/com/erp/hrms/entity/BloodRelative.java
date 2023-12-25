@@ -2,6 +2,7 @@ package com.erp.hrms.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -20,7 +21,7 @@ public class BloodRelative {
 	private String Rlastname;
 	@Column(name = "relationship")
 	private String relationship;
-	
+
 	@Column(name = "relative_phone_code")
 	private String RphoneCode;
 	@Column(name = "contact_no")
@@ -28,10 +29,13 @@ public class BloodRelative {
 	@Column(name = "address")
 	private String Raddress;
 
-	@Column(name = "relative_id", length = 2147483647)
-	private byte[] relativeid;
-	@Column(name = "adress_proof", length = 2147483647)
-	private byte[] Raddressproof;
-
-
+	private String relativeid;
+	
+	@Transient
+	private byte[] relativeIdData;
+	
+	private String Raddressproof;
+	
+	@Transient
+	private byte[] raddressProofData;
 }

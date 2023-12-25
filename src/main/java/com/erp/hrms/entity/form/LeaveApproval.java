@@ -1,9 +1,13 @@
 package com.erp.hrms.entity.form;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -16,22 +20,41 @@ public class LeaveApproval {
 	private Long leaveRequestId;
 	private Long employeeId;
 	private String nameOfEmployee;
-	private String email;
-	private String contactNumber;
-	private String designation; 
+	private String designation;
 	private String department;
-
-	private String emergencyContactNumber;
-	private String requestDate;
-	private String leaveType;
+	private double numberOfDaysRequested;
 	private String leaveReason;
+	private String requestDate;
 	private String startDate;
 	private String endDate;
-	private double numberOfDaysRequested;
-	private String approvalStatus;
+
 	private String approvingManagerName;
+	private String approvalStatus;
 	private String approvalRemarks;
 
+	private String hrName;
+	private String hrApprovalStatus;
+	private String hrApprovalRemarks;
+	private String hrEmail;
 
+	private String email;
+	private String contactNumber;
+	private String emergencyContactNumber;
+
+	private String medicalDocumentsName;
+	private String jobLevel;
+	private String location;
+
+	private String managerEmail;
+
+	@Transient
+	private byte[] medicalDocumentData;
+
+	private Double remainingMedicalLeaves;
+	private Double remainingCasualLeaves;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "leaveTypeLeaveApproval", referencedColumnName = "leaveTypeId")
+	private LeaveType leaveType;
 
 }

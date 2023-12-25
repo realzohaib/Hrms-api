@@ -6,20 +6,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "professional_qualifications")
 @Data
 public class ProfessionalQualification {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "p_id")
@@ -30,11 +29,11 @@ public class ProfessionalQualification {
 	private String yearOfQualification;
 	private String grade;
 
-	// dynamic
-	@Lob
+	private String degreeScan;
 
-	@Column(length = 2147483647)
-	private byte[] degreeScan;
+	@Transient
+	private byte[] degreeScanData;
+
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	@JsonBackReference

@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.form.ComplaintForm;
-import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.exception.ComplaintRequestException;
 import com.erp.hrms.exception.ComplaintRequestNotFoundException;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
@@ -24,13 +24,9 @@ public class ComplaintService implements IComplaintService {
 	@Override
 	public void sendComplaintRequest(String complaintForm) throws IOException {
 
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			ComplaintForm complaintFormJson = mapper.readValue(complaintForm, ComplaintForm.class);
-			iComplaintRepository.sendComplaintRequest(complaintFormJson);
-		} catch (Exception e) {
-			throw new ComplaintRequestException("Error while creating complant. " + e);
-		}
+		ObjectMapper mapper = new ObjectMapper();
+		ComplaintForm complaintFormJson = mapper.readValue(complaintForm, ComplaintForm.class);
+		iComplaintRepository.sendComplaintRequest(complaintFormJson);
 	}
 
 //	This method for get the complaint request by the complaint Id
@@ -38,7 +34,8 @@ public class ComplaintService implements IComplaintService {
 	public ComplaintForm getComplaintRequestById(long complaintId) {
 		ComplaintForm complaintForm = iComplaintRepository.getComplaintRequestById(complaintId);
 		if (complaintForm == null) {
-			throw new ComplaintRequestNotFoundException("Complaint request with ID " + complaintId + " not found");
+			throw new ComplaintRequestNotFoundException(
+					new MessageResponse("Complaint request with ID " + complaintId + " not found"));
 		}
 		return complaintForm;
 	}
@@ -49,7 +46,7 @@ public class ComplaintService implements IComplaintService {
 		List<ComplaintForm> complantForms = null;
 		complantForms = iComplaintRepository.findAllComplaints();
 		if (complantForms.isEmpty()) {
-			throw new ComplaintRequestNotFoundException("No Complaints ");
+			throw new ComplaintRequestNotFoundException(new MessageResponse("No Complaints "));
 		}
 		complantForms.sort((c1, c2) -> Long.compare(c2.getComplaintId(), c1.getComplaintId()));
 		return complantForms;
@@ -61,7 +58,8 @@ public class ComplaintService implements IComplaintService {
 
 		ComplaintForm existingComplaint = iComplaintRepository.getComplaintRequestById(complaintId);
 		if (existingComplaint == null) {
-			throw new ComplaintRequestNotFoundException("Complaint request with ID " + complaintId + " not found");
+			throw new ComplaintRequestNotFoundException(
+					new MessageResponse("Complaint request with ID " + complaintId + " not found"));
 		}
 		try {
 
@@ -97,10 +95,12 @@ public class ComplaintService implements IComplaintService {
 	public List<ComplaintForm> getComplaintRequestByEmployeeId(long employeeId) {
 		List<ComplaintForm> complaintForms = iComplaintRepository.getComplaintRequestByEmployeeId(employeeId);
 		if (complaintForms.isEmpty()) {
-			throw new LeaveRequestNotFoundException("This employee ID " + employeeId + " not found.");
+			throw new LeaveRequestNotFoundException(
+					new MessageResponse("This employee ID " + employeeId + " not found."));
 		}
 		complaintForms.sort((c1, c2) -> Long.compare(c2.getComplaintId(), c1.getComplaintId()));
 		return complaintForms;
 	}
 
 }
+

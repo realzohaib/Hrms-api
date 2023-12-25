@@ -1,11 +1,8 @@
-/**
- * 
- */
 package com.erp.hrms.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Lob;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -31,8 +28,6 @@ public class VisaDetail {
 	@Column(name = "visa_expiry_date")
 	private String visaExpiryDate;
 
-
-
 	private boolean visaEmailSend20and60daysBefore;
 	private boolean VisaEmailSend10and30daysBefore;
 
@@ -41,8 +36,9 @@ public class VisaDetail {
 	private boolean visaEmailSend2daysBefore;
 	private boolean visaEmailSend1dayBefore;
 
-	@Column(name = "visa_docs", length = 2147483647)
-	@Lob
-	private byte[] visaDocs;
+	private String visaDocs;
+	
+	@Transient
+	private byte[] visaDocsData;
 
 }

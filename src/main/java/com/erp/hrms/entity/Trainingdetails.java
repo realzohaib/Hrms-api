@@ -6,21 +6,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Data
 @Entity
 @Table(name = "training_detail")
 public class Trainingdetails {
+
 	@Id
 	@Column(name = "training_details.personal_info_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,14 +36,16 @@ public class Trainingdetails {
 	private String trainerPhoneCode;
 	private String trainerPhoneNo;
 
-	@Lob
+	private String PaidTrainingDocumentProof;
 
-	@Column(length = 2147483647)
-	private byte[] CertificateUploadedForOutsource;
-	@Lob
-	@Column(length = 2147483647)
-	private byte[] PaidTrainingDocumentProof;
-	
+	@Transient
+	private byte[] PaidTrainingDocumentProofData;
+
+	private String CertificateUploadedForOutsource;
+
+	@Transient
+	private byte[] CertificateUploadedForOutsourceData;
+
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	@JsonBackReference

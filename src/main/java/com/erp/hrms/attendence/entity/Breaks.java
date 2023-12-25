@@ -19,13 +19,13 @@ public class Breaks {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long breakId;
-	
+
 	private Timestamp breakStart;
-	
+
 	private Timestamp breakEnd;
-	
+
 	private long totalBreak;
-	
+
 	@JoinColumn(name = "attendence_Id")
 	@ManyToOne
 	@JsonBackReference

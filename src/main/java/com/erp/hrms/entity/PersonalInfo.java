@@ -1,36 +1,55 @@
 package com.erp.hrms.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+//import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PostLoad;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+//import org.apache.xmlbeans.impl.xb.xsdschema.All;
+//import org.hibernate.annotations.Cascade;
+//import org.hibernate.annotations.CascadeType;
+
+import com.erp.hrms.api.security.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
 
 @Data
 @Entity
-public class PersonalInfo {
+public class PersonalInfo implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@Column(name = "employee_Id")
+	@Column(name = "Id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdGenerator")
 	@SequenceGenerator(name = "employeeIdGenerator", sequenceName = "employee_id_seq", allocationSize = 1, initialValue = 1001)
+	private Long Id;
+
+	@Column(name = "employeeId")
 	private Long employeeId;
+
 	@Column(name = "name_prefix")
 	private String namePrefix;
 
@@ -66,9 +85,10 @@ public class PersonalInfo {
 	@Column(name = "personal_contact_no")
 	private String personalContactNo;
 
-	@Lob
-	@Column(name = "passport_size_photo ", length = 2147483647)
-	private byte[] passportSizePhoto;
+	private String passportSizePhoto;
+
+	@Transient
+	private byte[] passportSizePhotoData;
 
 	@Column(name = "email_id")
 	private String email;
@@ -76,9 +96,10 @@ public class PersonalInfo {
 	@Column(name = "citizenship")
 	private String citizenship;
 
-	@Column(name = "id_Scan", length = 2147483647)
-	@Lob
-	private byte[] OtherIdProofDoc;
+	private String OtherIdProofDoc;
+
+	@Transient
+	private byte[] otherIdProofDocData;
 
 	@Column(name = "permanent_residence_country")
 	private String permanentResidenceCountry;
@@ -101,9 +122,11 @@ public class PersonalInfo {
 	@Column(name = "hobbies")
 	private String hobbies;
 
-	private String status;
+	private String status;// Active or InActive
 
-	private String empStatus;
+	private String empStatus;// old or new
+
+	private String verifyAndNotVerify;
 
 	private PassportDetails psDetail;
 
@@ -112,6 +135,10 @@ public class PersonalInfo {
 	private BloodRelative relative;
 
 	private VisaDetail visainfo;
+
+	private String onboardHrApprovalStatus;
+
+	private boolean filledForm;
 
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
@@ -133,6 +160,11 @@ public class PersonalInfo {
 	@Cascade(CascadeType.ALL)
 	private List<PreviousEmployee> oldEmployee;
 
+	@OneToMany(mappedBy = "personalinfo")
+	@Cascade(CascadeType.ALL)
+	@JsonManagedReference
+	private List<EmpAchievement> empAchievements;
+
 	@JsonManagedReference
 	@OneToOne(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
@@ -143,18 +175,22 @@ public class PersonalInfo {
 	@Cascade(CascadeType.ALL)
 	private List<Trainingdetails> training;
 
-
-
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
-
 	private List<JobDetails> jobDetails;
+
+	@ManyToOne
+	@JoinColumn(name = "departmentId", referencedColumnName = "departmentId")
+	private Department department;
+
+	@OneToOne(mappedBy = "personalinfo")
+	@Cascade(CascadeType.ALL)
+	private UserEntity userentity;
 
 	@PostLoad
 	private void calculateAge() {
 		if (this.dateOfBirth != null && !this.dateOfBirth.isEmpty()) {
-
 
 			LocalDate dob = LocalDate.parse(this.dateOfBirth, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 			LocalDate currentDate = LocalDate.now();
