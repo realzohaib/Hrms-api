@@ -89,25 +89,27 @@ public class LeaveService implements ILeaveService {
 			ObjectMapper mapper = new ObjectMapper();
 			LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
 
-			LeaveApproval existingEmployee = entityManager
-					.createQuery("SELECT la FROM LeaveApproval la WHERE la.employeeId = :employeeId",
-							LeaveApproval.class)
-					.setParameter("employeeId", leaveApprovalJson.getEmployeeId()).getResultList().stream()
-					.max(Comparator.comparingLong(LeaveApproval::getLeaveRequestId)).orElse(null);
-			if (existingEmployee != null) {
-				// Employee already exists, fetch and set existing values
-				leaveApprovalJson.setRemainingMedicalLeaves(existingEmployee.getRemainingMedicalLeaves());
-				leaveApprovalJson.setRemainingCasualLeaves(existingEmployee.getRemainingCasualLeaves());
-			} else {
-				// Employee does not exist, set default values
-				LeaveType leaveType=new LeaveType();
-				leaveApprovalJson.setRemainingMedicalLeaves(15.0);
-				leaveApprovalJson.setRemainingCasualLeaves(30.0);
-			}
+//			LeaveApproval existingEmployee = entityManager
+//					.createQuery("SELECT la FROM LeaveApproval la WHERE la.employeeId = :employeeId",
+//							LeaveApproval.class)
+//					.setParameter("employeeId", leaveApprovalJson.getEmployeeId()).getResultList().stream()
+//					.max(Comparator.comparingLong(LeaveApproval::getLeaveRequestId)).orElse(null);
+//			if (existingEmployee != null) {
+//				// Employee already exists, fetch and set existing values
+//				leaveApprovalJson.setRemainingMedicalLeaves(existingEmployee.getRemainingMedicalLeaves());
+//				leaveApprovalJson.setRemainingCasualLeaves(existingEmployee.getRemainingCasualLeaves());
+//			} else {
+//				// Employee does not exist, set default values
+//				LeaveType leaveType=new LeaveType();
+//				leaveApprovalJson.setRemainingMedicalLeaves(15.0);
+//				leaveApprovalJson.setRemainingCasualLeaves(30.0);
+//			}
 
 			LeaveType leaveType = entityManager.find(LeaveType.class,
 					leaveApprovalJson.getLeaveType().getLeaveTypeId());
 			leaveApprovalJson.setLeaveType(leaveType);
+			
+			leaveApprovalJson.setNoOfLeavesApproved(leaveApprovalJson.getNumberOfDaysRequested());
 
 			// Fetch admin and manager email addresses based on roles
 			String managerEmail = null;
@@ -139,16 +141,16 @@ public class LeaveService implements ILeaveService {
 
 			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
 
-			if (managerEmail != null) {
-				// If only manager email is found, send the email to the manager
-				sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
-			} else {
-				logger.warn("Neither HR nor manager email found. Leave request email not sent.");
-			}
+//			if (managerEmail != null) {
+//				// If only manager email is found, send the email to the manager
+//				sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
+//			} else {
+//				logger.warn("Neither HR nor manager email found. Leave request email not sent.");
+//			}
 
 //		 Send an email to the employee who requested the leave
 			String employeeEmail = leaveApprovalJson.getEmail();
-			sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
+//			sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
 		} catch (Exception e) {
 			throw new RuntimeException("An error occurred while send your request." + e);
 		}
@@ -323,6 +325,7 @@ public class LeaveService implements ILeaveService {
 			existingApproval.setHrApprovalStatus(leaveApprovalJson.getHrApprovalStatus());
 			existingApproval.setHrApprovalRemarks(leaveApprovalJson.getHrApprovalRemarks());
 			existingApproval.setHrEmail(leaveApprovalJson.getHrEmail());
+			existingApproval.setNoOfLeavesApproved(leaveApprovalJson.getNoOfLeavesApproved());
 
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
 				if (existingApproval.getMedicalDocumentsName() != null) {
@@ -341,20 +344,23 @@ public class LeaveService implements ILeaveService {
 			LeaveType leaveType = existingApproval.getLeaveType();
 			if (leaveType != null) {
 				Long leaveid = leaveType.getLeaveTypeId();
-				double numberOfDaysRequested = leaveApprovalJson.getNumberOfDaysRequested();
+				double noOfLeaveTake = leaveApprovalJson.getNoOfLeavesApproved();
 
-				if ("Accepted".equalsIgnoreCase(leaveApprovalJson.getHrApprovalStatus())) {
-					if (1L == leaveid) {
-						// Subtract from remainingMedicalLeave for medical leave
-						existingApproval.setRemainingMedicalLeaves(
-								existingApproval.getRemainingMedicalLeaves() - numberOfDaysRequested);
-					} else if (2L == leaveid) {
-						// Subtract from remainingCasualLeave for casual leave
-						existingApproval.setRemainingCasualLeaves(
-								existingApproval.getRemainingCasualLeaves() - numberOfDaysRequested);
-					}
-				}
+//				if ("Accepted".equalsIgnoreCase(leaveApprovalJson.getHrApprovalStatus())) {
+//					if (1L == leaveid) {
+//						// Subtract from remainingMedicalLeave for medical leave
+//						existingApproval.setRemainingMedicalLeaves(
+//								existingApproval.getRemainingMedicalLeaves() - noOfLeaveTake);
+//					} else if (2L == leaveid) {
+//						// Subtract from remainingCasualLeave for casual leave
+//						existingApproval.setRemainingCasualLeaves(
+//								existingApproval.getRemainingCasualLeaves() - noOfLeaveTake);
+//					}
+//				}
+				
+				
 			}
+			
 			// Fetch hr and manager email addresses based on roles
 			String hrEmail = leaveApprovalJson.getHrEmail();
 			String managerEmail = leaveApprovalJson.getManagerEmail();

@@ -46,12 +46,14 @@ public class LeaveApproval {
 	private String location;
 
 	private String managerEmail;
+	
+	private double NoOfLeavesApproved;
 
 	@Transient
 	private byte[] medicalDocumentData;
 
-	private Double remainingMedicalLeaves;
-	private Double remainingCasualLeaves;
+//	private Double remainingMedicalLeaves;
+//	private Double remainingCasualLeaves;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "leaveTypeLeaveApproval", referencedColumnName = "leaveTypeId")
