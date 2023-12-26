@@ -66,13 +66,10 @@ public class UserEntity implements Serializable {
 	@JsonBackReference
 	private PersonalInfo personalinfo;
 
-//	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-//	private Set<RoleEntity> roles = new HashSet<>();`
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<RoleEntity> roles = new HashSet<>();
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-	@JoinTable(name = "user_joblevel", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "joblevelid_id"))
-	private Set<JobLevel> joblevel = new HashSet<>();
 
 	public UserEntity() {
 	}

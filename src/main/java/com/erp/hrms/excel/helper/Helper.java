@@ -547,7 +547,7 @@ public class Helper {
 							break;
 
 						case 110:
-							jobDetails.setJobPostDesignation(currentCell.getStringCellValue());
+//							jobDetails.setJobPostDesignation(currentCell.getStringCellValue());
 							break;
 
 						case 111:
@@ -559,7 +559,7 @@ public class Helper {
 							break;
 
 						case 113:
-							jobDetails.setJobLevel(currentCell.getStringCellValue());
+//							jobDetails.setJobLevel(currentCell.getStringCellValue());
 							break;
 
 						case 114:
@@ -764,9 +764,9 @@ public class Helper {
 					professionalqual.add(professionalQualification);
 					personalInfo.setProfessionalQualifications(professionalqual);
 
-					empAchievement.setPreviousEmployee(previousEmployee);
-					empachivmnt.add(empAchievement);
-					previousEmployee.setEmpAchievements(empachivmnt);
+//					empAchievement.setPreviousEmployee(previousEmployee);
+//					empachivmnt.add(empAchievement);
+//					previousEmployee.setEmpAchievements(empachivmnt);
 
 					previousEmployee.setPersonalinfo(personalInfo);
 					previousemp.add(previousEmployee);
