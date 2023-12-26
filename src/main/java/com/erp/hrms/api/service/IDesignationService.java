@@ -12,4 +12,6 @@ public interface IDesignationService {
 
 	public List<Designation> findAllDesignation();
 
+	public List<Designation> findByEmployeeid(Long employeeId);
+
 }

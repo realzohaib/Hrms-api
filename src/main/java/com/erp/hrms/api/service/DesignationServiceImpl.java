@@ -60,4 +60,10 @@ public class DesignationServiceImpl implements IDesignationService {
 		return designationRepository.findAll();
 	}
 
+	@Override
+	public List<Designation> findByEmployeeid(Long employeeId) {
+
+		return designationRepository.findByEmployeeId(employeeId);
+	}
+
 }

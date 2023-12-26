@@ -36,7 +36,7 @@ public class DesignationController {
 	}
 
 	@GetMapping("/designation/{did}")
-	public ResponseEntity<?> findByLevelId(@PathVariable Long did) {
+	public ResponseEntity<?> findByDesignationId(@PathVariable Long did) {
 		try {
 			Designation findByDesignationId = iDesignationService.findByDesignationId(did);
 			if (findByDesignationId == null) {
@@ -50,13 +50,27 @@ public class DesignationController {
 	}
 
 	@GetMapping("/all/designation")
-	public ResponseEntity<?> findAllDepartments() {
+	public ResponseEntity<?> findAllDesignation() {
 		try {
 			List<Designation> findAllDesignation = iDesignationService.findAllDesignation();
 			if (findAllDesignation.isEmpty()) {
 				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
 			} else {
 				return new ResponseEntity<>(findAllDesignation, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/designation/employeeId/{employeeId}")
+	public ResponseEntity<?> findByEmployeeId(@PathVariable Long employeeId) {
+		try {
+			List<Designation> findByEmployeeid = iDesignationService.findByEmployeeid(employeeId);
+			if (findByEmployeeid.isEmpty()) {
+				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
+			} else {
+				return new ResponseEntity<>(findByEmployeeid, HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);

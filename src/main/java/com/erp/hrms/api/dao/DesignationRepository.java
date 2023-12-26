@@ -17,4 +17,6 @@ public interface DesignationRepository extends JpaRepository<Designation, Long> 
 	@Query("SELECT d FROM Designation d WHERE d.employeeId = :employeeId ORDER BY d.dId DESC")
 	List<Designation> findDesignationWithMaxdIdByEmployeeId(@Param("employeeId") Long employeeId);
 
+	List<Designation> findByEmployeeId(@Param("employeeId") Long employeeId);
+
 }
