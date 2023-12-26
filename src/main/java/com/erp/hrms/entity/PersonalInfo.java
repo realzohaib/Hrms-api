@@ -159,7 +159,7 @@ public class PersonalInfo implements Serializable {
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
 	private List<PreviousEmployee> oldEmployee;
-	
+
 	@OneToMany(mappedBy = "personalinfo")
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
@@ -179,6 +179,11 @@ public class PersonalInfo implements Serializable {
 	@Cascade(CascadeType.ALL)
 	@JsonManagedReference
 	private List<JobDetails> jobDetails;
+
+	@OneToMany(mappedBy = "personalinfo")
+	@Cascade(CascadeType.ALL)
+	@JsonManagedReference
+	private List<Designation> designations;
 
 	@ManyToOne
 	@JoinColumn(name = "departmentId", referencedColumnName = "departmentId")

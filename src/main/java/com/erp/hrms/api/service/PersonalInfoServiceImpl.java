@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,6 +29,7 @@ import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
 import com.erp.hrms.entity.Department;
+import com.erp.hrms.entity.Designation;
 import com.erp.hrms.entity.DrivingLicense;
 import com.erp.hrms.entity.Education;
 import com.erp.hrms.entity.EmpAchievement;
@@ -399,10 +401,20 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				PersonalInfo.setTraining(training);
 			}
 
+			List<Designation> designations = PersonalInfo.getDesignations();
+			if (designations != null) {
+				for (Designation designation : designations) {
+					designation.setEmployeeId(employeeId);
+					JobDetails jobDetails = PersonalInfo.getJobDetails().get(0);
+					designation.setStartDate(jobDetails.getJoiningDate());
+				}
+				PersonalInfo.setDesignations(designations);
+			}
+
 			Set<String> strRoles = Signuprequest.getRole();
 			Set<RoleEntity> roles = new HashSet<>();
 
-			System.out.println(strRoles);
+//			System.out.println(strRoles);
 
 			if (strRoles == null) {
 				RoleEntity userRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
@@ -1844,10 +1856,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 					for (JobDetails existingJobDetails : jobDetails) {
 						if (Objects.equals(existingJobDetails.getId(), newJobDetail.getId())) {
-							existingJobDetails.setJobPostDesignation(newJobDetail.getJobPostDesignation());
 							existingJobDetails.setCompanyEmailIdProvided(newJobDetail.getCompanyEmailIdProvided());
 							existingJobDetails.setCompanyEmailId(newJobDetail.getCompanyEmailId());
-							existingJobDetails.setJobLevel(newJobDetail.getJobLevel());
 							existingJobDetails.setPostedLocation(newJobDetail.getPostedLocation());
 							existingJobDetails.setBasicPay(newJobDetail.getBasicPay());
 							existingJobDetails.setHouseRentAllowance(newJobDetail.getHouseRentAllowance());
@@ -1910,10 +1920,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 					if (!jobDetailExists) {
 						JobDetails newJobDetailInstance = new JobDetails();
-						newJobDetailInstance.setJobPostDesignation(newJobDetail.getJobPostDesignation());
 						newJobDetailInstance.setCompanyEmailIdProvided(newJobDetail.getCompanyEmailIdProvided());
 						newJobDetailInstance.setCompanyEmailId(newJobDetail.getCompanyEmailId());
-						newJobDetailInstance.setJobLevel(newJobDetail.getJobLevel());
 						newJobDetailInstance.setPostedLocation(newJobDetail.getPostedLocation());
 						newJobDetailInstance.setBasicPay(newJobDetail.getBasicPay());
 						newJobDetailInstance.setHouseRentAllowance(newJobDetail.getHouseRentAllowance());

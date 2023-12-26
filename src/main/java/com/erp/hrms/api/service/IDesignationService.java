@@ -12,5 +12,4 @@ public interface IDesignationService {
 
 	public List<Designation> findAllDesignation();
 
-	public void saveInitialdesignations();
 }
