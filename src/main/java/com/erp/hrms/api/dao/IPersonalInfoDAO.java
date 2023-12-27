@@ -3,7 +3,6 @@ package com.erp.hrms.api.dao;
 import java.util.List;
 
 import com.erp.hrms.entity.PersonalInfo;
-
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 
 public interface IPersonalInfoDAO {
@@ -27,7 +26,7 @@ public interface IPersonalInfoDAO {
 	public PersonalInfo updatePersonalInfo(String email, PersonalInfo personalInfo);
 
 	public PersonalInfo updateVisaDetails(Long employeeId, String visaIssueDate, String visaExpiryDate);
-	
+
 	public void update20and60daysBeforeVisaEmail(String email);
 
 	public void update10and30daysBeforeVisaEmail(String email);
@@ -39,6 +38,6 @@ public interface IPersonalInfoDAO {
 	public void update2daysBeforeVisaEmailSend(String email);
 
 	public void update1dayBeforeVisaEmailSend(String email);
-	
+
 	public List<NotificationHelper> getNotificationFields();
 }

@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,7 @@ import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
 import com.erp.hrms.entity.Department;
+import com.erp.hrms.entity.Designation;
 import com.erp.hrms.entity.DrivingLicense;
 import com.erp.hrms.entity.Education;
 import com.erp.hrms.entity.EmpAchievement;
@@ -407,19 +409,18 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				PersonalInfo.setTraining(training);
 			}
 
-//		 Set<String> jobDesignation = Signuprequest.getJobDesignation();
-//		 
-//			if (designations != null) {
-//				for (Designation designation : designations) {
-//					designation.setEmployeeId(employeeId);
-//					JobDetails jobDetails = PersonalInfo.getJobDetails().get(0);
-//					designation.setStartDate(jobDetails.getJoiningDate());
-//				}
-//				PersonalInfo.setDesignations(designations);
-//			}
+			List<Designation> designations = PersonalInfo.getDesignations();
+			if (designations != null) {
+				for (Designation designation : designations) {
+					designation.setEmployeeId(employeeId);
+					JobDetails jobDetails = PersonalInfo.getJobDetails().get(0);
+					designation.setStartDate(jobDetails.getJoiningDate());
+				}
+				PersonalInfo.setDesignations(designations);
+			}
 
 			Set<String> strRoles = Signuprequest.getRole();
-   			Set<RoleEntity> roles = new HashSet<>();
+			Set<RoleEntity> roles = new HashSet<>();
 
 //			System.out.println(strRoles);
 

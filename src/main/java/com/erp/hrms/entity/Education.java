@@ -37,7 +37,7 @@ public class Education {
 	@Transient
 	private byte[] secondaryDocumentScanData;
 
-	// for 12th updated later
+	// for 12th
 	@Column(name = "Senior_Secondary_issuing_authority")
 	private String seniorSecondaryIssuingAuthority;
 
@@ -102,8 +102,8 @@ public class Education {
 //	@JsonBackReference
 //	private PersonalInfo personalinfo;
 //	
-	@JoinColumn(name = "employee_Id")
 	@ManyToOne
+	@JoinColumn(name = "employee_Id")
 	@JsonBackReference
 	private PersonalInfo personalinfo;
 

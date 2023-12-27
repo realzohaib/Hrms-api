@@ -321,8 +321,8 @@ public class PayRollServiceImpl implements IPayRollService {
 		// Set job details from the employee's JobDetails list
 		List<JobDetails> jobDetails = employee.getJobDetails();
 		for (JobDetails job : jobDetails) {
-			payRoll.setJobDesignation(job.getJobPostDesignation());
-			payRoll.setJobLevel(job.getJobLevel());
+//			payRoll.setJobDesignation(job.getJobPostDesignation());
+//			payRoll.setJobLevel(job.getJobLevel());
 			payRoll.setJobLocation(job.getPostedLocation());
 
 			// Perquisites

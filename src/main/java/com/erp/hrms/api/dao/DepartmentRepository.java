@@ -19,10 +19,10 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
 	public List<Department> findAllDepartments();
 
 	@Query("SELECT new com.erp.hrms.entity.helper.PersonalInfoDTO(d.departmentId, d.departmentName, "
-			+ "pi.employeeId,pi.namePrefix, pi.firstName, pi.middleName, pi.lastName, pi.dateOfBirth, "
-			+ "pi.phoneCode, pi.personalContactNo, pi.email, jd.jobPostDesignation, "
-			+ "jd.jobLevel, jd.postedLocation) " + "FROM Department d " + "JOIN d.personalInfos pi "
-			+ "LEFT JOIN pi.jobDetails jd " + "WHERE d.departmentName = :departmentName")
+			+ "pi.employeeId, pi.namePrefix, pi.firstName, pi.middleName, pi.lastName, pi.dateOfBirth, "
+			+ "pi.phoneCode, pi.personalContactNo, pi.email, di.designationName, " + "di.level, jd.postedLocation) "
+			+ "FROM Department d " + "JOIN d.personalInfos pi "
+			+ "LEFT JOIN pi.jobDetails jd LEFT JOIN pi.designations di " + "WHERE d.departmentName = :departmentName")
 	List<PersonalInfoDTO> findFirstAndLastNameByDepartmentName(@Param("departmentName") String departmentName);
 
 }

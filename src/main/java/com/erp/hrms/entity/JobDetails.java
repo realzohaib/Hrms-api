@@ -24,10 +24,8 @@ public class JobDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String jobPostDesignation;
 	private String companyEmailIdProvided;
 	private String companyEmailId;
-	private String jobLevel;
 	private String postedLocation;
 
 	private String basicPay;

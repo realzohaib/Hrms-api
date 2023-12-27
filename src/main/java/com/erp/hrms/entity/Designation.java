@@ -6,34 +6,27 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.ToString;
 
 @Entity
 @Data
-@Table(name = "Employee_Achievement")
-@ToString
-public class EmpAchievement {
+public class Designation {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	private String achievementRewardsName;
-
-	private String achievementsRewardsDocs;
-
-	@Transient
-	private byte[] achievementsRewardsDocsData;
+	private Long dId;
+	private Long employeeId;
+	private String designationName;
+	private String level;
+	private String startDate;
+	private String endDate;
 
 	@ManyToOne
-	@JoinColumn(name = "employee_id")
+	@JoinColumn(name = "p_id")
 	@JsonBackReference
 	private PersonalInfo personalinfo;
+
 }
