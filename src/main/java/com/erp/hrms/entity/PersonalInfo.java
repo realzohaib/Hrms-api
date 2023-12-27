@@ -28,7 +28,6 @@ import org.hibernate.annotations.CascadeType;
 //import org.hibernate.annotations.CascadeType;
 
 import com.erp.hrms.api.security.entity.UserEntity;
-import com.erp.hrms.weekOffEntity.WeekOff;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;

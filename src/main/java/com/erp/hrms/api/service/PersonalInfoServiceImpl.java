@@ -463,6 +463,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			}
 			System.out.println(strRoles);
 
+
 			UserEntity user = new UserEntity();
 
 			user.setEmail(PersonalInfo.getEmail());
