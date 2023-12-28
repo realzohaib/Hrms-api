@@ -1,12 +1,12 @@
 package com.erp.hrms.api.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +45,8 @@ import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 @Service
 public class PersonalInfoServiceImpl implements IPersonalInfoService {
@@ -108,30 +110,105 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			PersonalInfo.setStatus("Active");
 			PersonalInfo.setEmpStatus("New employee");
 
+//			if (passportSizePhoto != null && !passportSizePhoto.isEmpty()) {
+//				String passportoriginalFileName = passportSizePhoto.getOriginalFilename();
+//				String passportfileNameWithUniqueIdentifier = employeeId + "-" + passportoriginalFileName;
+//				Path passportSizePhotoNameWithPath = Paths.get(uplaodDirectory, passportfileNameWithUniqueIdentifier);
+//				Files.write(passportSizePhotoNameWithPath, passportSizePhoto.getBytes());
+//				PersonalInfo.setPassportSizePhoto(passportfileNameWithUniqueIdentifier);
+//			}
+
+//			if (passportSizePhoto != null && !passportSizePhoto.isEmpty()) {
+//				try {
+//
+//					String passportOriginalFileName = passportSizePhoto.getOriginalFilename();
+//
+//					String passportFileNameWithUniqueIdentifier = employeeId + "-" + passportOriginalFileName;
+//
+//					Path compressedFilePath = Paths.get(uplaodDirectory, passportFileNameWithUniqueIdentifier);
+//
+//					// Directly compress the image data without saving the original file
+//					Thumbnails.of(new ByteArrayInputStream(passportSizePhoto.getBytes())).scale(1) // original size
+//							.outputQuality(0.4) // quality of image
+//							.toFile(compressedFilePath.toFile());
+//
+//					PersonalInfo.setPassportSizePhoto(passportFileNameWithUniqueIdentifier);
+//
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+
 			if (passportSizePhoto != null && !passportSizePhoto.isEmpty()) {
-				String passportoriginalFileName = passportSizePhoto.getOriginalFilename();
-				String passportfileNameWithUniqueIdentifier = employeeId + "-" + passportoriginalFileName;
-				Path passportSizePhotoNameWithPath = Paths.get(uplaodDirectory, passportfileNameWithUniqueIdentifier);
-				Files.write(passportSizePhotoNameWithPath, passportSizePhoto.getBytes());
-				PersonalInfo.setPassportSizePhoto(passportfileNameWithUniqueIdentifier);
+				try {
+					String passportOriginalFileName = passportSizePhoto.getOriginalFilename();
+					String passportFileNameWithUniqueIdentifier = employeeId + "-" + passportOriginalFileName;
+
+					Path compressedFilePath = Paths.get(uplaodDirectory, passportFileNameWithUniqueIdentifier);
+
+					if (isImageFile(passportOriginalFileName)) {
+						// Compress the image data without saving the original file
+						Thumbnails.of(new ByteArrayInputStream(passportSizePhoto.getBytes())).scale(1) // original size
+								.outputQuality(0.4) // quality of image
+								.outputFormat("jpg").toFile(compressedFilePath.toFile());
+					} else {
+
+						Files.write(compressedFilePath, passportSizePhoto.getBytes());
+					}
+
+					PersonalInfo.setPassportSizePhoto(passportFileNameWithUniqueIdentifier);
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
+
+//			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
+//				String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename();
+//				String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-" + OtherIdProoforiginalFileName;
+//				Path OtherIdProofDocNameWithData = Paths.get(uplaodDirectory,
+//						OtherIdProofDocfileNameWithUniqueIdentifier);
+//				Files.write(OtherIdProofDocNameWithData, OtherIdProofDoc.getBytes());
+//				PersonalInfo.setOtherIdProofDoc(OtherIdProofDocfileNameWithUniqueIdentifier);
+//			}
+
 			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
-				String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename();
-				String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-" + OtherIdProoforiginalFileName;
-				Path OtherIdProofDocNameWithData = Paths.get(uplaodDirectory,
-						OtherIdProofDocfileNameWithUniqueIdentifier);
-				Files.write(OtherIdProofDocNameWithData, OtherIdProofDoc.getBytes());
-				PersonalInfo.setOtherIdProofDoc(OtherIdProofDocfileNameWithUniqueIdentifier);
+				try {
+
+					String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename();
+
+					String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-"
+							+ OtherIdProoforiginalFileName;
+
+					Path compressedFilePath = Paths.get(uplaodDirectory, OtherIdProofDocfileNameWithUniqueIdentifier);
+
+					// Directly compress the image data without saving the original file
+					Thumbnails.of(new ByteArrayInputStream(OtherIdProofDoc.getBytes())).scale(1) // original size
+							.outputQuality(0.4) // quality of image
+							.toFile(compressedFilePath.toFile());
+
+					PersonalInfo.setOtherIdProofDoc(OtherIdProofDocfileNameWithUniqueIdentifier);
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 			PassportDetails passportDetails = new PassportDetails();
 
 			if (passportScan != null && !passportScan.isEmpty()) {
-				String passportScanoriginalFileName = passportScan.getOriginalFilename();
-				String passportScanfileNameWithUniqueIdentifier = employeeId + "-" + passportScanoriginalFileName;
-				Path passportScanNameWithData = Paths.get(uplaodDirectory, passportScanfileNameWithUniqueIdentifier);
-				Files.write(passportScanNameWithData, passportScan.getBytes());
-				passportDetails.setPassportScan(passportScanfileNameWithUniqueIdentifier);
+				try {
+					String passportScanoriginalFileName = passportScan.getOriginalFilename();
+					String passportScanfileNameWithUniqueIdentifier = employeeId + "-" + passportScanoriginalFileName;
+					Path compressedFilePath = Paths.get(uplaodDirectory, passportScanfileNameWithUniqueIdentifier);
+//				Files.write(passportScanNameWithData, passportScan.getBytes());
+					Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+							.outputQuality(0.4) // quality of image
+							.toFile(compressedFilePath.toFile());
+					passportDetails.setPassportScan(passportScanfileNameWithUniqueIdentifier);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 			if (PersonalInfo.getPsDetail() != null) {
@@ -166,21 +243,38 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				visaDetail.setVisaExpiryDate(visaExpiryDateString);
 
 				if (visaDocs != null && !visaDocs.isEmpty()) {
-					String visaDocsoriginalFileName = visaDocs.getOriginalFilename();
-					String visaDocsfileNameWithUniqueIdentifier = employeeId + "-" + visaDocsoriginalFileName;
-					Path visaDocsNameWithData = Paths.get(uplaodDirectory, visaDocsfileNameWithUniqueIdentifier);
-					Files.write(visaDocsNameWithData, visaDocs.getBytes());
-					visaDetail.setVisaDocs(visaDocsfileNameWithUniqueIdentifier);
+					try {
+						String visaDocsoriginalFileName = visaDocs.getOriginalFilename();
+						String visaDocsfileNameWithUniqueIdentifier = employeeId + "-" + visaDocsoriginalFileName;
+						Path visaDocsNameWithData = Paths.get(uplaodDirectory, visaDocsfileNameWithUniqueIdentifier);
+//					Files.write(visaDocsNameWithData, visaDocs.getBytes());
+						Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+								.outputQuality(0.4) // quality of image
+								.toFile(visaDocsNameWithData.toFile());
+						visaDetail.setVisaDocs(visaDocsfileNameWithUniqueIdentifier);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			PersonalInfo.setVisainfo(visaDetail);
 			DrivingLicense drivinglicense = new DrivingLicense();
 			if (licensecopy != null && !licensecopy.isEmpty()) {
-				String licensecopyoriginalFileName = licensecopy.getOriginalFilename();
-				String licensecopyfileNameWithUniqueIdentifier = employeeId + "-" + licensecopyoriginalFileName;
-				Path licensecopyNameWithData = Paths.get(uplaodDirectory, licensecopyfileNameWithUniqueIdentifier);
-				Files.write(licensecopyNameWithData, licensecopy.getBytes());
-				drivinglicense.setLicensecopy(licensecopyfileNameWithUniqueIdentifier);
+				try {
+					String licensecopyoriginalFileName = licensecopy.getOriginalFilename();
+					String licensecopyfileNameWithUniqueIdentifier = employeeId + "-" + licensecopyoriginalFileName;
+					Path licensecopyNameWithData = Paths.get(uplaodDirectory, licensecopyfileNameWithUniqueIdentifier);
+//				Files.write(licensecopyNameWithData, licensecopy.getBytes());
+
+					Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+							.outputQuality(0.4) // quality of image
+							.toFile(licensecopyNameWithData.toFile());
+
+					drivinglicense.setLicensecopy(licensecopyfileNameWithUniqueIdentifier);
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 			if (PersonalInfo.getLicense() != null) {
@@ -191,18 +285,34 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			PersonalInfo.setLicense(drivinglicense);
 			BloodRelative relative = new BloodRelative();
 			if (relativeid != null && !relativeid.isEmpty()) {
-				String relativeidoriginalFileName = relativeid.getOriginalFilename();
-				String relativeidfileNameWithUniqueIdentifier = employeeId + "-" + relativeidoriginalFileName;
-				Path relativeidNameWithData = Paths.get(uplaodDirectory, relativeidfileNameWithUniqueIdentifier);
-				Files.write(relativeidNameWithData, relativeid.getBytes());
-				relative.setRelativeid(relativeidfileNameWithUniqueIdentifier);
+				try {
+					String relativeidoriginalFileName = relativeid.getOriginalFilename();
+					String relativeidfileNameWithUniqueIdentifier = employeeId + "-" + relativeidoriginalFileName;
+					Path relativeidNameWithData = Paths.get(uplaodDirectory, relativeidfileNameWithUniqueIdentifier);
+//				Files.write(relativeidNameWithData, relativeid.getBytes());
+					Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+							.outputQuality(0.4) // quality of image
+							.toFile(relativeidNameWithData.toFile());
+					relative.setRelativeid(relativeidfileNameWithUniqueIdentifier);
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 			if (raddressproof != null && !raddressproof.isEmpty()) {
-				String raddressprooforiginalFileName = raddressproof.getOriginalFilename();
-				String raddressprooffileNameWithUniqueIdentifier = employeeId + "-" + raddressprooforiginalFileName;
-				Path raddressproofNameWithData = Paths.get(uplaodDirectory, raddressprooffileNameWithUniqueIdentifier);
-				Files.write(raddressproofNameWithData, raddressproof.getBytes());
-				relative.setRaddressproof(raddressprooffileNameWithUniqueIdentifier);
+				try {
+					String raddressprooforiginalFileName = raddressproof.getOriginalFilename();
+					String raddressprooffileNameWithUniqueIdentifier = employeeId + "-" + raddressprooforiginalFileName;
+					Path raddressproofNameWithData = Paths.get(uplaodDirectory,
+							raddressprooffileNameWithUniqueIdentifier);
+//				Files.write(raddressproofNameWithData, raddressproof.getBytes());
+					Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+							.outputQuality(0.4) // quality of image
+							.toFile(raddressproofNameWithData.toFile());
+					relative.setRaddressproof(raddressprooffileNameWithUniqueIdentifier);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 			if (PersonalInfo.getRelative() != null) {
@@ -220,51 +330,87 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			if (educations != null) {
 				for (Education edc : educations) {
 					if (secondaryDocumentScan != null && !secondaryDocumentScan.isEmpty()) {
-						String secondaryDocumentScanoriginalFileName = secondaryDocumentScan.getOriginalFilename();
-						String secondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-								+ secondaryDocumentScanoriginalFileName;
-						Path secondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
-								secondaryDocumentScanfileNameWithUniqueIdentifier);
-						Files.write(secondaryDocumentScanNameWithData, secondaryDocumentScan.getBytes());
-						edc.setSecondaryDocumentScan(secondaryDocumentScanfileNameWithUniqueIdentifier);
+						try {
+							String secondaryDocumentScanoriginalFileName = secondaryDocumentScan.getOriginalFilename();
+							String secondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+									+ secondaryDocumentScanoriginalFileName;
+							Path secondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
+									secondaryDocumentScanfileNameWithUniqueIdentifier);
+//						Files.write(secondaryDocumentScanNameWithData, secondaryDocumentScan.getBytes());
+							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+									.outputQuality(0.4) // quality of image
+									.toFile(secondaryDocumentScanNameWithData.toFile());
+							edc.setSecondaryDocumentScan(secondaryDocumentScanfileNameWithUniqueIdentifier);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 					if (seniorSecondaryDocumentScan != null && !seniorSecondaryDocumentScan.isEmpty()) {
-						String seniorSecondaryDocumentScanoriginalFileName = seniorSecondaryDocumentScan
-								.getOriginalFilename();
-						String seniorSecondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-								+ seniorSecondaryDocumentScanoriginalFileName;
-						Path seniorSecondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
-								seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
-						Files.write(seniorSecondaryDocumentScanNameWithData, seniorSecondaryDocumentScan.getBytes());
-						edc.setSeniorSecondaryDocumentScan(seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
+						try {
+							String seniorSecondaryDocumentScanoriginalFileName = seniorSecondaryDocumentScan
+									.getOriginalFilename();
+							String seniorSecondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+									+ seniorSecondaryDocumentScanoriginalFileName;
+							Path seniorSecondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
+									seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
+//						Files.write(seniorSecondaryDocumentScanNameWithData, seniorSecondaryDocumentScan.getBytes());
+							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+									.outputQuality(0.4) // quality of image
+									.toFile(seniorSecondaryDocumentScanNameWithData.toFile());
+							edc.setSeniorSecondaryDocumentScan(seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 					if (graduationDocumentScan != null && !graduationDocumentScan.isEmpty()) {
-						String graduationDocumentScanoriginalFileName = graduationDocumentScan.getOriginalFilename();
-						String graduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-								+ graduationDocumentScanoriginalFileName;
-						Path graduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
-								graduationDocumentScanfileNameWithUniqueIdentifier);
-						Files.write(graduationDocumentScanNameWithData, graduationDocumentScan.getBytes());
-						edc.setGraduationDocumentScan(graduationDocumentScanfileNameWithUniqueIdentifier);
+						try {
+							String graduationDocumentScanoriginalFileName = graduationDocumentScan
+									.getOriginalFilename();
+							String graduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+									+ graduationDocumentScanoriginalFileName;
+							Path graduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
+									graduationDocumentScanfileNameWithUniqueIdentifier);
+//						Files.write(graduationDocumentScanNameWithData, graduationDocumentScan.getBytes());
+							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+									.outputQuality(0.4) // quality of image
+									.toFile(graduationDocumentScanNameWithData.toFile());
+							edc.setGraduationDocumentScan(graduationDocumentScanfileNameWithUniqueIdentifier);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 					if (postGraduationDocumentScan != null && !postGraduationDocumentScan.isEmpty()) {
-						String postGraduationDocumentScanoriginalFileName = postGraduationDocumentScan
-								.getOriginalFilename();
-						String postGraduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-								+ postGraduationDocumentScanoriginalFileName;
-						Path postGraduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
-								postGraduationDocumentScanfileNameWithUniqueIdentifier);
-						Files.write(postGraduationDocumentScanNameWithData, postGraduationDocumentScan.getBytes());
-						edc.setPostGraduationDocumentScan(postGraduationDocumentScanfileNameWithUniqueIdentifier);
+						try {
+							String postGraduationDocumentScanoriginalFileName = postGraduationDocumentScan
+									.getOriginalFilename();
+							String postGraduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+									+ postGraduationDocumentScanoriginalFileName;
+							Path postGraduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
+									postGraduationDocumentScanfileNameWithUniqueIdentifier);
+//						Files.write(postGraduationDocumentScanNameWithData, postGraduationDocumentScan.getBytes());
+							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+									.outputQuality(0.4) // quality of image
+									.toFile(postGraduationDocumentScanNameWithData.toFile());
+							edc.setPostGraduationDocumentScan(postGraduationDocumentScanfileNameWithUniqueIdentifier);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 					if (diplomaDocumentScan != null && !diplomaDocumentScan.isEmpty()) {
-						String diplomaDocumentScanoriginalFileName = diplomaDocumentScan.getOriginalFilename();
-						String diplomaDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-								+ diplomaDocumentScanoriginalFileName;
-						Path diplomaDocumentScanNameWithData = Paths.get(uplaodDirectory,
-								diplomaDocumentScanfileNameWithUniqueIdentifier);
-						Files.write(diplomaDocumentScanNameWithData, diplomaDocumentScan.getBytes());
-						edc.setDiplomaDocumentScan(diplomaDocumentScanfileNameWithUniqueIdentifier);
+						try {
+							String diplomaDocumentScanoriginalFileName = diplomaDocumentScan.getOriginalFilename();
+							String diplomaDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+									+ diplomaDocumentScanoriginalFileName;
+							Path diplomaDocumentScanNameWithData = Paths.get(uplaodDirectory,
+									diplomaDocumentScanfileNameWithUniqueIdentifier);
+//						Files.write(diplomaDocumentScanNameWithData, diplomaDocumentScan.getBytes());
+							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+									.outputQuality(0.4) // quality of image
+									.toFile(diplomaDocumentScanNameWithData.toFile());
+							edc.setDiplomaDocumentScan(diplomaDocumentScanfileNameWithUniqueIdentifier);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 					edc.setPersonalinfo(PersonalInfo);
 				}
@@ -277,15 +423,25 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					if (othersDocumentScan != null && i < othersDocumentScan.length) {
 						MultipartFile file = othersDocumentScan[i];
 						if (file != null && !file.isEmpty()) {
-							String othersDocumentScanoriginalFileName = file.getOriginalFilename();
-							String othersDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-									+ othersDocumentScanoriginalFileName;
-							Path othersDocumentScanNameWithData = Paths.get(uplaodDirectory,
-									othersDocumentScanfileNameWithUniqueIdentifier);
-							Files.write(othersDocumentScanNameWithData, file.getBytes());
-							newOthersQualification
-									.setOthersDocumentScan(othersDocumentScanfileNameWithUniqueIdentifier);
+							try {
+								String othersDocumentScanoriginalFileName = file.getOriginalFilename();
+								String othersDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
+										+ othersDocumentScanoriginalFileName;
+								Path othersDocumentScanNameWithData = Paths.get(uplaodDirectory,
+										othersDocumentScanfileNameWithUniqueIdentifier);
+//							Files.write(othersDocumentScanNameWithData, file.getBytes());
+								Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original
+																											// size
+										.outputQuality(0.4) // quality of image
+										.toFile(othersDocumentScanNameWithData.toFile());
+								newOthersQualification
+										.setOthersDocumentScan(othersDocumentScanfileNameWithUniqueIdentifier);
+
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
+
 					}
 					newOthersQualification.setPersonalinfo(PersonalInfo);
 				}
@@ -298,13 +454,23 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					if (degreeScan != null && i < degreeScan.length) {
 						MultipartFile file = degreeScan[i];
 						if (file != null && !file.isEmpty()) {
-							String degreeScanoriginalFileName = file.getOriginalFilename();
-							String degreeScanfileNameWithUniqueIdentifier = employeeId + "-"
-									+ degreeScanoriginalFileName;
-							Path degreeScanNameWithData = Paths.get(uplaodDirectory,
-									degreeScanfileNameWithUniqueIdentifier);
-							Files.write(degreeScanNameWithData, file.getBytes());
-							professionalQualification.setDegreeScan(degreeScanfileNameWithUniqueIdentifier);
+							try {
+								String degreeScanoriginalFileName = file.getOriginalFilename();
+								String degreeScanfileNameWithUniqueIdentifier = employeeId + "-"
+										+ degreeScanoriginalFileName;
+								Path degreeScanNameWithData = Paths.get(uplaodDirectory,
+										degreeScanfileNameWithUniqueIdentifier);
+//							Files.write(degreeScanNameWithData, file.getBytes());
+
+								Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original
+																											// size
+										.outputQuality(0.4) // quality of image
+										.toFile(degreeScanNameWithData.toFile());
+
+								professionalQualification.setDegreeScan(degreeScanfileNameWithUniqueIdentifier);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 					professionalQualification.setPersonalinfo(PersonalInfo);
@@ -315,12 +481,22 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			if (oldEmployee != null) {
 				for (PreviousEmployee oldemp : oldEmployee) {
 					if (payslipScan != null && !payslipScan.isEmpty()) {
-						String payslipScanoriginalFileName = payslipScan.getOriginalFilename();
-						String payslipScanfileNameWithUniqueIdentifier = employeeId + "-" + payslipScanoriginalFileName;
-						Path payslipScanNameWithData = Paths.get(uplaodDirectory,
-								payslipScanfileNameWithUniqueIdentifier);
-						Files.write(payslipScanNameWithData, payslipScan.getBytes());
-						oldemp.setPayslipScan(payslipScanfileNameWithUniqueIdentifier);
+						try {
+							String payslipScanoriginalFileName = payslipScan.getOriginalFilename();
+							String payslipScanfileNameWithUniqueIdentifier = employeeId + "-"
+									+ payslipScanoriginalFileName;
+							Path payslipScanNameWithData = Paths.get(uplaodDirectory,
+									payslipScanfileNameWithUniqueIdentifier);
+//						Files.write(payslipScanNameWithData, payslipScan.getBytes());
+
+							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+									.outputQuality(0.4) // quality of image
+									.toFile(payslipScanNameWithData.toFile());
+
+							oldemp.setPayslipScan(payslipScanfileNameWithUniqueIdentifier);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 
 					oldemp.setPersonalinfo(PersonalInfo);
@@ -336,13 +512,24 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					if (achievementsRewardsDocs != null && i < achievementsRewardsDocs.length) {
 						MultipartFile file = achievementsRewardsDocs[i];
 						if (file != null && !file.isEmpty()) {
-							String achievementsRewardsDocsoriginalFileName = file.getOriginalFilename();
-							String achievementsRewardsDocsfileNameWithUniqueIdentifier = employeeId + "-"
-									+ achievementsRewardsDocsoriginalFileName;
-							Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
-									achievementsRewardsDocsfileNameWithUniqueIdentifier);
-							Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
-							achievement.setAchievementsRewardsDocs(achievementsRewardsDocsfileNameWithUniqueIdentifier);
+							try {
+								String achievementsRewardsDocsoriginalFileName = file.getOriginalFilename();
+								String achievementsRewardsDocsfileNameWithUniqueIdentifier = employeeId + "-"
+										+ achievementsRewardsDocsoriginalFileName;
+								Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
+										achievementsRewardsDocsfileNameWithUniqueIdentifier);
+//							Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
+
+								Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original
+																											// size
+										.outputQuality(0.4) // quality of image
+										.toFile(achievementsRewardsDocsNameWithData.toFile());
+
+								achievement.setAchievementsRewardsDocs(
+										achievementsRewardsDocsfileNameWithUniqueIdentifier);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 					achievement.setPersonalinfo(PersonalInfo);
@@ -353,20 +540,39 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			BackgroundCheck bgcheck = PersonalInfo.getBgcheck();
 			if (bgcheck != null) {
 				if (recordsheet != null && !recordsheet.isEmpty()) {
-					String recordsheetoriginalFileName = recordsheet.getOriginalFilename();
-					String recordsheetfileNameWithUniqueIdentifier = employeeId + "-" + recordsheetoriginalFileName;
-					Path recordsheetNameWithData = Paths.get(uplaodDirectory, recordsheetfileNameWithUniqueIdentifier);
-					Files.write(recordsheetNameWithData, recordsheet.getBytes());
-					bgcheck.setRecordsheet(recordsheetfileNameWithUniqueIdentifier);
+					try {
+						String recordsheetoriginalFileName = recordsheet.getOriginalFilename();
+						String recordsheetfileNameWithUniqueIdentifier = employeeId + "-" + recordsheetoriginalFileName;
+						Path recordsheetNameWithData = Paths.get(uplaodDirectory,
+								recordsheetfileNameWithUniqueIdentifier);
+//					Files.write(recordsheetNameWithData, recordsheet.getBytes());
+
+						Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+								.outputQuality(0.4) // quality of image
+								.toFile(recordsheetNameWithData.toFile());
+
+						bgcheck.setRecordsheet(recordsheetfileNameWithUniqueIdentifier);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 				if (declarationRequired != null && !declarationRequired.isEmpty()) {
-					String declarationRequiredoriginalFileName = declarationRequired.getOriginalFilename();
-					String declarationRequiredfileNameWithUniqueIdentifier = employeeId + "-"
-							+ declarationRequiredoriginalFileName;
-					Path declarationRequiredNameWithData = Paths.get(uplaodDirectory,
-							declarationRequiredfileNameWithUniqueIdentifier);
-					Files.write(declarationRequiredNameWithData, declarationRequired.getBytes());
-					bgcheck.setDeclarationRequired(declarationRequiredfileNameWithUniqueIdentifier);
+					try {
+						String declarationRequiredoriginalFileName = declarationRequired.getOriginalFilename();
+						String declarationRequiredfileNameWithUniqueIdentifier = employeeId + "-"
+								+ declarationRequiredoriginalFileName;
+						Path declarationRequiredNameWithData = Paths.get(uplaodDirectory,
+								declarationRequiredfileNameWithUniqueIdentifier);
+//					Files.write(declarationRequiredNameWithData, declarationRequired.getBytes());
+
+						Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+								.outputQuality(0.4) // quality of image
+								.toFile(declarationRequiredNameWithData.toFile());
+
+						bgcheck.setDeclarationRequired(declarationRequiredfileNameWithUniqueIdentifier);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 				bgcheck.setPersonalinfo(PersonalInfo);
 			}
@@ -375,26 +581,45 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			if (training != null) {
 				for (Trainingdetails train : training) {
 					if (CertificateUploadedForOutsource != null && !CertificateUploadedForOutsource.isEmpty()) {
-						String CertificateUploadedForOutsourceoriginalFileName = CertificateUploadedForOutsource
-								.getOriginalFilename();
-						String CertificateUploadedForOutsourcefileNameWithUniqueIdentifier = employeeId + "-"
-								+ CertificateUploadedForOutsourceoriginalFileName;
-						Path CertificateUploadedForOutsourceNameWithData = Paths.get(uplaodDirectory,
-								CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
-						Files.write(CertificateUploadedForOutsourceNameWithData,
-								CertificateUploadedForOutsource.getBytes());
-						train.setCertificateUploadedForOutsource(
-								CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
+						try {
+							String CertificateUploadedForOutsourceoriginalFileName = CertificateUploadedForOutsource
+									.getOriginalFilename();
+							String CertificateUploadedForOutsourcefileNameWithUniqueIdentifier = employeeId + "-"
+									+ CertificateUploadedForOutsourceoriginalFileName;
+							Path CertificateUploadedForOutsourceNameWithData = Paths.get(uplaodDirectory,
+									CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
+//						Files.write(CertificateUploadedForOutsourceNameWithData,
+//								CertificateUploadedForOutsource.getBytes());
+
+							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+									.outputQuality(0.4) // quality of image
+									.toFile(CertificateUploadedForOutsourceNameWithData.toFile());
+
+							train.setCertificateUploadedForOutsource(
+									CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 					if (PaidTrainingDocumentProof != null && !PaidTrainingDocumentProof.isEmpty()) {
-						String PaidTrainingDocumentProoforiginalFileName = PaidTrainingDocumentProof
-								.getOriginalFilename();
-						String PaidTrainingDocumentProoffileNameWithUniqueIdentifier = employeeId + "-"
-								+ PaidTrainingDocumentProoforiginalFileName;
-						Path PaidTrainingDocumentProofNameWithData = Paths.get(uplaodDirectory,
-								PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
-						Files.write(PaidTrainingDocumentProofNameWithData, PaidTrainingDocumentProof.getBytes());
-						train.setPaidTrainingDocumentProof(PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
+						try {
+							String PaidTrainingDocumentProoforiginalFileName = PaidTrainingDocumentProof
+									.getOriginalFilename();
+							String PaidTrainingDocumentProoffileNameWithUniqueIdentifier = employeeId + "-"
+									+ PaidTrainingDocumentProoforiginalFileName;
+							Path PaidTrainingDocumentProofNameWithData = Paths.get(uplaodDirectory,
+									PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
+//						Files.write(PaidTrainingDocumentProofNameWithData, PaidTrainingDocumentProof.getBytes());
+
+							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
+									.outputQuality(0.4) // quality of image
+									.toFile(PaidTrainingDocumentProofNameWithData.toFile());
+
+							train.setPaidTrainingDocumentProof(PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
+
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 					train.setPersonalinfo(PersonalInfo);
 				}
@@ -472,6 +697,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp);
 		} catch (Exception e) {
+			System.out.println(e);
 			throw new RuntimeException("An error occurred while saving personal information.", e);
 		}
 	}
@@ -2129,5 +2355,12 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		newEmpAchievements.setPersonalinfo(existingPersonalInfo);
 
 		return newEmpAchievements;
+	}
+
+	private boolean isImageFile(String fileName) {
+		// Add logic to check if the file has an image extension (e.g., jpg, png, etc.)
+		String lowerCaseFileName = fileName.toLowerCase();
+		return lowerCaseFileName.endsWith(".jpg") || lowerCaseFileName.endsWith(".png")
+				|| lowerCaseFileName.endsWith(".jpeg") || lowerCaseFileName.endsWith(".gif");
 	}
 }

@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -24,9 +25,13 @@ public class Designation {
 	private String startDate;
 	private String endDate;
 
+//	@ManyToMany
+//	@JoinColumn(name = "p_id")
+//	@JsonBackReference
+//	private PersonalInfo personalinfo;
+ 
 	@ManyToOne
-	@JoinColumn(name = "p_id")
+	@JoinColumn(name = "employee_id", referencedColumnName = "Id") // Adjusted foreign key definition
 	@JsonBackReference
 	private PersonalInfo personalinfo;
-
 }
