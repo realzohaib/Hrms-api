@@ -180,11 +180,6 @@ public class PersonalInfo implements Serializable {
 	@JsonManagedReference
 	private List<JobDetails> jobDetails;
 
-	@OneToMany(mappedBy = "personalinfo")
-	@Cascade(CascadeType.ALL)
-	@JsonManagedReference
-	private List<Designation> designations;
-
 	@ManyToOne
 	@JoinColumn(name = "departmentId", referencedColumnName = "departmentId")
 	private Department department;

@@ -78,20 +78,20 @@ public class DepartmentController {
 			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
-	@GetMapping("/department/name/{departmentName}/personalInfo")
-	public ResponseEntity<?> findPersonalInfoByDepartmentName(@PathVariable String departmentName) {
-		try {
-			List<PersonalInfoDTO> personalInfoDTOs = idepartmentService
-					.getPersonalInfoByDepartmentName(departmentName);
-
-			if (personalInfoDTOs.isEmpty()) {
-				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
-			} else {
-				return new ResponseEntity<>(personalInfoDTOs, HttpStatus.OK);
-			}
-		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+// is ko un comment karna hai repository me sahi karna hai abhi vo personal info me tha ab job details me hai
+//	@GetMapping("/department/name/{departmentName}/personalInfo")
+//	public ResponseEntity<?> findPersonalInfoByDepartmentName(@PathVariable String departmentName) {
+//		try {
+//			List<PersonalInfoDTO> personalInfoDTOs = idepartmentService
+//					.getPersonalInfoByDepartmentName(departmentName);
+//
+//			if (personalInfoDTOs.isEmpty()) {
+//				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
+//			} else {
+//				return new ResponseEntity<>(personalInfoDTOs, HttpStatus.OK);
+//			}
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
 }

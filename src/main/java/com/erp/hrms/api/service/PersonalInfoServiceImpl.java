@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.repo.IRoleRepository;
-import com.erp.hrms.api.repo.IjobLevelRepo;
 import com.erp.hrms.api.security.entity.RoleEntity;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -28,7 +27,6 @@ import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
 import com.erp.hrms.entity.Department;
-import com.erp.hrms.entity.Designation;
 import com.erp.hrms.entity.DrivingLicense;
 import com.erp.hrms.entity.Education;
 import com.erp.hrms.entity.EmpAchievement;
@@ -72,9 +70,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	
 	@Autowired
 	private weekOffserviceImpl weekoff;
-	
-	@Autowired
-	private IjobLevelRepo joblevel;
 	
 	@Autowired
 	private IRoleRepository roleRepository;
@@ -409,16 +404,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					train.setPersonalinfo(PersonalInfo);
 				}
 				PersonalInfo.setTraining(training);
-			}
-
-			List<Designation> designations = PersonalInfo.getDesignations();
-			if (designations != null) {
-				for (Designation designation : designations) {
-					designation.setEmployeeId(employeeId);
-					JobDetails jobDetails = PersonalInfo.getJobDetails().get(0);
-					designation.setStartDate(jobDetails.getJoiningDate());
-				}
-				PersonalInfo.setDesignations(designations);
 			}
 
 			Set<String> strRoles = Signuprequest.getRoles();
