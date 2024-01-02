@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.erp.hrms.joblevelandDesignationEntity.Designations;
+import com.erp.hrms.joblevelandDesignationEntity.Duties;
 import com.erp.hrms.joblevelandDesignationEntity.JobLevel;
 import com.erp.hrms.joblevelandDesignationREPO.DesignationRepo;
 import com.erp.hrms.joblevelandDesignationREPO.joblevelRepo;
@@ -28,30 +29,38 @@ public class DesignationServiceImpl implements IDesignationService {
 		// Initialize a list to hold the response data
 		List<DesignationResponse> responseList = new ArrayList<>();
 
+		List<Duties> dutyList = new ArrayList<Duties>();
+
 		// Retrieve all designations from the service
 		List<Designations> allDesignations = repo.findAll();
 
 		// Iterate through each designation and assemble the response
 		for (Designations designation : allDesignations) {
-			// Create a new Designation object for response
-			Designations responseDesignation = new Designations();
-			// Create a new DesignationResponse object
-			DesignationResponse designationResponse = new DesignationResponse();
+			DesignationResponse response = new DesignationResponse();
 
-			// Assemble Data for Response
-			responseDesignation.setDesignationId(designation.getDesignationId());
-			responseDesignation.setDesignationName(designation.getDesignationName());
+			Integer designationId = designation.getDesignationId();
+			String designationName = designation.getDesignationName();
+			List<Duties> dutiesList = designation.getDuties();
+			JobLevel level = designation.getJoblevel();
 
-			// Fetch JobLevel data associated with the designation
-			JobLevel jobLevel = designation.getJoblevel();
+			response.setDesignationId(designationId);
+			response.setDesignationName(designationName);
+			response.setJobLevel(level.getLevelName());
+			response.setJobLevelID(level.getLevelId());
 
-			// Finalize the response data
-			designationResponse.setDesignation(responseDesignation);
-			designationResponse.setJobLevel(jobLevel.getLevelName());
-			designationResponse.setJobLevelID(jobLevel.getLevelId());
+			for (Duties duty : dutiesList) {
+				Duties duties = new Duties();
 
-			// Add the response to the list
-			responseList.add(designationResponse);
+				duties.setDutiesId(duty.getDutiesId());
+				duties.setDutyName(duty.getDutyName());
+
+				dutyList.add(duties);
+
+			}
+			response.setDuties(dutiesList);
+
+			responseList.add(response);
+
 		}
 
 		return responseList;
@@ -74,14 +83,14 @@ public class DesignationServiceImpl implements IDesignationService {
 
 	@Override
 	public Designations updateDesignation(DesignationResponse designations) {
-		Integer designationId = designations.getDesignation().getDesignationId();
-		
+		Integer designationId = designations.getDesignationId();
+
 		Integer jobLevelID = designations.getJobLevelID();
-		
+
 		JobLevel level = levelrepo.findByLevelId(jobLevelID);
-		
+
 		Designations designation = repo.findByDesignationId(designationId);
-		
+
 		designation.setJoblevel(level);
 		return repo.save(designation);
 	}

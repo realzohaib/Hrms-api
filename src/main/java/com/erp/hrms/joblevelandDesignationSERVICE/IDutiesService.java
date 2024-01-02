@@ -7,7 +7,7 @@ import com.erp.hrms.joblevelandDesignationREQ_RES.DutiesRequest;
 
 public interface IDutiesService {
 	
-	public List<Duties> saveDuties(DutiesRequest duties);
+	public void saveDuties(DutiesRequest duties);
 	
 	public List<Duties>getallduties();
 

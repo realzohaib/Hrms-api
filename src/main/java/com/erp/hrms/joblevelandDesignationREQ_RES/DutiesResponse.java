@@ -1,12 +1,14 @@
 package com.erp.hrms.joblevelandDesignationREQ_RES;
 
-import com.erp.hrms.joblevelandDesignationEntity.Duties;
-
 import lombok.Data;
 
 @Data
 public class DutiesResponse {
-	
-	private Duties duties;
+
+	private Integer dutiesId;
+	private String dutyName;
+	private Integer designationId;
+	private String designationName;
+
 
 }
