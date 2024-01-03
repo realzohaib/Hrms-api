@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import com.erp.hrms.joblevelandDesignationEntity.Duties;
 
 @Repository
-public interface DutiesRepo extends JpaRepository<Duties, Integer>{
+public interface TaskRepo extends JpaRepository<Duties, Integer>{
+	
+	Duties findByDutiesId(int dutiesId);
 
 }

@@ -25,4 +25,9 @@ public class joblevelServiceImpl implements jobLevelService{
 		return repo.findAll();
 	}
 
+	@Override
+	public JobLevel getJobLevelById(Integer levelId) {
+		return repo.findByLevelId(levelId);
+	}
+
 }

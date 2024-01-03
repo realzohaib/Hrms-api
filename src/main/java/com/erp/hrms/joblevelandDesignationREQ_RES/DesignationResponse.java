@@ -8,13 +8,11 @@ import lombok.Data;
 
 @Data
 public class DesignationResponse {
-	
-	//private Designations designation;
+	private Integer jobLevelID;
+	private String jobLevel;
 	private Integer designationId;
 	private String designationName;
-	private List<Duties>duties;
-	private Integer jobLevelID;
-	private String  jobLevel;
+	private List<Duties> duties;
 	
 
 }

@@ -10,5 +10,7 @@ public interface jobLevelService {
 	public JobLevel savejoblevel(JobLevel joblevel);
 	
 	public List<JobLevel> loadAllJobLevel();
+	
+	public JobLevel getJobLevelById(Integer levelId);
 
 }

@@ -95,4 +95,25 @@ public class DesignationServiceImpl implements IDesignationService {
 		return repo.save(designation);
 	}
 
+	@Override
+	public DesignationResponse loadDesignationById(Integer Id) {
+		DesignationResponse response = new DesignationResponse();
+		
+		Designations designation = repo.findByDesignationId(Id);
+		
+		Integer levelId = designation.getJoblevel().getLevelId();
+		String levelName = designation.getJoblevel().getLevelName();
+		Integer designationId = designation.getDesignationId();
+		String designationName = designation.getDesignationName();
+		List<Duties> duties = designation.getDuties();
+		
+		response.setJobLevelID(levelId);
+		response.setJobLevel(levelName);
+		response.setDesignationId(designationId);
+		response.setDesignationName(designationName);
+		response.setDuties(duties);
+		
+		return response;
+	}
+
 }

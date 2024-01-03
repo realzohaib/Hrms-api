@@ -13,5 +13,7 @@ public interface IDesignationService {
 	public List<?> loadAllDesignations();
 	
 	public Designations updateDesignation(DesignationResponse designations);
+	
+	public DesignationResponse loadDesignationById(Integer Id);
 
 }

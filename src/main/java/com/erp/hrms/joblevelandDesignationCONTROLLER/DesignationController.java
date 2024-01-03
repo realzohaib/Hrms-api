@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +34,15 @@ public class DesignationController {
 	public ResponseEntity<?> getAllDesignations() {
 	    try {
 	        return ResponseEntity.ok().body(service.loadAllDesignations());
+	    } catch (Exception e) {
+	        return new ResponseEntity<>(new MessageResponse("Failed to retrieve designations: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+	    }
+	}
+	
+	@GetMapping("/getDesignations/{id}")
+	public ResponseEntity<?> loadDesignationById(@PathVariable Integer id) {
+	    try {
+	        return ResponseEntity.ok().body(service.loadDesignationById(id));
 	    } catch (Exception e) {
 	        return new ResponseEntity<>(new MessageResponse("Failed to retrieve designations: " + e.getMessage()), HttpStatus.BAD_REQUEST);
 	    }

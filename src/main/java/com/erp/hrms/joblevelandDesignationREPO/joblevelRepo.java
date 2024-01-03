@@ -11,7 +11,7 @@ import com.erp.hrms.joblevelandDesignationEntity.JobLevel;
 @Repository
 public interface joblevelRepo extends JpaRepository<JobLevel, Integer> {
 	
-	JobLevel findByLevelId(int id);
+	public JobLevel findByLevelId(int id);
 	
 	@Query("SELECT jl FROM JobLevel jl LEFT JOIN FETCH jl.designations")
 	public List<JobLevel> loadAllJobLevel();
