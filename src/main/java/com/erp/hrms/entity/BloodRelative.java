@@ -30,12 +30,32 @@ public class BloodRelative {
 	private String Raddress;
 
 	private String relativeid;
-	
+
 	@Transient
 	private byte[] relativeIdData;
-	
+
 	private String Raddressproof;
-	
+
 	@Transient
 	private byte[] raddressProofData;
+
+	public void setRelativeIdData(byte[] relativeIdData) {
+		validateAndSetData(relativeIdData, "Relative ID Data");
+	}
+
+	public void setRaddressProofData(byte[] raddressProofData) {
+		validateAndSetData(raddressProofData, "Relative Address Proof Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 100 * 1024) {
+			if ("Relative ID Data".equals(dataType)) {
+				this.relativeIdData = data;
+			} else if ("Relative Address Proof Data".equals(dataType)) {
+				this.raddressProofData = data;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+		}
+	}
 }

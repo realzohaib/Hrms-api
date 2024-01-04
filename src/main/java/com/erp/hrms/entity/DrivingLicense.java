@@ -20,8 +20,22 @@ public class DrivingLicense {
 	private String ownvehicle;
 
 	private String licensecopy;
-	
+
 	@Transient
 	private byte[] licenseCopyData;
+
+	public void setLicenseCopyData(byte[] licenseCopyData) {
+		validateAndSetData(licenseCopyData, "License Copy Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 100 * 1024) {
+			if ("License Copy Data".equals(dataType)) {
+				this.licenseCopyData = data;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+		}
+	}
 
 }

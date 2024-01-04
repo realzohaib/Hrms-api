@@ -142,7 +142,7 @@ public class LeaveRepository implements ILeaveRepository {
 
 	@Override
 	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId) {
-		String sql = "SELECT SUM(numberOfDaysRequested) FROM LeaveApproval WHERE employeeId = :employeeId";
+		String sql = "SELECT SUM(noOfLeavesApproved) FROM LeaveApproval WHERE employeeId = :employeeId";
 		Query query = entityManager.createQuery(sql);
 		query.setParameter("employeeId", employeeId);
 
@@ -158,7 +158,7 @@ public class LeaveRepository implements ILeaveRepository {
 
 	@Override
 	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName) {
-		String sql = "SELECT SUM(la.numberOfDaysRequested) FROM LeaveApproval la " + "JOIN la.leaveType lt "
+		String sql = "SELECT SUM(la.noOfLeavesApproved) FROM LeaveApproval la " + "JOIN la.leaveType lt "
 				+ "WHERE la.employeeId = :employeeId AND lt.leaveName = :leaveName";
 		Query query = entityManager.createQuery(sql);
 		query.setParameter("employeeId", employeeId);
@@ -181,7 +181,7 @@ public class LeaveRepository implements ILeaveRepository {
 		CriteriaQuery<BigDecimal> query = cb.createQuery(BigDecimal.class);
 		Root<LeaveApproval> root = query.from(LeaveApproval.class);
 
-		query.select(cb.sum(root.get("numberOfDaysRequested").as(BigDecimal.class))).where(
+		query.select(cb.sum(root.get("noOfLeavesApproved").as(BigDecimal.class))).where(
 				cb.equal(root.get("employeeId"), employeeId),
 				cb.equal(cb.function("YEAR", Integer.class, root.get("startDate")), year),
 				cb.equal(cb.function("MONTH", Integer.class, root.get("startDate")), month),
@@ -213,4 +213,5 @@ public class LeaveRepository implements ILeaveRepository {
 			return null;
 		}
 	}
+
 }

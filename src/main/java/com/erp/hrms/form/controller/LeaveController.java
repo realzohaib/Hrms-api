@@ -1,6 +1,7 @@
 package com.erp.hrms.form.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,6 +186,14 @@ public class LeaveController {
 			return new ResponseEntity<>(new MessageResponse("An error occurred while fetching marked calendar dates."),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@GetMapping("/calculateTotalDays/{employeeId}/{year}/{month}")
+	public ResponseEntity<BigDecimal> calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(
+			@PathVariable Long employeeId, @PathVariable int year, @PathVariable int month) {
+		BigDecimal totalDays = iLeaveService.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(employeeId,
+				year, month);
+		return ResponseEntity.ok(totalDays);
 	}
 
 //	This method the total leaves in a year of particular employee

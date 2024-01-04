@@ -11,7 +11,6 @@ import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,26 +88,10 @@ public class LeaveService implements ILeaveService {
 			ObjectMapper mapper = new ObjectMapper();
 			LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
 
-//			LeaveApproval existingEmployee = entityManager
-//					.createQuery("SELECT la FROM LeaveApproval la WHERE la.employeeId = :employeeId",
-//							LeaveApproval.class)
-//					.setParameter("employeeId", leaveApprovalJson.getEmployeeId()).getResultList().stream()
-//					.max(Comparator.comparingLong(LeaveApproval::getLeaveRequestId)).orElse(null);
-//			if (existingEmployee != null) {
-//				// Employee already exists, fetch and set existing values
-//				leaveApprovalJson.setRemainingMedicalLeaves(existingEmployee.getRemainingMedicalLeaves());
-//				leaveApprovalJson.setRemainingCasualLeaves(existingEmployee.getRemainingCasualLeaves());
-//			} else {
-//				// Employee does not exist, set default values
-//				LeaveType leaveType=new LeaveType();
-//				leaveApprovalJson.setRemainingMedicalLeaves(15.0);
-//				leaveApprovalJson.setRemainingCasualLeaves(30.0);
-//			}
-
 			LeaveType leaveType = entityManager.find(LeaveType.class,
 					leaveApprovalJson.getLeaveType().getLeaveTypeId());
 			leaveApprovalJson.setLeaveType(leaveType);
-			
+
 			leaveApprovalJson.setNoOfLeavesApproved(leaveApprovalJson.getNumberOfDaysRequested());
 
 			// Fetch admin and manager email addresses based on roles
@@ -341,38 +324,18 @@ public class LeaveService implements ILeaveService {
 				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
 			}
 
-			LeaveType leaveType = existingApproval.getLeaveType();
-			if (leaveType != null) {
-				Long leaveid = leaveType.getLeaveTypeId();
-				double noOfLeaveTake = leaveApprovalJson.getNoOfLeavesApproved();
-
-//				if ("Accepted".equalsIgnoreCase(leaveApprovalJson.getHrApprovalStatus())) {
-//					if (1L == leaveid) {
-//						// Subtract from remainingMedicalLeave for medical leave
-//						existingApproval.setRemainingMedicalLeaves(
-//								existingApproval.getRemainingMedicalLeaves() - noOfLeaveTake);
-//					} else if (2L == leaveid) {
-//						// Subtract from remainingCasualLeave for casual leave
-//						existingApproval.setRemainingCasualLeaves(
-//								existingApproval.getRemainingCasualLeaves() - noOfLeaveTake);
-//					}
-//				}
-				
-				
-			}
-			
 			// Fetch hr and manager email addresses based on roles
 			String hrEmail = leaveApprovalJson.getHrEmail();
 			String managerEmail = leaveApprovalJson.getManagerEmail();
 
 //			// Send emails to hr
-			sendLeaveRequestEmailApprovedOrDenyByHR(hrEmail, "Leave Request status by the HR", leaveApprovalJson);
+//			sendLeaveRequestEmailApprovedOrDenyByHR(hrEmail, "Leave Request status by the HR", leaveApprovalJson);
 //			 Send email to manager who approve or deny the leave request
-			sendLeaveRequestEmailApprovedOrDenyByHR(managerEmail, "Leave Request status by the HR", leaveApprovalJson);
+//			sendLeaveRequestEmailApprovedOrDenyByHR(managerEmail, "Leave Request status by the HR", leaveApprovalJson);
 
 			// Send an email to the employee
 			String employeeEmail = leaveApprovalJson.getEmail();
-			sendLeaveRequestEmailApprovedOrDenyByHR(employeeEmail, "Leave Request status by the HR", leaveApprovalJson);
+//			sendLeaveRequestEmailApprovedOrDenyByHR(employeeEmail, "Leave Request status by the HR", leaveApprovalJson);
 
 			return iLeaveRepository.approvedOrDenyByHR(leaveRequestId, existingApproval);
 		} catch (Exception e) {
@@ -520,49 +483,19 @@ public class LeaveService implements ILeaveService {
 	}
 
 //	This method is to calculate how many employees are on leave in a day.
-//	@Override
-//	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals) {
-//		List<LeaveCalendarData> calendarData = new ArrayList<>();
-//
-//		for (LeaveApproval approval : leaveApprovals) {
-//			LocalDate startDate = LocalDate.parse(approval.getStartDate());
-//			LocalDate endDate = LocalDate.parse(approval.getEndDate());
-//
-//			List<LocalDate> leaveDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
-//
-//			for (LocalDate date : leaveDates) {
-//				Optional<LeaveCalendarData> existingData = calendarData.stream()
-//						.filter(data -> data.getDate().equals(date)).findFirst();
-//
-//				if (existingData.isPresent()) {
-//					existingData.get().incrementEmployeeCount();
-//				} else {
-//					LeaveCalendarData data = new LeaveCalendarData(date);
-//					calendarData.add(data);
-//				}
-//			}
-//		}
-//
-//		return calendarData;
-//	}
-
+	@Override
 	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals) {
 		List<LeaveCalendarData> calendarData = new ArrayList<>();
-
 		for (LeaveApproval approval : leaveApprovals) {
 			LocalDate startDate = LocalDate.parse(approval.getStartDate());
 			LocalDate endDate = LocalDate.parse(approval.getEndDate());
-
 			List<LocalDate> leaveDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
-
 			for (LocalDate date : leaveDates) {
 				Optional<LeaveCalendarData> existingData = calendarData.stream()
 						.filter(data -> data.getDate().equals(date)).findFirst();
-
 				LeaveEmployee leaveEmployee = new LeaveEmployee();
 				leaveEmployee.setEmployeeId(approval.getEmployeeId());
 				leaveEmployee.setEmployeeName(approval.getNameOfEmployee());
-
 				if (existingData.isPresent()) {
 					existingData.get().incrementEmployeeCount();
 					existingData.get().getLeaveEmployees().add(leaveEmployee);
@@ -574,7 +507,6 @@ public class LeaveService implements ILeaveService {
 				}
 			}
 		}
-
 		return calendarData;
 	}
 

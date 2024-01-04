@@ -1,6 +1,5 @@
 package com.erp.hrms.api.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,7 +28,6 @@ import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
 import com.erp.hrms.entity.Department;
-import com.erp.hrms.entity.Designation;
 import com.erp.hrms.entity.DrivingLicense;
 import com.erp.hrms.entity.Education;
 import com.erp.hrms.entity.EmpAchievement;
@@ -45,8 +43,6 @@ import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.coobird.thumbnailator.Thumbnails;
 
 @Service
 public class PersonalInfoServiceImpl implements IPersonalInfoService {
@@ -110,101 +106,31 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			PersonalInfo.setStatus("Active");
 			PersonalInfo.setEmpStatus("New employee");
 
-//			if (passportSizePhoto != null && !passportSizePhoto.isEmpty()) {
-//				String passportoriginalFileName = passportSizePhoto.getOriginalFilename();
-//				String passportfileNameWithUniqueIdentifier = employeeId + "-" + passportoriginalFileName;
-//				Path passportSizePhotoNameWithPath = Paths.get(uplaodDirectory, passportfileNameWithUniqueIdentifier);
-//				Files.write(passportSizePhotoNameWithPath, passportSizePhoto.getBytes());
-//				PersonalInfo.setPassportSizePhoto(passportfileNameWithUniqueIdentifier);
-//			}
-
-//			if (passportSizePhoto != null && !passportSizePhoto.isEmpty()) {
-//				try {
-//
-//					String passportOriginalFileName = passportSizePhoto.getOriginalFilename();
-//
-//					String passportFileNameWithUniqueIdentifier = employeeId + "-" + passportOriginalFileName;
-//
-//					Path compressedFilePath = Paths.get(uplaodDirectory, passportFileNameWithUniqueIdentifier);
-//
-//					// Directly compress the image data without saving the original file
-//					Thumbnails.of(new ByteArrayInputStream(passportSizePhoto.getBytes())).scale(1) // original size
-//							.outputQuality(0.4) // quality of image
-//							.toFile(compressedFilePath.toFile());
-//
-//					PersonalInfo.setPassportSizePhoto(passportFileNameWithUniqueIdentifier);
-//
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-
 			if (passportSizePhoto != null && !passportSizePhoto.isEmpty()) {
-				try {
-					String passportOriginalFileName = passportSizePhoto.getOriginalFilename();
-					String passportFileNameWithUniqueIdentifier = employeeId + "-" + passportOriginalFileName;
-
-					Path compressedFilePath = Paths.get(uplaodDirectory, passportFileNameWithUniqueIdentifier);
-
-					if (isImageFile(passportOriginalFileName)) {
-						// Compress the image data without saving the original file
-						Thumbnails.of(new ByteArrayInputStream(passportSizePhoto.getBytes())).scale(1) // original size
-								.outputQuality(0.4) // quality of image
-								.outputFormat("jpg").toFile(compressedFilePath.toFile());
-					} else {
-
-						Files.write(compressedFilePath, passportSizePhoto.getBytes());
-					}
-
-					PersonalInfo.setPassportSizePhoto(passportFileNameWithUniqueIdentifier);
-
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				String passportoriginalFileName = passportSizePhoto.getOriginalFilename();
+				String passportfileNameWithUniqueIdentifier = employeeId + "-" + passportoriginalFileName;
+				Path passportSizePhotoNameWithPath = Paths.get(uplaodDirectory, passportfileNameWithUniqueIdentifier);
+				Files.write(passportSizePhotoNameWithPath, passportSizePhoto.getBytes());
+				PersonalInfo.setPassportSizePhoto(passportfileNameWithUniqueIdentifier);
 			}
 
-//			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
-//				String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename();
-//				String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-" + OtherIdProoforiginalFileName;
-//				Path OtherIdProofDocNameWithData = Paths.get(uplaodDirectory,
-//						OtherIdProofDocfileNameWithUniqueIdentifier);
-//				Files.write(OtherIdProofDocNameWithData, OtherIdProofDoc.getBytes());
-//				PersonalInfo.setOtherIdProofDoc(OtherIdProofDocfileNameWithUniqueIdentifier);
-//			}
-
 			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
-				try {
-
-					String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename();
-
-					String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-"
-							+ OtherIdProoforiginalFileName;
-
-					Path compressedFilePath = Paths.get(uplaodDirectory, OtherIdProofDocfileNameWithUniqueIdentifier);
-
-					// Directly compress the image data without saving the original file
-					Thumbnails.of(new ByteArrayInputStream(OtherIdProofDoc.getBytes())).scale(1) // original size
-							.outputQuality(0.4) // quality of image
-							.toFile(compressedFilePath.toFile());
-
-					PersonalInfo.setOtherIdProofDoc(OtherIdProofDocfileNameWithUniqueIdentifier);
-
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename();
+				String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-" + OtherIdProoforiginalFileName;
+				Path OtherIdProofDocNameWithData = Paths.get(uplaodDirectory,
+						OtherIdProofDocfileNameWithUniqueIdentifier);
+				Files.write(OtherIdProofDocNameWithData, OtherIdProofDoc.getBytes());
+				PersonalInfo.setOtherIdProofDoc(OtherIdProofDocfileNameWithUniqueIdentifier);
 			}
 
 			PassportDetails passportDetails = new PassportDetails();
-
 			if (passportScan != null && !passportScan.isEmpty()) {
 				try {
 					String passportScanoriginalFileName = passportScan.getOriginalFilename();
 					String passportScanfileNameWithUniqueIdentifier = employeeId + "-" + passportScanoriginalFileName;
-					Path compressedFilePath = Paths.get(uplaodDirectory, passportScanfileNameWithUniqueIdentifier);
-//				Files.write(passportScanNameWithData, passportScan.getBytes());
-					Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-							.outputQuality(0.4) // quality of image
-							.toFile(compressedFilePath.toFile());
+					Path passportScanNameWithData = Paths.get(uplaodDirectory,
+							passportScanfileNameWithUniqueIdentifier);
+					Files.write(passportScanNameWithData, passportScan.getBytes());
 					passportDetails.setPassportScan(passportScanfileNameWithUniqueIdentifier);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -247,10 +173,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						String visaDocsoriginalFileName = visaDocs.getOriginalFilename();
 						String visaDocsfileNameWithUniqueIdentifier = employeeId + "-" + visaDocsoriginalFileName;
 						Path visaDocsNameWithData = Paths.get(uplaodDirectory, visaDocsfileNameWithUniqueIdentifier);
-//					Files.write(visaDocsNameWithData, visaDocs.getBytes());
-						Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-								.outputQuality(0.4) // quality of image
-								.toFile(visaDocsNameWithData.toFile());
+						Files.write(visaDocsNameWithData, visaDocs.getBytes());
 						visaDetail.setVisaDocs(visaDocsfileNameWithUniqueIdentifier);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -264,12 +187,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					String licensecopyoriginalFileName = licensecopy.getOriginalFilename();
 					String licensecopyfileNameWithUniqueIdentifier = employeeId + "-" + licensecopyoriginalFileName;
 					Path licensecopyNameWithData = Paths.get(uplaodDirectory, licensecopyfileNameWithUniqueIdentifier);
-//				Files.write(licensecopyNameWithData, licensecopy.getBytes());
-
-					Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-							.outputQuality(0.4) // quality of image
-							.toFile(licensecopyNameWithData.toFile());
-
+					Files.write(licensecopyNameWithData, licensecopy.getBytes());
 					drivinglicense.setLicensecopy(licensecopyfileNameWithUniqueIdentifier);
 
 				} catch (IOException e) {
@@ -289,10 +207,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					String relativeidoriginalFileName = relativeid.getOriginalFilename();
 					String relativeidfileNameWithUniqueIdentifier = employeeId + "-" + relativeidoriginalFileName;
 					Path relativeidNameWithData = Paths.get(uplaodDirectory, relativeidfileNameWithUniqueIdentifier);
-//				Files.write(relativeidNameWithData, relativeid.getBytes());
-					Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-							.outputQuality(0.4) // quality of image
-							.toFile(relativeidNameWithData.toFile());
+					Files.write(relativeidNameWithData, relativeid.getBytes());
 					relative.setRelativeid(relativeidfileNameWithUniqueIdentifier);
 
 				} catch (IOException e) {
@@ -305,10 +220,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					String raddressprooffileNameWithUniqueIdentifier = employeeId + "-" + raddressprooforiginalFileName;
 					Path raddressproofNameWithData = Paths.get(uplaodDirectory,
 							raddressprooffileNameWithUniqueIdentifier);
-//				Files.write(raddressproofNameWithData, raddressproof.getBytes());
-					Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-							.outputQuality(0.4) // quality of image
-							.toFile(raddressproofNameWithData.toFile());
+					Files.write(raddressproofNameWithData, raddressproof.getBytes());
 					relative.setRaddressproof(raddressprooffileNameWithUniqueIdentifier);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -336,10 +248,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ secondaryDocumentScanoriginalFileName;
 							Path secondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									secondaryDocumentScanfileNameWithUniqueIdentifier);
-//						Files.write(secondaryDocumentScanNameWithData, secondaryDocumentScan.getBytes());
-							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-									.outputQuality(0.4) // quality of image
-									.toFile(secondaryDocumentScanNameWithData.toFile());
+							Files.write(secondaryDocumentScanNameWithData, secondaryDocumentScan.getBytes());
 							edc.setSecondaryDocumentScan(secondaryDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -353,10 +262,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ seniorSecondaryDocumentScanoriginalFileName;
 							Path seniorSecondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
-//						Files.write(seniorSecondaryDocumentScanNameWithData, seniorSecondaryDocumentScan.getBytes());
-							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-									.outputQuality(0.4) // quality of image
-									.toFile(seniorSecondaryDocumentScanNameWithData.toFile());
+							Files.write(seniorSecondaryDocumentScanNameWithData,
+									seniorSecondaryDocumentScan.getBytes());
 							edc.setSeniorSecondaryDocumentScan(seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -370,10 +277,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ graduationDocumentScanoriginalFileName;
 							Path graduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									graduationDocumentScanfileNameWithUniqueIdentifier);
-//						Files.write(graduationDocumentScanNameWithData, graduationDocumentScan.getBytes());
-							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-									.outputQuality(0.4) // quality of image
-									.toFile(graduationDocumentScanNameWithData.toFile());
+							Files.write(graduationDocumentScanNameWithData, graduationDocumentScan.getBytes());
 							edc.setGraduationDocumentScan(graduationDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -387,10 +291,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ postGraduationDocumentScanoriginalFileName;
 							Path postGraduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									postGraduationDocumentScanfileNameWithUniqueIdentifier);
-//						Files.write(postGraduationDocumentScanNameWithData, postGraduationDocumentScan.getBytes());
-							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-									.outputQuality(0.4) // quality of image
-									.toFile(postGraduationDocumentScanNameWithData.toFile());
+							Files.write(postGraduationDocumentScanNameWithData, postGraduationDocumentScan.getBytes());
 							edc.setPostGraduationDocumentScan(postGraduationDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -403,10 +304,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ diplomaDocumentScanoriginalFileName;
 							Path diplomaDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									diplomaDocumentScanfileNameWithUniqueIdentifier);
-//						Files.write(diplomaDocumentScanNameWithData, diplomaDocumentScan.getBytes());
-							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-									.outputQuality(0.4) // quality of image
-									.toFile(diplomaDocumentScanNameWithData.toFile());
+							Files.write(diplomaDocumentScanNameWithData, diplomaDocumentScan.getBytes());
 							edc.setDiplomaDocumentScan(diplomaDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -429,11 +327,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 										+ othersDocumentScanoriginalFileName;
 								Path othersDocumentScanNameWithData = Paths.get(uplaodDirectory,
 										othersDocumentScanfileNameWithUniqueIdentifier);
-//							Files.write(othersDocumentScanNameWithData, file.getBytes());
-								Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original
-																											// size
-										.outputQuality(0.4) // quality of image
-										.toFile(othersDocumentScanNameWithData.toFile());
+								Files.write(othersDocumentScanNameWithData, file.getBytes());
 								newOthersQualification
 										.setOthersDocumentScan(othersDocumentScanfileNameWithUniqueIdentifier);
 
@@ -460,13 +354,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 										+ degreeScanoriginalFileName;
 								Path degreeScanNameWithData = Paths.get(uplaodDirectory,
 										degreeScanfileNameWithUniqueIdentifier);
-//							Files.write(degreeScanNameWithData, file.getBytes());
-
-								Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original
-																											// size
-										.outputQuality(0.4) // quality of image
-										.toFile(degreeScanNameWithData.toFile());
-
+								Files.write(degreeScanNameWithData, file.getBytes());
 								professionalQualification.setDegreeScan(degreeScanfileNameWithUniqueIdentifier);
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -487,12 +375,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ payslipScanoriginalFileName;
 							Path payslipScanNameWithData = Paths.get(uplaodDirectory,
 									payslipScanfileNameWithUniqueIdentifier);
-//						Files.write(payslipScanNameWithData, payslipScan.getBytes());
-
-							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-									.outputQuality(0.4) // quality of image
-									.toFile(payslipScanNameWithData.toFile());
-
+							Files.write(payslipScanNameWithData, payslipScan.getBytes());
 							oldemp.setPayslipScan(payslipScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -518,13 +401,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 										+ achievementsRewardsDocsoriginalFileName;
 								Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
 										achievementsRewardsDocsfileNameWithUniqueIdentifier);
-//							Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
-
-								Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original
-																											// size
-										.outputQuality(0.4) // quality of image
-										.toFile(achievementsRewardsDocsNameWithData.toFile());
-
+								Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
 								achievement.setAchievementsRewardsDocs(
 										achievementsRewardsDocsfileNameWithUniqueIdentifier);
 							} catch (IOException e) {
@@ -545,12 +422,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						String recordsheetfileNameWithUniqueIdentifier = employeeId + "-" + recordsheetoriginalFileName;
 						Path recordsheetNameWithData = Paths.get(uplaodDirectory,
 								recordsheetfileNameWithUniqueIdentifier);
-//					Files.write(recordsheetNameWithData, recordsheet.getBytes());
-
-						Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-								.outputQuality(0.4) // quality of image
-								.toFile(recordsheetNameWithData.toFile());
-
+						Files.write(recordsheetNameWithData, recordsheet.getBytes());
 						bgcheck.setRecordsheet(recordsheetfileNameWithUniqueIdentifier);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -563,12 +435,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 								+ declarationRequiredoriginalFileName;
 						Path declarationRequiredNameWithData = Paths.get(uplaodDirectory,
 								declarationRequiredfileNameWithUniqueIdentifier);
-//					Files.write(declarationRequiredNameWithData, declarationRequired.getBytes());
-
-						Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-								.outputQuality(0.4) // quality of image
-								.toFile(declarationRequiredNameWithData.toFile());
-
+						Files.write(declarationRequiredNameWithData, declarationRequired.getBytes());
 						bgcheck.setDeclarationRequired(declarationRequiredfileNameWithUniqueIdentifier);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -588,13 +455,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ CertificateUploadedForOutsourceoriginalFileName;
 							Path CertificateUploadedForOutsourceNameWithData = Paths.get(uplaodDirectory,
 									CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
-//						Files.write(CertificateUploadedForOutsourceNameWithData,
-//								CertificateUploadedForOutsource.getBytes());
-
-							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-									.outputQuality(0.4) // quality of image
-									.toFile(CertificateUploadedForOutsourceNameWithData.toFile());
-
+							Files.write(CertificateUploadedForOutsourceNameWithData,
+									CertificateUploadedForOutsource.getBytes());
 							train.setCertificateUploadedForOutsource(
 									CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
 						} catch (IOException e) {
@@ -609,12 +471,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ PaidTrainingDocumentProoforiginalFileName;
 							Path PaidTrainingDocumentProofNameWithData = Paths.get(uplaodDirectory,
 									PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
-//						Files.write(PaidTrainingDocumentProofNameWithData, PaidTrainingDocumentProof.getBytes());
-
-							Thumbnails.of(new ByteArrayInputStream(passportScan.getBytes())).scale(1) // original size
-									.outputQuality(0.4) // quality of image
-									.toFile(PaidTrainingDocumentProofNameWithData.toFile());
-
+							Files.write(PaidTrainingDocumentProofNameWithData, PaidTrainingDocumentProof.getBytes());
 							train.setPaidTrainingDocumentProof(PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
 
 						} catch (IOException e) {
@@ -626,20 +483,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				PersonalInfo.setTraining(training);
 			}
 
-			List<Designation> designations = PersonalInfo.getDesignations();
-			if (designations != null) {
-				for (Designation designation : designations) {
-					designation.setEmployeeId(employeeId);
-					JobDetails jobDetails = PersonalInfo.getJobDetails().get(0);
-					designation.setStartDate(jobDetails.getJoiningDate());
-				}
-				PersonalInfo.setDesignations(designations);
-			}
-
 			Set<String> strRoles = Signuprequest.getRole();
 			Set<RoleEntity> roles = new HashSet<>();
-
-//			System.out.println(strRoles);
 
 			if (strRoles == null) {
 				RoleEntity userRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
@@ -2357,10 +2202,4 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		return newEmpAchievements;
 	}
 
-	private boolean isImageFile(String fileName) {
-		// Add logic to check if the file has an image extension (e.g., jpg, png, etc.)
-		String lowerCaseFileName = fileName.toLowerCase();
-		return lowerCaseFileName.endsWith(".jpg") || lowerCaseFileName.endsWith(".png")
-				|| lowerCaseFileName.endsWith(".jpeg") || lowerCaseFileName.endsWith(".gif");
-	}
 }

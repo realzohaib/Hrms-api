@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.erp.hrms.entity.form.ExtraBenefitsApproval;
-import com.erp.hrms.entity.form.LeaveApproval;
 
 @Repository
 @Transactional

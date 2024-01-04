@@ -41,6 +41,20 @@ public class PreviousEmployee {
 	@Transient
 	private byte[] payslipScanData;
 
+	public void setPayslipScanData(byte[] payslipScanData) {
+		validateAndSetData(payslipScanData, "Payslip Scan Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 100 * 1024) {
+			if ("Payslip Scan Data".equals(dataType)) {
+				this.payslipScanData = data;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+		}
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	@JsonBackReference

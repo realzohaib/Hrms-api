@@ -37,6 +37,20 @@ public class OthersQualification {
 	@Transient
 	private byte[] othersDocumentScanData;
 
+	public void setOthersDocumentScanData(byte[] othersDocumentScanData) {
+		validateAndSetData(othersDocumentScanData, "Others Document Scan Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 100 * 1024) {
+			if ("Others Document Scan Data".equals(dataType)) {
+				this.othersDocumentScanData = data;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+		}
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	@JsonBackReference
