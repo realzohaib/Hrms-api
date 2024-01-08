@@ -15,5 +15,7 @@ public interface IDesignationService {
 	public Designations updateDesignation(DesignationResponse designations);
 	
 	public DesignationResponse loadDesignationById(Integer Id);
+	
+	public List<DesignationResponse> loadAllDesignationBYlevelId(Integer levelId);
 
 }

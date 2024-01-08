@@ -20,7 +20,7 @@ public class SubDutyController {
 	private ISubdutyServiceImpl service;
 	
 	@PostMapping("/save _subduties")
-	public ResponseEntity<?> saveDuties(@RequestBody SubDutiesRequest req) {
+	public ResponseEntity<?> saveSubDuties(@RequestBody SubDutiesRequest req) {
 		try {
 			service.saveSubduty(req);
 			return ResponseEntity.ok().body(new MessageResponse("data saved"));
@@ -31,7 +31,7 @@ public class SubDutyController {
 	
 
 	@GetMapping("/getAllSubDuties")
-	public ResponseEntity<?> loadAllJobLevel() {
+	public ResponseEntity<?> loadAllSubDuties() {
 		try {
 			return ResponseEntity.ok().body(service.loadAllSubduties());
 

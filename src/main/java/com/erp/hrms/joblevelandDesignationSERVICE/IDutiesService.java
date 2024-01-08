@@ -12,5 +12,7 @@ public interface IDutiesService {
 	
 	public List<Duties>getallduties();
 	
+	public List<DutiesResponse> loadDutiesByDesignationId(int designationId);
+	
 
 }

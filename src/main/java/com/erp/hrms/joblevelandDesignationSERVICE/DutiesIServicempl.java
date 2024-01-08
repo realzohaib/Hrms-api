@@ -1,6 +1,7 @@
 package com.erp.hrms.joblevelandDesignationSERVICE;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,9 @@ import org.springframework.stereotype.Service;
 import com.erp.hrms.joblevelandDesignationEntity.Designations;
 import com.erp.hrms.joblevelandDesignationEntity.Duties;
 import com.erp.hrms.joblevelandDesignationREPO.DesignationRepo;
-import com.erp.hrms.joblevelandDesignationREPO.TaskRepo;
+import com.erp.hrms.joblevelandDesignationREPO.DutiesRepo;
 import com.erp.hrms.joblevelandDesignationREQ_RES.DutiesRequest;
+import com.erp.hrms.joblevelandDesignationREQ_RES.DutiesResponse;
 
 @Service
 public class DutiesIServicempl implements IDutiesService {
@@ -19,7 +21,7 @@ public class DutiesIServicempl implements IDutiesService {
 	private DesignationRepo desigrepo;
 
 	@Autowired
-	private TaskRepo repo;
+	private DutiesRepo repo;
 
 	@Override
 	public void saveDuties(DutiesRequest duties) {
@@ -41,6 +43,25 @@ public class DutiesIServicempl implements IDutiesService {
 	@Override
 	public List<Duties> getallduties() {
 		return repo.findAll();
+	}
+
+	@Override
+	public List<DutiesResponse> loadDutiesByDesignationId(int designationId) {
+		List<DutiesResponse> response = new ArrayList<DutiesResponse>();
+
+		List<Duties> listOfDuties = repo.findByDesignationId(designationId);
+		for (Duties duties : listOfDuties) {
+			DutiesResponse obj = new DutiesResponse();
+			
+			obj.setDesignationId(designationId);
+			obj.setDutiesId(duties.getDutiesId());
+			obj.setDutyName(duties.getDutyName());
+			
+			response.add(obj);
+			
+			
+		}
+		return response;
 	}
 
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.erp.hrms.joblevelandDesignationEntity.Duties;
 import com.erp.hrms.joblevelandDesignationEntity.SubDuties;
-import com.erp.hrms.joblevelandDesignationREPO.TaskRepo;
+import com.erp.hrms.joblevelandDesignationREPO.DutiesRepo;
 import com.erp.hrms.joblevelandDesignationREPO.SubDutiesRepo;
 import com.erp.hrms.joblevelandDesignationREQ_RES.SubDutiesRequest;
 
@@ -16,7 +16,7 @@ import com.erp.hrms.joblevelandDesignationREQ_RES.SubDutiesRequest;
 public class ISubdutyServiceImpl implements ISubdutyService {
 	
 	@Autowired
-	private TaskRepo repo;
+	private DutiesRepo repo;
 	
 	@Autowired
 	private SubDutiesRepo subrepo;

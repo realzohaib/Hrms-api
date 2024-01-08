@@ -1,5 +1,8 @@
 package com.erp.hrms.joblevelandDesignationCONTROLLER;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +23,7 @@ public class JoblevelController {
 	private joblevelServiceImpl service;
 
 	@PostMapping(value = "/saveJobLevel")
-	public ResponseEntity<?> savePayRoll(/* @RequestBody JobLevel joblevel */
-	 @RequestParam("levelName") String levelName) {
+	public ResponseEntity<?> savePayRoll(@RequestParam("levelName") String levelName) {
 		try {
 			JobLevel joblevel = new JobLevel();
 			joblevel.setLevelName(levelName);
@@ -34,13 +36,27 @@ public class JoblevelController {
 	@GetMapping("/getAllJobLevel")
 	public ResponseEntity<?> loadAllJobLevel() {
 		try {
-			return ResponseEntity.ok().body(service.loadAllJobLevel());
+
+			// sending only levelId and Name in response , to minimise data loading time on
+			// server
+			List<JobLevel> list = new ArrayList<JobLevel>();
+			List<JobLevel> loadAllJobLevel = service.loadAllJobLevel();
+
+			for (JobLevel jobLevel : loadAllJobLevel) {
+				JobLevel obj = new JobLevel();
+				obj.setLevelId(jobLevel.getLevelId());
+				obj.setLevelName(jobLevel.getLevelName());
+
+				list.add(obj);
+			}
+
+			return ResponseEntity.ok().body(list);
 
 		} catch (Exception e) {
 			return ResponseEntity.ok().body(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/getJobLevel/{id}")
 	public ResponseEntity<?> loadJobLevel(@PathVariable Integer id) {
 		try {
@@ -49,7 +65,5 @@ public class JoblevelController {
 			return ResponseEntity.ok().body(e.getMessage());
 		}
 	}
-	
-	
 
 }
