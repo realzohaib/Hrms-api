@@ -12,6 +12,9 @@ public interface SubDutiesRepo extends JpaRepository<SubDuties, Integer>{
 	
 	public SubDuties findBySubDutiesId(Integer id);
 	
+	public SubDuties findBySubDutyName(String Name);
+
+	
 	
 	
 	

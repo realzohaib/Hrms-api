@@ -28,7 +28,7 @@ public class Task implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Task_id")
 	private Integer taskId;
-	private String TaskName;
+	private String taskName;
 
 	@ManyToMany(mappedBy = "task")
 	@JsonBackReference

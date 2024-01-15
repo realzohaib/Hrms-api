@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.joblevelandDesignationREPO.DesignationRepo;
 import com.erp.hrms.joblevelandDesignationREQ_RES.DesignationRequest;
 import com.erp.hrms.joblevelandDesignationREQ_RES.DesignationResponse;
 import com.erp.hrms.joblevelandDesignationSERVICE.DesignationServiceImpl;
@@ -22,6 +23,9 @@ public class DesignationController {
 
 	@Autowired
 	private DesignationServiceImpl service;
+	
+	@Autowired
+	private DesignationRepo repo;
 
 	@PostMapping("/savedesignation")
 	public ResponseEntity<?> saveDesignation(@RequestBody DesignationRequest designation) {

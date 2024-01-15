@@ -16,8 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.erp.hrms.EmpDesignation.REQandRES.CurrentReq;
+import com.erp.hrms.EmpDesignation.SERVICE.CurrentServiceImpl;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.repo.IRoleRepository;
 import com.erp.hrms.api.security.entity.RoleEntity;
@@ -72,12 +75,16 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	
 	@Autowired
 	private IRoleRepository roleRepository;
+	
+	@Autowired
+	private CurrentServiceImpl currentService;
 
 	/**
 	 *
 	 */
+	@Transactional
 	@Override
-	public void savedata(String personalinfo, String SignupRequest, String url, MultipartFile passportSizePhoto,
+	public void savedata(String personalinfo, String SignupRequest, String url,String CurrentDesignationandAdditionalTask ,MultipartFile passportSizePhoto,
 			MultipartFile OtherIdProofDoc, MultipartFile passportScan, MultipartFile licensecopy,
 			MultipartFile relativeid, MultipartFile raddressproof, MultipartFile secondaryDocumentScan,
 			MultipartFile seniorSecondaryDocumentScan, MultipartFile graduationDocumentScan,
@@ -89,6 +96,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
 		com.erp.hrms.api.request.SignupRequest Signuprequest = mapper.readValue(SignupRequest, com.erp.hrms.api.request.SignupRequest.class);
+		CurrentReq currentDesignationandTask = mapper.readValue(CurrentDesignationandAdditionalTask, CurrentReq.class);
 
 		String email = PersonalInfo.getEmail();
 		if (dao.existsByEmail(email)) {
@@ -463,7 +471,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			user.setOtp(otp);
 
 			PersonalInfo.setUserentity(user);
-			
+			currentDesignationandTask.setEmpId(employeeId);
+			currentService.saveCurrent(currentDesignationandTask);
 			dao.savePersonalInfo(PersonalInfo);
 
 			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp);

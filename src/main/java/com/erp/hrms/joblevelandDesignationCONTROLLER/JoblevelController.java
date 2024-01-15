@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.joblevelandDesignationEntity.JobLevel;
+import com.erp.hrms.joblevelandDesignationREPO.joblevelRepo;
 import com.erp.hrms.joblevelandDesignationSERVICE.joblevelServiceImpl;
 
 @RestController
@@ -21,10 +22,18 @@ public class JoblevelController {
 
 	@Autowired
 	private joblevelServiceImpl service;
+	
+	@Autowired
+	private joblevelRepo repo;
 
 	@PostMapping(value = "/saveJobLevel")
 	public ResponseEntity<?> savePayRoll(@RequestParam("levelName") String levelName) {
 		try {
+			levelName = levelName.replaceAll("\\p{Space}", ""); // Removes all whitespace characters
+			JobLevel name = repo.findByLevelName(levelName);
+			if(name != null) {
+				return ResponseEntity.ok("Level Already Exist");
+			}
 			JobLevel joblevel = new JobLevel();
 			joblevel.setLevelName(levelName);
 			return ResponseEntity.ok().body(service.savejoblevel(joblevel));

@@ -30,8 +30,12 @@ public class DutiesIServicempl implements IDutiesService {
 		List<Duties> dutiesList = new ArrayList<>();
 
 		for (String dutyName : duties.getDuties()) {
+			String DutyName = dutyName.trim();
+			if(repo.findByDutyName(DutyName) != null) {
+				throw new IllegalStateException("DutyName: " + dutyName + " already exist!!");
+			}
 			Duties duty = new Duties();
-			duty.setDutyName(dutyName);
+			duty.setDutyName(DutyName);
 
 			dutiesList.add(duty);
 		}

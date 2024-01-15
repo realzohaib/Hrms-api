@@ -8,5 +8,9 @@ import com.erp.hrms.joblevelandDesignationEntity.Task;
 @Repository
 public interface TaskRepo extends JpaRepository<Task, Long>{
 	public Task findByTaskId(int id);
+	
+	public Task findByTaskName(String taskName);
+
+	
 
 }

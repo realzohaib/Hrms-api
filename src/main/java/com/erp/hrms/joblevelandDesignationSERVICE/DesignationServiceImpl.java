@@ -73,8 +73,12 @@ public class DesignationServiceImpl implements IDesignationService {
 		JobLevel joblevel = levelrepo.findByLevelId(joblevelId);
 		List<String> designationNames = designation.getDesignationName();
 
-		List<Designations> savedDesignations = designationNames.stream()
-				.map(name -> new Designations(null, name, null, joblevel)).collect(Collectors.toList());
+		List<Designations> savedDesignations = designationNames.stream().map(name -> {
+			if (repo.findByDesignationName(name) != null) {
+				throw new IllegalStateException("Designation with name '" + name + "' already exists");
+			}
+			return new Designations(null, name, null, joblevel);
+		}).collect(Collectors.toList());
 
 		repo.saveAll(savedDesignations);
 

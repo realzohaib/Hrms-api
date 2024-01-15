@@ -30,9 +30,15 @@ public class ISubdutyServiceImpl implements ISubdutyService {
 		List<String> subDuties = req.getSubDuties();
 		
 		for (String dutyName : subDuties) {
+			String SubDutyName = dutyName.trim();
+			
+			if(subrepo.findBySubDutyName(SubDutyName) != null) {
+				throw new IllegalStateException("SubDuty:" + SubDutyName+"already exist");
+			}
+			
 			SubDuties obj = new SubDuties();
 			
-			obj.setSubDutyName(dutyName);
+			obj.setSubDutyName(SubDutyName);
 			
 			list.add(obj);
 		}

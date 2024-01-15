@@ -12,6 +12,8 @@ public interface DesignationRepo extends JpaRepository<Designations, Integer>{
 	
 	Designations findByDesignationId(int id);
 	
+	Designations findByDesignationName(String name);
+		
     List<Designations> findByJoblevelLevelId(Integer levelId);
 
 

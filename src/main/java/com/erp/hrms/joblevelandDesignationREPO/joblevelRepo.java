@@ -13,6 +13,8 @@ public interface joblevelRepo extends JpaRepository<JobLevel, Integer> {
 	
 	public JobLevel findByLevelId(int id);
 	
+	public JobLevel findByLevelName(String levelName);
+	
 	@Query("SELECT jl FROM JobLevel jl LEFT JOIN FETCH jl.designations")
 	public List<JobLevel> loadAllJobLevel();
 

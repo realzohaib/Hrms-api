@@ -14,6 +14,8 @@ public interface DutiesRepo extends JpaRepository<Duties, Integer>{
 	
 	Duties findByDutiesId(int dutiesId);
 	
+	Duties findByDutyName(String name);
+	
 	@Query("SELECT d FROM Duties d JOIN d.designation designations WHERE designations.id = :designationId")
 	List<Duties> findByDesignationId(@Param("designationId") int designationId);
 

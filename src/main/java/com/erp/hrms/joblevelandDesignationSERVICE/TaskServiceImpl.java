@@ -32,6 +32,11 @@ public class TaskServiceImpl implements ITaskService {
 		SubDuties subDuties = repo.findBySubDutiesId(subDutiesId);
 
 		for (String name : taskName) {
+			
+			if(taskrepo.findByTaskName(name) != null) {
+				throw new IllegalStateException("Task: "+
+			name +" Already exist");	
+			}
 
 			Task obj = new Task();
 
