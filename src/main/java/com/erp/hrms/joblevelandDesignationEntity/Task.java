@@ -11,14 +11,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+import com.erp.hrms.EmpDesignation.ENTITY.CurrentDesignationAndTask;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.Data;
 
 @Entity
 @Data
-public class Task implements Serializable{
-	
+public class Task implements Serializable {
+
 	/**
 	 * 
 	 */
@@ -28,12 +29,13 @@ public class Task implements Serializable{
 	@Column(name = "Task_id")
 	private Integer taskId;
 	private String TaskName;
-	
-	
+
 	@ManyToMany(mappedBy = "task")
 	@JsonBackReference
-	private List<SubDuties>subduties= new ArrayList<SubDuties>();
-	
-	
+	private List<SubDuties> subduties = new ArrayList<SubDuties>();
+//
+//	@ManyToMany(mappedBy = "task")	
+//	@JsonBackReference(value = "current")
+//	private List<CurrentDesignationAndTask> current;
 
 }

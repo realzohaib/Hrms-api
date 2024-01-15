@@ -72,7 +72,7 @@ public class DutyController {
 
 	}
 	
-	@PostMapping("/getDutiesByDesignationId/{id}")
+	@GetMapping("/getDutiesByDesignationId/{id}")
 	public ResponseEntity<?> getDutiesByDesignationId(@PathVariable int id) {
 		try {
 			List<DutiesResponse> list = service.loadDutiesByDesignationId(id);

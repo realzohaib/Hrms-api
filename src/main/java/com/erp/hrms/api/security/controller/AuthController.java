@@ -1,5 +1,6 @@
 package com.erp.hrms.api.security.controller;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.erp.hrms.EmpDesignation.REQandRES.CurrentRes;
+import com.erp.hrms.EmpDesignation.SERVICE.CurrentServiceImpl;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.repo.UserRepository;
 import com.erp.hrms.api.request.LoginRequest;
@@ -57,6 +60,9 @@ public class AuthController {
 
 	@Autowired
 	IPersonalInfoDAO dao;
+	
+	@Autowired
+	CurrentServiceImpl service;
 
 	@PostMapping("/v1/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -72,9 +78,9 @@ public class AuthController {
 					.collect(Collectors.toSet());
 
 			// Verify if the user has the required role
-			if (!roles.contains(loginRequest.getRole())) {
-				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("You don't have access"));
-			}
+//			if (!roles.contains(loginRequest.getRole())) {
+//				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("You don't have access"));
+//			}
 
 			String username = loginRequest.getUsername();
 			long parseLong = Long.parseLong(username);
@@ -84,7 +90,10 @@ public class AuthController {
 				jwt.setInfo(personalInfo);
 				return ResponseEntity.ok(jwt);
 			}
-
+			
+			List<CurrentRes> loadAllActiveDesignationAndTaskByEmpId = service.loadAllActiveDesignationAndTaskByEmpId(parseLong);
+			jwt.setCurrentDesignationAndTask(loadAllActiveDesignationAndTaskByEmpId);
+			
 			return ResponseEntity.ok(jwt);
 
 		} catch (BadCredentialsException e) {

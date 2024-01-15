@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.erp.hrms.joblevelandDesignationEntity.Designations;
 import com.erp.hrms.joblevelandDesignationEntity.Duties;
+import com.erp.hrms.joblevelandDesignationEntity.SubDuties;
 import com.erp.hrms.joblevelandDesignationREPO.DesignationRepo;
 import com.erp.hrms.joblevelandDesignationREPO.DutiesRepo;
 import com.erp.hrms.joblevelandDesignationREQ_RES.DutiesRequest;
@@ -52,17 +53,26 @@ public class DutiesIServicempl implements IDutiesService {
 		List<Duties> listOfDuties = repo.findByDesignationId(designationId);
 		for (Duties duties : listOfDuties) {
 			DutiesResponse obj = new DutiesResponse();
-			
+
 			obj.setDesignationId(designationId);
 			obj.setDutiesId(duties.getDutiesId());
 			obj.setDutyName(duties.getDutyName());
+
+			List<SubDuties> subdutylist = new ArrayList<SubDuties>();
+			List<SubDuties> subduties = duties.getSubduties();
 			
+			for (SubDuties subduty : subduties) {
+				SubDuties sub = new SubDuties();
+				sub.setSubDutiesId(subduty.getSubDutiesId());
+				sub.setSubDutyName(subduty.getSubDutyName());
+
+				subdutylist.add(sub);
+
+			}
 			response.add(obj);
-			
-			
+
 		}
 		return response;
 	}
-
 
 }

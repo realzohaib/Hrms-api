@@ -23,7 +23,6 @@ import com.erp.hrms.api.repo.IRoleRepository;
 import com.erp.hrms.api.security.entity.RoleEntity;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
-import com.erp.hrms.api.utill.ERole;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
 import com.erp.hrms.entity.Department;
@@ -406,47 +405,47 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				PersonalInfo.setTraining(training);
 			}
 
-			Set<String> strRoles = Signuprequest.getRoles();
+			Set<String> strRoles = Signuprequest.getRole();
 			Set<RoleEntity> roles = new HashSet<>();
 
 //			System.out.println(strRoles);
 
-			if (strRoles == null) {
-				RoleEntity userRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(userRole);
-			} else {
-				strRoles.forEach(role -> {
-					switch (role) {
-					case "admin":
-						RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(adminRole);
-						break;
-					case "employee":
-						RoleEntity empRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(empRole);
-						break;
-					case "manager":
-						RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MANAGER)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(modRole);
-						break;
-					case "hr":
-						RoleEntity hrRole = roleRepository.findByName(ERole.ROLE_HR)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(hrRole);
-						break;
-					case "subadmin":
-						RoleEntity subAdminRole = roleRepository.findByName(ERole.ROLE_SUBADMIN)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-						roles.add(subAdminRole);
-					}
-				});
-
-			}
-			System.out.println(strRoles);
+//			if (strRoles == null) {
+//				RoleEntity userRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
+//						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//				roles.add(userRole);
+//			} else {
+//				strRoles.forEach(role -> {
+//					switch (role) {
+//					case "admin":
+//						RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+//								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//						roles.add(adminRole);
+//						break;
+//					case "employee":
+//						RoleEntity empRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
+//								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//						roles.add(empRole);
+//						break;
+//					case "manager":
+//						RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MANAGER)
+//								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//						roles.add(modRole);
+//						break;
+//					case "hr":
+//						RoleEntity hrRole = roleRepository.findByName(ERole.ROLE_HR)
+//								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//						roles.add(hrRole);
+//						break;
+//					case "subadmin":
+//						RoleEntity subAdminRole = roleRepository.findByName(ERole.ROLE_SUBADMIN)
+//								.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+//						roles.add(subAdminRole);
+//					}
+//				});
+//
+//			}
+//			System.out.println(strRoles);
 
 
 			UserEntity user = new UserEntity();

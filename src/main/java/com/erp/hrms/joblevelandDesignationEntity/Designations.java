@@ -16,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import com.erp.hrms.EmpDesignation.ENTITY.CurrentDesignationAndTask;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -50,6 +51,10 @@ public class Designations implements Serializable {
 	@JoinColumn(name = "joblevel_id")
 	@JsonBackReference
 	private JobLevel joblevel;
+	
+//	@ManyToMany(mappedBy = "designation")
+//	@JsonBackReference(value = "designationreference")
+//	private List<CurrentDesignationAndTask>current;
 
 	public Designations(Integer designationId, String designationName, List<Duties> duties, JobLevel joblevel) {
 		super();
