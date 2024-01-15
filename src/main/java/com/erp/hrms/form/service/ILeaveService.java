@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.erp.hrms.approver.entity.LeaveApprover;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
 import com.erp.hrms.entity.form.LeaveCountDTO;
@@ -14,7 +15,7 @@ import com.erp.hrms.entity.form.MarkedDate;
 
 public interface ILeaveService {
 
-	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException;
+	public LeaveApprover createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException;
 
 	public LeaveApproval getleaveRequestById(Long leaveRequestID) throws IOException;
 
@@ -34,9 +35,9 @@ public interface ILeaveService {
 
 	public List<LeaveApproval> findAllLeaveApprovalRejected() throws IOException;
 
-	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId);
+//	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId);
 
-	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
+//	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
 
 	public List<LeaveCalendarData> generateLeaveCalendar(List<LeaveApproval> leaveApprovals);
 
@@ -44,7 +45,7 @@ public interface ILeaveService {
 
 	public List<MarkedDate> markCalendarDates();
 
-	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
+	public BigDecimal calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(Long employeeId, int year,
 			int month);
 
 	public List<LeaveCountDTO> getAllLeavesByEmployeeIdAndYear(Long employeeId, int year, String countryName);

@@ -26,11 +26,11 @@ public interface ILeaveRepository {
 
 	public List<LeaveApproval> findAllLeaveApprovalRejected();
 
-	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId);
+//	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId);
 
-	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
+//	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName);
 
-	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
+	public BigDecimal calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(Long employeeId, int year,
 			int month);
 
 	public List<LeaveCountDTO> getLeaveCountByEmployeeAndMonth(Long employeeId, int year, int month);

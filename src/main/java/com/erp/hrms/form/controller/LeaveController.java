@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.erp.hrms.Location.entity.Location;
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.approver.entity.LeaveApprover;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
 import com.erp.hrms.entity.form.LeaveCountDTO;
@@ -38,8 +40,9 @@ public class LeaveController {
 			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
 			throws IOException {
 		try {
-			iLeaveService.createLeaveApproval(leaveApproval, medicalDocumentsName);
-			return new ResponseEntity<>(new MessageResponse("Your leave request send to your manager."), HttpStatus.OK);
+			LeaveApprover approval = iLeaveService.createLeaveApproval(leaveApproval, medicalDocumentsName);
+
+			return ResponseEntity.ok(approval);
 		} catch (Exception e) {
 			return new ResponseEntity<>((new MessageResponse("Error while creating leave approval. " + e)),
 					HttpStatus.BAD_REQUEST);
@@ -143,30 +146,29 @@ public class LeaveController {
 		}
 	}
 
-	@GetMapping("/calculateTotalLeaveDays/{employeeId}")
-	public ResponseEntity<?> calculateTotalLeaveDays(@PathVariable Long employeeId) {
-		try {
-			return new ResponseEntity<>(iLeaveService.calculateTotalNumberOfDaysRequestedByEmployee(employeeId),
-					HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
-		}
-	}
+//	@GetMapping("/calculateTotalLeaveDays/{employeeId}")
+//	public ResponseEntity<?> calculateTotalLeaveDays(@PathVariable Long employeeId) {
+//		try {
+//			return new ResponseEntity<>(iLeaveService.calculateTotalNumberOfDaysRequestedByEmployee(employeeId),
+//					HttpStatus.OK);
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
+//		}
+//	}
 
-//	This method for calculate total number of leave days with employee id and leave name
-	@GetMapping("/calculateTotalLeaveDays/{employeeId}/leaveName/{leaveName}")
-	public ResponseEntity<?> calculateTotalSpecificLeaveDays(@PathVariable Long employeeId,
-			@PathVariable String leaveName) {
-		try {
-			return new ResponseEntity<>(
-					iLeaveService.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName),
-					HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
-		}
-	}
+////	This method for calculate total number of leave days with employee id and leave name
+//	@GetMapping("/calculateTotalLeaveDays/{employeeId}/leaveName/{leaveName}")
+//	public ResponseEntity<?> calculateTotalSpecificLeaveDays(@PathVariable Long employeeId,
+//			@PathVariable String leaveName) {
+//		try {
+//			return new ResponseEntity<>(
+//					iLeaveService.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName),
+//					HttpStatus.OK);
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
+//		}
+//	}
 
-//	mujhe is me employee ka naam add karna hai
 //	This method is to calculate how many employees are on leave in a day.
 	@GetMapping("/leave-calendar")
 	public ResponseEntity<List<LeaveCalendarData>> getLeaveCalendar() {
@@ -191,7 +193,7 @@ public class LeaveController {
 	@GetMapping("/calculateTotalDays/{employeeId}/{year}/{month}")
 	public ResponseEntity<BigDecimal> calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(
 			@PathVariable Long employeeId, @PathVariable int year, @PathVariable int month) {
-		BigDecimal totalDays = iLeaveService.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(employeeId,
+		BigDecimal totalDays = iLeaveService.calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(employeeId,
 				year, month);
 		return ResponseEntity.ok(totalDays);
 	}
