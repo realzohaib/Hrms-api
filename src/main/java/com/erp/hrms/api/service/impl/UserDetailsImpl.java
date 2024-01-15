@@ -54,6 +54,13 @@ public class UserDetailsImpl implements UserDetails {
 
 		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities , user.isEnabled() );
 	}
+	
+//	public static UserDetailsImpl build(UserEntity user) {
+//		List<GrantedAuthority> authorities = user.getJoblevel().stream()
+//				.map(joblevel -> new SimpleGrantedAuthority(joblevel.getJoblevel())).collect(Collectors.toList());
+//
+//		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities , user.isEnabled() );
+//	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

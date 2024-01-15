@@ -10,6 +10,6 @@ public interface LocationService {
 	public void createLocation(Location location);
 
 	public LocationDto findByLocationId(Long locationId);
-	
+
 	public List<Location> findAllLocations();
 }

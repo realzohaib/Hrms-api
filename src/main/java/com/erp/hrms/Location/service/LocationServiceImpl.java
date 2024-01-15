@@ -11,8 +11,6 @@ import com.erp.hrms.Location.entity.response.LeaveApproverDto;
 import com.erp.hrms.Location.entity.response.LocationDto;
 import com.erp.hrms.Location.repository.LocationRepository;
 import com.erp.hrms.approver.entity.LeaveApprover;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class LocationServiceImpl implements LocationService {
@@ -62,6 +60,6 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	public List<Location> findAllLocations() {
 		return locationRepository.findAll();
-	}
 
+	}
 }

@@ -16,5 +16,5 @@ public interface IDepartmentService {
 
 	public List<Department> getAllDepartment();
 
-	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName);
+//	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName);
 }

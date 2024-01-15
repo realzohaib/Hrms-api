@@ -136,7 +136,7 @@ public class AttendenceController {
 			List<Attendence> attendanceForMonth = service.getAttendanceForMonth(id, year, month);
 			return ResponseEntity.ok(attendanceForMonth);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new MessageResponse("invalid Data"));
+			return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
 
 		}
 	}

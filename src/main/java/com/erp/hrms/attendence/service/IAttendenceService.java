@@ -21,7 +21,7 @@ public interface IAttendenceService {
 
 	public List<Attendence> getAttendanceForMonth(Long employeeId, int year, int month);
 
-	public int calculateWorkingDays(int year, int month);
+	public int calculateWorkingDays(int year, int month , long employeeId);
 
 	public AttendenceResponse fullAttendence(Long employeeId, int year, int month);
 

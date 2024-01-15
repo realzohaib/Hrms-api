@@ -3,7 +3,9 @@ package com.erp.hrms.api.request;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

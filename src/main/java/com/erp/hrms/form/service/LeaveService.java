@@ -91,6 +91,7 @@ public class LeaveService implements ILeaveService {
 	@Override
 	public LeaveApprover createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName)
 			throws IOException {
+
 		try {
 			LeaveApprover approver = null;
 			ObjectMapper mapper = new ObjectMapper();
@@ -305,6 +306,7 @@ public class LeaveService implements ILeaveService {
 //
 //			// Send emails to hr
 //			sendLeaveRequestEmailApproved(hrEmail, "Leave Request status by the manager", leaveApprovalJson);
+
 //			 Send email to manager who approve or deny the leave request
 			return iLeaveRepository.approvedByManager(leaveRequestId, leaveApprovalJson);
 		} catch (Exception e) {

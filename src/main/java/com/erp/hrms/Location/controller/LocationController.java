@@ -38,5 +38,5 @@ public class LocationController {
 	public List<Location> findAllLocations() {
 		return locationService.findAllLocations();
 	}
-	
+
 }

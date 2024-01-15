@@ -52,8 +52,8 @@ public class DepartmentService implements IDepartmentService {
 		return findAllDepartments;
 	}
 
-	@Override
-	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName) {
-		return idepartmentRepository.findFirstAndLastNameByDepartmentName(departmentName);
-	}
+//	@Override
+//	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName) {
+//		return idepartmentRepository.findFirstAndLastNameByDepartmentName(departmentName);
+//	}
 }
