@@ -183,7 +183,7 @@ public class LeaveRepository implements ILeaveRepository {
 				cb.equal(root.get("employeeId"), employeeId),
 				cb.equal(cb.function("YEAR", Integer.class, root.get("startDate")), year),
 				cb.equal(cb.function("MONTH", Integer.class, root.get("startDate")), month),
-				cb.equal(root.get("approvalStatus"), "ACCEPTED"));
+				cb.equal(root.get("hrApprovalStatus"), "ACCEPTED"));
 		return entityManager.createQuery(query).getSingleResult();
 	}
 
@@ -192,17 +192,15 @@ public class LeaveRepository implements ILeaveRepository {
 		try {
 			TypedQuery<LeaveCountDTO> query = entityManager.createQuery(
 					"SELECT NEW com.erp.hrms.entity.form.LeaveCountDTO(l.leaveType.leaveName, SUM(l.numberOfDaysRequested)) "
-							+ "FROM LeaveApproval l "
-							+ "WHERE l.employeeId = :employeeId AND YEAR(l.startDate) = :year AND MONTH(l.startDate) = :month AND l.hrApprovalStatus = 'Accepted' "
+							+ "FROM LeaveApproval l " + "WHERE l.employeeId = :employeeId "
+							+ "AND YEAR(l.startDate) = :year " + "AND MONTH(l.startDate) = :month "
+							+ "AND (l.hrApprovalStatus = 'Accepted' OR l.approvalStatus = 'Accepted') "
 							+ "GROUP BY l.leaveType.leaveName",
 					LeaveCountDTO.class);
 
 			query.setParameter("employeeId", employeeId);
 			query.setParameter("year", year);
 			query.setParameter("month", month);
-
-			System.out
-					.println("Generated SQL Query: " + query.unwrap(org.hibernate.query.Query.class).getQueryString());
 
 			return query.getResultList();
 		} catch (NoResultException e) {

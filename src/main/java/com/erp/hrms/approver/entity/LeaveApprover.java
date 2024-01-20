@@ -21,7 +21,10 @@ public class LeaveApprover {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long lAId;
 	private Long firstApproverEmpId;
+	private String firstApproverEmail;
+
 	private Long secondApproverEmpId;
+	private String secondApproverEmail;
 	private String startDate;
 	private String endDate;
 

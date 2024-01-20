@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.erp.hrms.Location.entity.Location;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.approver.entity.LeaveApprover;
 import com.erp.hrms.entity.form.LeaveApproval;

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.erp.hrms.Location.entity.Location;
 import com.erp.hrms.Location.entity.response.LocationDto;
 import com.erp.hrms.Location.service.LocationService;
+import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.approver.entity.LeaveApprover;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -24,9 +27,9 @@ public class LocationController {
 	private LocationService locationService;
 
 	@PostMapping("/location")
-	public ResponseEntity<String> createLocation(@RequestBody Location location) {
+	public ResponseEntity<?> createLocation(@RequestBody Location location) {
 		locationService.createLocation(location);
-		return new ResponseEntity<>("Location created successfully", HttpStatus.CREATED);
+		return new ResponseEntity<>(new MessageResponse("your location is created."), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/location/id/{locationId}")
@@ -37,6 +40,13 @@ public class LocationController {
 	@GetMapping("/find/all/locations")
 	public List<Location> findAllLocations() {
 		return locationService.findAllLocations();
+	}
+
+	@PutMapping("/location/update/{locationId}")
+	public ResponseEntity<?> updateLocation(@PathVariable Long locationId, @RequestBody Location location) {
+		locationService.updateLocation(locationId, location);
+		return new ResponseEntity<>(new MessageResponse("Your location is update."),
+				HttpStatus.OK);
 	}
 
 }

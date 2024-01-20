@@ -34,9 +34,11 @@ public class Location {
 
 	private String longitude;
 
-	private boolean isMaintenanceRequired;
+	private Boolean isMaintenanceRequired;
 
 	private String commentsForMaintenance;
+	
+	private String country;
 
 //	@ManyToMany(cascade = { CascadeType.ALL }) 
 //	@JoinTable(name = "countryLocation", joinColumns = @JoinColumn(name = "locationId"), inverseJoinColumns = @JoinColumn(name = "countryId"))

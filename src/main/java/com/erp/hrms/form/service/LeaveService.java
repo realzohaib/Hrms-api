@@ -84,14 +84,10 @@ public class LeaveService implements ILeaveService {
 	@Autowired
 	private LocationRepository locationRepository;
 
-	@Autowired
-	private LeaveApproverRepo approverRepo;
-
 //	This method for send the leave request to manager and send email to manager and admin
 	@Override
 	public LeaveApprover createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName)
 			throws IOException {
-
 		try {
 			LeaveApprover approver = null;
 			ObjectMapper mapper = new ObjectMapper();
@@ -130,52 +126,6 @@ public class LeaveService implements ILeaveService {
 			throw new RuntimeException("An error occurred while send your request." + e);
 		}
 	}
-
-//	public void createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException {
-//		try {
-//			ObjectMapper mapper = new ObjectMapper();
-//			LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
-//			LeaveType leaveType = entityManager.find(LeaveType.class,
-//					leaveApprovalJson.getLeaveType().getLeaveTypeId());
-//			leaveApprovalJson.setLeaveType(leaveType);
-//			leaveApprovalJson.setNoOfLeavesApproved(leaveApprovalJson.getNumberOfDaysRequested());
-////			// Fetch admin and manager email addresses based on roles
-////			String managerEmail = null;
-////			List<UserEntity> userList = userService.getUsers();
-////			for (UserEntity user : userList) {
-////				Set<RoleEntity> roles = user.getRoles();
-////				for (RoleEntity role : roles) {
-////					if (role.getName() == ERole.ROLE_MANAGER) {
-////						managerEmail = user.getEmail();
-////					}
-////				}
-////				// If managerEmail are found, you can break out of the loop.
-////				if (managerEmail != null) {
-////					break;
-////				}
-////			}
-//			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
-//				String uniqueIdentifier = UUID.randomUUID().toString();
-//				String originalFileName = medicalDocumentsName.getOriginalFilename();
-//				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
-//				Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
-//				Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
-//				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
-//			}
-//			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
-////			if (managerEmail != null) {
-////				// If only manager email is found, send the email to the manager
-////				sendLeaveRequestEmail(managerEmail, "Leave Request from Employee", leaveApprovalJson);
-////			} else {
-////				logger.warn("Neither HR nor manager email found. Leave request email not sent.");
-////			}
-////		 Send an email to the employee who requested the leave
-////			String employeeEmail = leaveApprovalJson.getEmail();
-////			sendLeaveRequestEmail(employeeEmail, "Leave Request Confirmation", leaveApprovalJson);
-//		} catch (Exception e) {
-//			throw new RuntimeException("An error occurred while send your request." + e);
-//		}
-//	}
 
 //	This method for find the data of leave by leave request id
 	@Override
@@ -273,6 +223,12 @@ public class LeaveService implements ILeaveService {
 			existingApproval.setApprovalRemarks(leaveApprovalJson.getApprovalRemarks());
 			existingApproval.setManagerEmail(leaveApprovalJson.getManagerEmail());
 			existingApproval.setNoOfLeavesApproved(leaveApprovalJson.getNoOfLeavesApproved());
+			double noOfLeavesApproved = leaveApprovalJson.getNoOfLeavesApproved();
+			if (noOfLeavesApproved <= 3) {
+				leaveApprovalJson.setHrApprovalStatus(leaveApprovalJson.getApprovalStatus());
+			} else {
+				leaveApprovalJson.setHrApprovalStatus("Pending");
+			}
 
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
 				if (existingApproval.getMedicalDocumentsName() != null) {
@@ -365,8 +321,8 @@ public class LeaveService implements ILeaveService {
 			}
 
 			// Fetch hr and manager email addresses based on roles
-			String hrEmail = leaveApprovalJson.getHrEmail();
-			String managerEmail = leaveApprovalJson.getManagerEmail();
+//			String hrEmail = leaveApprovalJson.getHrEmail();
+//			String managerEmail = leaveApprovalJson.getManagerEmail();
 
 //			// Send emails to hr
 //			sendLeaveRequestEmailApprovedOrDenyByHR(hrEmail, "Leave Request status by the HR", leaveApprovalJson);
@@ -374,7 +330,7 @@ public class LeaveService implements ILeaveService {
 //			sendLeaveRequestEmailApprovedOrDenyByHR(managerEmail, "Leave Request status by the HR", leaveApprovalJson);
 
 			// Send an email to the employee
-			String employeeEmail = leaveApprovalJson.getEmail();
+//			String employeeEmail = leaveApprovalJson.getEmail();
 //			sendLeaveRequestEmailApprovedOrDenyByHR(employeeEmail, "Leave Request status by the HR", leaveApprovalJson);
 
 			return iLeaveRepository.approvedOrDenyByHR(leaveRequestId, existingApproval);
@@ -390,6 +346,7 @@ public class LeaveService implements ILeaveService {
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
 		}
+
 		for (LeaveApproval leaveApproval : leaveApprovals) {
 			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
@@ -399,6 +356,7 @@ public class LeaveService implements ILeaveService {
 				}
 			}
 		}
+
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
 	}
@@ -573,7 +531,6 @@ public class LeaveService implements ILeaveService {
 
 			int totalEmployees = getTotalEmployeeCount(employees);
 
-			// Determine which dates should be marked
 			for (LocalDate date : dateToEmployeeCount.keySet()) {
 				int employeeCount = dateToEmployeeCount.get(date);
 
@@ -617,7 +574,14 @@ public class LeaveService implements ILeaveService {
 				LocalDate endOfYear = endDate.isAfter(LocalDate.of(year + 1, 1, 1))
 						? LocalDate.of(year + 1, 1, 1).minusDays(1)
 						: endDate;
-				long diffInDays = ChronoUnit.DAYS.between(startOfYear, endOfYear) + 1;
+
+				double diffInDays = ChronoUnit.DAYS.between(startOfYear, endOfYear) + 1;
+
+				String leaveName = leaveApproval.getLeaveType().getLeaveName();
+				if ("Half Day".equalsIgnoreCase(leaveName)) {
+					diffInDays = diffInDays / 2.0;
+					leaveName = "Casual"; // Assign "Casual" as the leave name for half days
+				}
 
 				for (AcademicCalendar holiday : holidays) {
 					LocalDate startHolidayDate = holiday.getStartHolidayDate();
@@ -637,32 +601,22 @@ public class LeaveService implements ILeaveService {
 					currentDate = currentDate.plusDays(1);
 				}
 
-				leaveTypeTotalDaysMap.merge(leaveApproval.getLeaveType().getLeaveName(), (double) diffInDays,
-						Double::sum);
+				leaveTypeTotalDaysMap.merge(leaveName, (double) diffInDays, Double::sum);
 			}
 		}
-
-		// Convert the map to a list of LeaveCountDTO
 		List<LeaveCountDTO> result = leaveTypeTotalDaysMap.entrySet().stream()
 				.map(entry -> new LeaveCountDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
-
 		return result;
 	}
 
 	@Override
 	public List<LeaveCountDTO> getAllLeaveByMonthByEmployeeId(int year, int month, long employeeId,
 			String countryName) {
-
 		List<LeaveApproval> leaves = repo.findByEmployeeIdAndHrApprovalStatus(employeeId, "Accepted");
 		List<AcademicCalendar> holidays = calendarRepository.findByYearAndCountry(year, countryName);
-
 		Map<String, Double> leaveTypeTotalDaysMap = new HashMap<>();
 		YearMonth yearMonth = YearMonth.of(year, month);
-
-		// Get the first day of the month
 		LocalDate firstDayOfMonth = yearMonth.atDay(1);
-
-		// Get the last day of the month
 		LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 
 		for (LeaveApproval leave : leaves) {
@@ -671,25 +625,21 @@ public class LeaveService implements ILeaveService {
 			LocalDate startDate = LocalDate.parse(startDateString);
 			LocalDate endDate = LocalDate.parse(endDateString);
 
-			// Check if the leave period overlaps with the specified month
 			if (endDate.isAfter(firstDayOfMonth.minusDays(1)) && startDate.isBefore(lastDayOfMonth.plusDays(1))) {
-				// Adjust start date and end date to fit within the month
 				startDate = startDate.isBefore(firstDayOfMonth) ? firstDayOfMonth : startDate;
 				endDate = endDate.isAfter(lastDayOfMonth) ? lastDayOfMonth : endDate;
+				double daysBetweenInclusive = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 
-				// Calculate the duration between the two dates
-				int daysBetweenInclusive = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
+				if ("Half Day".equalsIgnoreCase(leave.getLeaveType().getLeaveName())) {
+					daysBetweenInclusive = (double) daysBetweenInclusive / 2;
+				}
 
-				// Subtract holidays and weekends
 				for (AcademicCalendar holiday : holidays) {
 					LocalDate startHolidayDate = holiday.getStartHolidayDate();
 					LocalDate endHolidayDate = holiday.getEndHolidayDate();
-
 					if (startDate.isBefore(endHolidayDate) && endDate.isAfter(startHolidayDate)) {
-						// Overlapping dates, subtract the days
 						LocalDate overlapStartDate = startDate.isAfter(startHolidayDate) ? startDate : startHolidayDate;
 						LocalDate overlapEndDate = endDate.isBefore(endHolidayDate) ? endDate : endHolidayDate;
-
 						daysBetweenInclusive -= calculateDaysInRange(overlapStartDate, overlapEndDate);
 					}
 				}
@@ -703,18 +653,16 @@ public class LeaveService implements ILeaveService {
 					currentDate = currentDate.plusDays(1);
 				}
 
-				// Update the total days for each leave type
-				leaveTypeTotalDaysMap.merge(leave.getLeaveType().getLeaveName(), (double) daysBetweenInclusive,
-						Double::sum);
+				String leaveName = leave.getLeaveType().getLeaveName();
+				if ("Half Day".equalsIgnoreCase(leaveName)) {
+					leaveName = "Casual"; // Assign "Casual" as the leave name for half days
+				}
+				leaveTypeTotalDaysMap.merge(leaveName, (double) daysBetweenInclusive, Double::sum);
 			}
 		}
-
-		// Convert the map to a list of LeaveCountDTO
 		List<LeaveCountDTO> result = leaveTypeTotalDaysMap.entrySet().stream()
 				.map(entry -> new LeaveCountDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
-
 		return result;
-
 	}
 
 	// Helper method to calculate days between two dates inclusive

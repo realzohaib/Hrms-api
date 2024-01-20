@@ -35,9 +35,10 @@ public class LocationServiceImpl implements LocationService {
 		response.setAddress(findByLocationId.getAddress());
 		response.setLatitude(findByLocationId.getLatitude());
 		response.setLongitude(findByLocationId.getLongitude());
-		response.setIsMaintenanceRequired(findByLocationId.isMaintenanceRequired());
+		response.setIsMaintenanceRequired(findByLocationId.getIsMaintenanceRequired());
 		response.setCommentsForMaintenance(findByLocationId.getCommentsForMaintenance());
 		response.setInchargeInfo(findByLocationId.getInchargeInfo());
+		
 
 		List<LeaveApproverDto> leaveApprovers = new ArrayList<>();
 		List<LeaveApprover> leaveApproverEntities = findByLocationId.getLeaveApprover();
@@ -61,5 +62,22 @@ public class LocationServiceImpl implements LocationService {
 	public List<Location> findAllLocations() {
 		return locationRepository.findAll();
 
+	}
+
+	@Override
+	public Location updateLocation(Long locationId, Location location) {
+		Location existingLocation = locationRepository.findById(locationId)
+				.orElseThrow(() -> new RuntimeException("Location not found with id: " + locationId));
+		existingLocation.setConcernedAuthorityEmpId(location.getConcernedAuthorityEmpId());
+		existingLocation.setName(location.getName());
+		existingLocation.setAddress(location.getAddress());
+		existingLocation.setLatitude(location.getLatitude());
+		existingLocation.setLongitude(location.getLongitude());
+		existingLocation.setIsMaintenanceRequired(location.getIsMaintenanceRequired());
+		existingLocation.setCommentsForMaintenance(location.getCommentsForMaintenance());
+		existingLocation.setCountry(location.getCountry());
+		existingLocation.setInchargeInfo(location.getInchargeInfo());
+
+		return locationRepository.save(existingLocation);
 	}
 }

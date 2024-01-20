@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-public class PersonalEmailExistsException extends RuntimeException {
+public class PersonalPhoneNumberExistsException extends RuntimeException {
 
 	/**
 	 * 
@@ -20,9 +20,8 @@ public class PersonalEmailExistsException extends RuntimeException {
 
 	MessageResponse messageResponse;
 
-	public PersonalEmailExistsException(MessageResponse messageResponse) {
+	public PersonalPhoneNumberExistsException(MessageResponse messageResponse) {
 		super(messageResponse.getMessage());
 		this.messageResponse = messageResponse;
 	}
-
 }

@@ -65,11 +65,12 @@ public class PersonalInfoController {
 		url = url.replace(req.getServletPath(), "");
 
 		try {
-			personalInfoService.savedata(personalinfo, SignupRequest, url,CurrentDesignationandAdditionalTask, passportSizePhoto, OtherIdProofDoc,
-					passportScan, licensecopy, relativeid, raddressproof, secondaryDocumentScan,
-					seniorSecondaryDocumentScan, graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan,
-					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,
-					visaDocs, diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
+			personalInfoService.savedata(personalinfo, SignupRequest, url, CurrentDesignationandAdditionalTask,
+					passportSizePhoto, OtherIdProofDoc, passportScan, licensecopy, relativeid, raddressproof,
+					secondaryDocumentScan, seniorSecondaryDocumentScan, graduationDocumentScan,
+					postGraduationDocumentScan, othersDocumentScan, degreeScan, payslipScan, recordsheet,
+					PaidTrainingDocumentProof, CertificateUploadedForOutsource, visaDocs, diplomaDocumentScan,
+					declarationRequired, achievementsRewardsDocs);
 			return ResponseEntity.ok(new MessageResponse("Insert Personal info successfully"));
 		} catch (PersonalEmailExistsException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Email ID already exists"));
@@ -207,6 +208,17 @@ public class PersonalInfoController {
 			return ResponseEntity.ok(requestedField);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(new Exception("error occured " + e));
+		}
+	}
+
+	@GetMapping("/find-all/personal-info/background-check/pending")
+	public ResponseEntity<?> getPersonalInfoWithPendingBackgroundCheck() {
+		try {
+			List<PersonalInfo> personalInfoWithPendingBackgroundCheck = personalInfoService
+					.getPersonalInfoWithPendingBackgroundCheck();
+			return ResponseEntity.ok(personalInfoWithPendingBackgroundCheck);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Exception occurred: " + e.getMessage());
 		}
 	}
 

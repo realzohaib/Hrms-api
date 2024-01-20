@@ -43,5 +43,7 @@ public interface IPersonalInfoService {
 
 	public List<NotificationHelper> getRequestedField();
 	
+	public List<PersonalInfo> getPersonalInfoWithPendingBackgroundCheck();
+	
 	
 }
