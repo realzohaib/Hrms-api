@@ -2,6 +2,7 @@ package com.erp.hrms.approver.entity;
 
 import java.util.List;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,4 +31,7 @@ public class LeaveApprover {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	private List<Location> locations;
+
+	@ElementCollection
+	private List<String> approverLevels;
 }

@@ -27,7 +27,6 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 
 	@Override
 	public List<LeaveApprover> findAllLeaveApprovers() {
-
 		return leaveApproverRepo.findAll();
 	}
 

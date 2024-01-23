@@ -2397,4 +2397,215 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 	}
 
+	@Override
+	@Transactional
+	public List<PersonalInfo> getByPostedLocation(String postedLocation) {
+
+		try {
+			List<PersonalInfo> byPostedLocation = dao.getByPostedLocation(postedLocation);
+			if (byPostedLocation.isEmpty()) {
+				throw new PersonalInfoNotFoundException(new MessageResponse(
+						"No personal information found for this posted location: " + postedLocation));
+			}
+			
+			for (PersonalInfo personalInfo : byPostedLocation) {
+				String passportSizePhotoName = personalInfo.getPassportSizePhoto();
+				if (passportSizePhotoName != null && !passportSizePhotoName.isEmpty()) {
+					byte[] passportSizePhoteData = personalInfoFileService.getFileData(passportSizePhotoName);
+					if (passportSizePhoteData != null) {
+						personalInfo.setPassportSizePhotoData(passportSizePhoteData);
+					}
+				}
+
+				String OtherIdProofDocName = personalInfo.getOtherIdProofDoc();
+				if (OtherIdProofDocName != null && !OtherIdProofDocName.isEmpty()) {
+					byte[] OtherIdProofDocNameData = personalInfoFileService.getFileData(OtherIdProofDocName);
+					if (OtherIdProofDocNameData != null) {
+						personalInfo.setOtherIdProofDocData(OtherIdProofDocNameData);
+					}
+				}
+
+				String passportScanName = null;
+				if (personalInfo.getPsDetail() != null) {
+					passportScanName = personalInfo.getPsDetail().getPassportScan();
+				}
+
+				if (passportScanName != null && !passportScanName.isEmpty()) {
+					byte[] passportScanData = personalInfoFileService.getFileData(passportScanName);
+					if (passportScanData != null) {
+						personalInfo.getPsDetail().setPassportScanData(passportScanData);
+					}
+				}
+
+				String licensecopyName = null;
+				if (personalInfo.getLicense() != null) {
+					licensecopyName = personalInfo.getLicense().getLicensecopy();
+				}
+				if (licensecopyName != null && !licensecopyName.isEmpty()) {
+					byte[] licensecopyData = personalInfoFileService.getFileData(licensecopyName);
+					if (licensecopyData != null) {
+						personalInfo.getLicense().setLicenseCopyData(licensecopyData);
+					}
+				}
+
+				BloodRelative relative = personalInfo.getRelative();
+				if (relative != null) {
+					String raddressproofName = relative.getRaddressproof();
+					if (raddressproofName != null && !raddressproofName.isEmpty()) {
+						byte[] raddressproofData = personalInfoFileService.getFileData(raddressproofName);
+						if (raddressproofData != null) {
+							relative.setRaddressProofData(raddressproofData);
+						}
+					}
+					String relativeidName = relative.getRelativeid();
+					if (relativeidName != null && !relativeidName.isEmpty()) {
+						byte[] relativeidData = personalInfoFileService.getFileData(relativeidName);
+						if (relativeidData != null) {
+							relative.setRelativeIdData(relativeidData);
+						}
+					}
+				}
+
+				String visaDocsName = null;
+				if (personalInfo.getVisainfo() != null) {
+					visaDocsName = personalInfo.getVisainfo().getVisaDocs();
+				}
+				if (visaDocsName != null && !visaDocsName.isEmpty()) {
+					byte[] visaDocsData = personalInfoFileService.getFileData(visaDocsName);
+					if (visaDocsData != null) {
+						personalInfo.getVisainfo().setVisaDocsData(visaDocsData);
+					}
+				}
+
+				for (Education education : personalInfo.getEducations()) {
+
+					String secondaryDocumentScanName = education.getSecondaryDocumentScan();
+					if (secondaryDocumentScanName != null && !secondaryDocumentScanName.isEmpty()) {
+						byte[] secondaryDocumentScanData = personalInfoFileService
+								.getFileData(secondaryDocumentScanName);
+						if (secondaryDocumentScanData != null) {
+							education.setSecondaryDocumentScanData(secondaryDocumentScanData);
+						}
+					}
+
+					String seniorSecondaryDocumentScanName = education.getSeniorSecondaryDocumentScan();
+					if (seniorSecondaryDocumentScanName != null && !seniorSecondaryDocumentScanName.isEmpty()) {
+						byte[] seniorSecondaryDocumentScanData = personalInfoFileService
+								.getFileData(seniorSecondaryDocumentScanName);
+						if (seniorSecondaryDocumentScanData != null) {
+							education.setSeniorSecondaryDocumentScanData(seniorSecondaryDocumentScanData);
+						}
+					}
+
+					String graduationDocumentScanName = education.getGraduationDocumentScan();
+					if (graduationDocumentScanName != null && !graduationDocumentScanName.isEmpty()) {
+						byte[] graduationDocumentScanData = personalInfoFileService
+								.getFileData(graduationDocumentScanName);
+						if (graduationDocumentScanData != null) {
+							education.setGraduationDocumentScanData(graduationDocumentScanData);
+						}
+					}
+
+					String postGraduationDocumentScanName = education.getPostGraduationDocumentScan();
+					if (postGraduationDocumentScanName != null && !postGraduationDocumentScanName.isEmpty()) {
+						byte[] postGraduationDocumentScanData = personalInfoFileService
+								.getFileData(postGraduationDocumentScanName);
+						if (postGraduationDocumentScanData != null) {
+							education.setPostGraduationDocumentScanData(postGraduationDocumentScanData);
+						}
+					}
+
+					String diplomaDocumentScanName = education.getDiplomaDocumentScan();
+					if (diplomaDocumentScanName != null && !diplomaDocumentScanName.isEmpty()) {
+						byte[] diplomaDocumentScanData = personalInfoFileService.getFileData(diplomaDocumentScanName);
+						if (diplomaDocumentScanData != null) {
+							education.setDiplomaDocumentScanData(diplomaDocumentScanData);
+						}
+					}
+
+				}
+
+				for (OthersQualification othersQualification : personalInfo.getOthersQualifications()) {
+
+					String othersDocumentScanName = othersQualification.getOthersDocumentScan();
+					if (othersDocumentScanName != null && !othersDocumentScanName.isEmpty()) {
+						byte[] othersDocumentScanData = personalInfoFileService.getFileData(othersDocumentScanName);
+						if (othersDocumentScanData != null) {
+							othersQualification.setOthersDocumentScanData(othersDocumentScanData);
+						}
+					}
+				}
+
+				for (ProfessionalQualification professionalQualification : personalInfo
+						.getProfessionalQualifications()) {
+
+					String degreeScanName = professionalQualification.getDegreeScan();
+					if (degreeScanName != null && !degreeScanName.isEmpty()) {
+						byte[] degreeScanData = personalInfoFileService.getFileData(degreeScanName);
+						if (degreeScanData != null) {
+							professionalQualification.setDegreeScanData(degreeScanData);
+						}
+					}
+				}
+
+				for (PreviousEmployee previousEmployee : personalInfo.getOldEmployee()) {
+
+					String payslipScanName = previousEmployee.getPayslipScan();
+					if (payslipScanName != null && !payslipScanName.isEmpty()) {
+						byte[] degreeScanData = personalInfoFileService.getFileData(payslipScanName);
+						if (degreeScanData != null) {
+							previousEmployee.setPayslipScanData(degreeScanData);
+						}
+					}
+
+				}
+
+				String recordsheetName = personalInfo.getBgcheck().getRecordsheet();
+				if (recordsheetName != null && !recordsheetName.isEmpty()) {
+					byte[] recordsheetData = personalInfoFileService.getFileData(recordsheetName);
+					if (recordsheetData != null) {
+						personalInfo.getBgcheck().setRecordSheetData(recordsheetData);
+					}
+				}
+
+				String declarationRequiredName = personalInfo.getBgcheck().getDeclarationRequired();
+				if (declarationRequiredName != null && !declarationRequiredName.isEmpty()) {
+					byte[] declarationRequiredData = personalInfoFileService.getFileData(declarationRequiredName);
+					if (declarationRequiredData != null) {
+						personalInfo.getBgcheck().setDeclarationRequiredData(declarationRequiredData);
+					}
+				}
+
+				for (EmpAchievement empAchievement : personalInfo.getEmpAchievements()) {
+
+					String achievementsRewardsDocsName = empAchievement.getAchievementsRewardsDocs();
+					if (achievementsRewardsDocsName != null && !achievementsRewardsDocsName.isEmpty()) {
+						byte[] achievementsRewardsDocsData = personalInfoFileService
+								.getFileData(achievementsRewardsDocsName);
+						if (achievementsRewardsDocsData != null) {
+							empAchievement.setAchievementsRewardsDocsData(achievementsRewardsDocsData);
+						}
+					}
+				}
+
+				for (Trainingdetails trainingdetails : personalInfo.getTraining()) {
+
+					String PaidTrainingDocumentProofName = trainingdetails.getPaidTrainingDocumentProof();
+					if (PaidTrainingDocumentProofName != null && !PaidTrainingDocumentProofName.isEmpty()) {
+						byte[] PaidTrainingDocumentProofData = personalInfoFileService
+								.getFileData(PaidTrainingDocumentProofName);
+						if (PaidTrainingDocumentProofData != null) {
+							trainingdetails.setPaidTrainingDocumentProofData(PaidTrainingDocumentProofData);
+						}
+					}
+				}
+			}
+
+			return byPostedLocation;
+		} catch (Exception e) {
+			throw new RuntimeException("An error occurred while retrieving personal information for email: ", e);
+		}
+
+	}
+
 }

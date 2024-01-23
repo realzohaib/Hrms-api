@@ -45,5 +45,7 @@ public interface IPersonalInfoService {
 	
 	public List<PersonalInfo> getPersonalInfoWithPendingBackgroundCheck();
 	
+	public List<PersonalInfo> getByPostedLocation(String postedLocation);
+	
 	
 }

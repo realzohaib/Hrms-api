@@ -44,4 +44,6 @@ public interface IPersonalInfoDAO {
 	public List<NotificationHelper> getNotificationFields();
 	
 	public List<PersonalInfo> getPersonalInfoWithPendingBackgroundCheck();
+	
+	public List<PersonalInfo> getByPostedLocation(String postedLocation);
 }

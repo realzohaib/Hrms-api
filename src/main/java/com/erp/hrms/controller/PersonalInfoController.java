@@ -222,4 +222,19 @@ public class PersonalInfoController {
 		}
 	}
 
+	
+	 @GetMapping("/postedLocation/{postedLocation}")
+	    public ResponseEntity<List<PersonalInfo>> getByPostedLocation(@PathVariable String postedLocation) {
+	        try {
+	            List<PersonalInfo> personalInfoList = personalInfoService.getByPostedLocation(postedLocation);
+	            
+	            if (personalInfoList.isEmpty()) {
+	                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	            } else {
+	                return new ResponseEntity<>(personalInfoList, HttpStatus.OK);
+	            }
+	        } catch (Exception e) {
+	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    } 
 }

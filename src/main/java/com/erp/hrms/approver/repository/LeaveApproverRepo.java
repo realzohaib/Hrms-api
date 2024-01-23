@@ -8,5 +8,8 @@ import com.erp.hrms.approver.entity.LeaveApprover;
 
 public interface LeaveApproverRepo extends JpaRepository<LeaveApprover, Long> {
 
-	  List<LeaveApprover> findByEndDateIsNull();
+	List<LeaveApprover> findByEndDateIsNull();
+
+	List<LeaveApprover> findByFirstApproverEmpId(Long firstApproverEmpId);
+
 }
