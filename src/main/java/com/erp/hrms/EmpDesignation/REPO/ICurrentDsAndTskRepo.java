@@ -15,6 +15,8 @@ public interface ICurrentDsAndTskRepo extends JpaRepository<CurrentDesignationAn
         
     @Query("SELECT cdt FROM CurrentDesignationAndTask cdt WHERE cdt.currentDsAndTskId = :currentDsAndTskId")
     public CurrentDesignationAndTask findByCurrentDsAndTskId(Integer currentDsAndTskId);
+    
+    List<CurrentDesignationAndTask>findByLevelId(Integer levelId);
 
     
 

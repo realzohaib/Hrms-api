@@ -34,4 +34,14 @@ public class LeaveApprover {
 
 	@ElementCollection
 	private List<String> approverLevels;
+	
+	
+//	DTO
+//	
+//	Private leaveApprover;
+//	private int empid
+	
+	
+	//public list<DTO> apprioverAndEmpUnderSameL;
+	
 }

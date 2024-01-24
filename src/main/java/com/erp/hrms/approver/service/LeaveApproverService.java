@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.erp.hrms.approver.entity.LeaveApprover;
+import com.erp.hrms.entity.response.LeaveApproverDTO;
 
 public interface LeaveApproverService {
 
@@ -14,5 +15,8 @@ public interface LeaveApproverService {
 	public List<LeaveApprover> findAllLeaveApprovers();
 
 	public LeaveApprover updateLeaveApproverEndDate(Long lAId, LeaveApprover leaveApprover);
+	
+//	public List<LeaveApprover> findByFirstApproverEmpId(Long firstApproverEmpId);
 
+	public List<LeaveApproverDTO> findByFirstApproverEmpId(Long firstApproverEmpId);
 }

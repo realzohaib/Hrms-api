@@ -299,17 +299,20 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 
 	@Override
 	public List<PersonalInfo> getByPostedLocation(String postedLocation) {
-	    try {
-	        TypedQuery<PersonalInfo> query = entityManager.createQuery(
-	            "SELECT p FROM PersonalInfo p JOIN p.jobDetails j WHERE j.postedLocation = :postedLocation", PersonalInfo.class);
-	        query.setParameter("postedLocation", postedLocation);
-	        return query.getResultList();
-	    } catch (NoResultException ex) {
-	        throw new PersonalInfoNotFoundException(
-	            new MessageResponse("No personal information found for this posted location: " + postedLocation));
-	    } catch (Exception ex) {
-	        throw new RuntimeException("An error occurred while retrieving personal information for posted location: " + postedLocation, ex);
-	    }
+		try {
+			TypedQuery<PersonalInfo> query = entityManager.createQuery(
+					"SELECT p FROM PersonalInfo p JOIN p.jobDetails j WHERE j.postedLocation = :postedLocation",
+					PersonalInfo.class);
+			query.setParameter("postedLocation", postedLocation);
+			return query.getResultList();
+		} catch (NoResultException ex) {
+			throw new PersonalInfoNotFoundException(
+					new MessageResponse("No personal information found for this posted location: " + postedLocation));
+		} catch (Exception ex) {
+			throw new RuntimeException(
+					"An error occurred while retrieving personal information for posted location: " + postedLocation,
+					ex);
+		}
 	}
-	
+
 }

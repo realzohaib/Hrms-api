@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.approver.entity.LeaveApprover;
 import com.erp.hrms.approver.service.LeaveApproverService;
+import com.erp.hrms.entity.response.LeaveApproverDTO;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -55,4 +56,26 @@ public class LeaveApproverController {
 		return new ResponseEntity<>(updatedApprover, HttpStatus.OK);
 	}
 
+//	 @GetMapping("/findByFirstApproverEmpId/{firstApproverEmpId}")
+//	    public ResponseEntity<List<LeaveApprover>> findByFirstApproverEmpId(@PathVariable Long firstApproverEmpId) {
+//	        List<LeaveApprover> leaveApprovers = leaveApproverService.findByFirstApproverEmpId(firstApproverEmpId);
+//
+//	        if (leaveApprovers.isEmpty()) {
+//	            return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+//	        } else {
+//	            return new ResponseEntity<>(leaveApprovers, HttpStatus.OK);
+//	        }
+//	    }
+	
+	@GetMapping("/findByFirstApproverEmpId/{firstApproverEmpId}")
+	public ResponseEntity<List<LeaveApproverDTO>> findByFirstApproverEmpId(@PathVariable Long firstApproverEmpId) {
+	    List<LeaveApproverDTO> leaveApproverDTOs = leaveApproverService.findByFirstApproverEmpId(firstApproverEmpId);
+
+	    if (leaveApproverDTOs.isEmpty()) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    } else {
+	        return new ResponseEntity<>(leaveApproverDTOs, HttpStatus.OK);
+	    }
+	}
+	
 }

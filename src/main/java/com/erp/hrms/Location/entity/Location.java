@@ -37,7 +37,7 @@ public class Location {
 	private Boolean isMaintenanceRequired;
 
 	private String commentsForMaintenance;
-	
+
 	private String country;
 
 //	@ManyToMany(cascade = { CascadeType.ALL }) 

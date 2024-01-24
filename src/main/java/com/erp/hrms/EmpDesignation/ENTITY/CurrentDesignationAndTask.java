@@ -29,6 +29,7 @@ import lombok.Data;
 		private Long empId;
 		private String startDate;
 		private String endDate;
+		private Integer levelId;
 	
 		@ManyToMany
 		@JoinTable(name = "currentDsAnsdTask_location", joinColumns = @JoinColumn(name = "current_desigAndTsk_Id"), inverseJoinColumns = @JoinColumn(name = "location_Id"))

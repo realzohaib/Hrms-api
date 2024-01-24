@@ -217,4 +217,19 @@ public class CurrentServiceImpl implements ICurrentService {
 		return res;
 	}
 
+	@Override
+	public List<CurrentDesignationAndTask> findAllEmpByLevelId(Integer levelId) {
+		// return repo.findByLevelId(levelId);
+		List<CurrentDesignationAndTask> findByLevelId = repo.findByLevelId(levelId);
+		for (CurrentDesignationAndTask obj : findByLevelId) {
+			List<Designations> designationlist = obj.getDesignation();
+			for (Designations designation : designationlist) {
+				designation.setDuties(null);
+			}
+			obj.setTask(null);
+
+		}
+		return findByLevelId;
+	}
+
 }

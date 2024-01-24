@@ -24,6 +24,7 @@ import com.erp.hrms.api.security.response.StatusResponse;
 import com.erp.hrms.api.service.IPersonalInfoService;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
+import com.erp.hrms.entity.response.EmployeeResponseDTO;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
@@ -222,19 +223,21 @@ public class PersonalInfoController {
 		}
 	}
 
-	
-	 @GetMapping("/postedLocation/{postedLocation}")
-	    public ResponseEntity<List<PersonalInfo>> getByPostedLocation(@PathVariable String postedLocation) {
-	        try {
-	            List<PersonalInfo> personalInfoList = personalInfoService.getByPostedLocation(postedLocation);
-	            
-	            if (personalInfoList.isEmpty()) {
-	                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	            } else {
-	                return new ResponseEntity<>(personalInfoList, HttpStatus.OK);
-	            }
-	        } catch (Exception e) {
-	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
-	    } 
+	@GetMapping("/employees/postedLocation/{postedLocation}")
+	public ResponseEntity<List<EmployeeResponseDTO>> getByPostedLocationResponse(@PathVariable String postedLocation) {
+		try {
+			List<EmployeeResponseDTO> employeeResponseList = personalInfoService.getByPostedLocation(postedLocation);
+
+			if (employeeResponseList.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			} else {
+				return new ResponseEntity<>(employeeResponseList, HttpStatus.OK);
+			}
+		} catch (PersonalInfoNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 }
