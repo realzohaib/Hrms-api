@@ -25,6 +25,8 @@ public class ShiftAssignment {
 
     private long employeeId;
     
+    private boolean deleted;
+    
     @ManyToOne
     private Shift shift;
 }

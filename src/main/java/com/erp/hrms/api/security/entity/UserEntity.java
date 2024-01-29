@@ -52,6 +52,8 @@ public class UserEntity implements Serializable {
 	@Size(max = 50)
 	@Email
 	private String email;
+	
+	private String mobileNo;
 
 	// @NotBlank
 	@Size(max = 120)

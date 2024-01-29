@@ -28,5 +28,7 @@ public interface ShiftAssignmentRepo extends JpaRepository<ShiftAssignment, Long
 
 	@Query("SELECT sa FROM ShiftAssignment sa WHERE sa.shift.shiftName = :shiftName AND sa.startDate = :date")
 	List<ShiftAssignment> findByShift_ShiftNameAndStartDate(LocalDate date, String shiftName);
+	
+	ShiftAssignment findByAssignmentId(long id);
 
 }

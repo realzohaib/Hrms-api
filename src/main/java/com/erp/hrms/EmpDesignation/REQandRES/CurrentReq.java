@@ -10,6 +10,7 @@ public class CurrentReq {
 	private Long empId;
 	private String startDate;
 	private String endDate;
+	private Integer levelId;
 	private List<Integer>locationId;
 	private List<Integer>designationId;
 	private List<Integer>taskId;

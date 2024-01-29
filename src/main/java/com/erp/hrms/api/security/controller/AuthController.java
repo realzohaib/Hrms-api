@@ -49,8 +49,8 @@ public class AuthController {
 	@Autowired
 	UserRepository userRepository;
 
-	//@Autowired
-	//IRoleRepository roleRepository;
+	// @Autowired
+	// IRoleRepository roleRepository;
 
 	@Autowired
 	PasswordEncoder encoder;
@@ -60,7 +60,7 @@ public class AuthController {
 
 	@Autowired
 	IPersonalInfoDAO dao;
-	
+
 	@Autowired
 	CurrentServiceImpl service;
 
@@ -82,18 +82,20 @@ public class AuthController {
 //				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("You don't have access"));
 //			}
 
-			String username = loginRequest.getUsername();
+			UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+			String username = userPrincipal.getUsername();
 			long parseLong = Long.parseLong(username);
 
-			if (roles.contains("ROLE_EMPLOYEE")) {
-				PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
-				jwt.setInfo(personalInfo);
-				return ResponseEntity.ok(jwt);
-			}
-			
-			List<CurrentRes> loadAllActiveDesignationAndTaskByEmpId = service.loadAllActiveDesignationAndTaskByEmpId(parseLong);
+//			if (roles.contains("ROLE_EMPLOYEE")) {
+//				PersonalInfo personalInfo = dao.getPersonalInfoByEmployeeId(parseLong);
+//				jwt.setInfo(personalInfo);
+//				return ResponseEntity.ok(jwt);
+//			}
+
+			List<CurrentRes> loadAllActiveDesignationAndTaskByEmpId = service
+					.loadAllActiveDesignationAndTaskByEmpId(parseLong);
 			jwt.setCurrentDesignationAndTask(loadAllActiveDesignationAndTaskByEmpId);
-			
+
 			return ResponseEntity.ok(jwt);
 
 		} catch (BadCredentialsException e) {

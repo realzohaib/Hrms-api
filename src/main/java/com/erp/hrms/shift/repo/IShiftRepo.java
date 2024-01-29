@@ -7,5 +7,6 @@ import com.erp.hrms.shift.entity.Shift;
 
 @Repository
 public interface IShiftRepo extends JpaRepository<Shift, Integer> {
-	
+	Shift findByshiftId(int shiftId);
+
 }
