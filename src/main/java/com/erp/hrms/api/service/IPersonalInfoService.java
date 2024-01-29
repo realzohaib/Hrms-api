@@ -48,4 +48,6 @@ public interface IPersonalInfoService {
 
 	public List<EmployeeResponseDTO> getByPostedLocation(String postedLocation);
 
+	public List<PersonalInfo> findAllPersonalInfoActive();
+
 }

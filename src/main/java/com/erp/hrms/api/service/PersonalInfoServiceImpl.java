@@ -2426,4 +2426,13 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		return responseDTO;
 	}
 
+	@Override
+	public List<PersonalInfo> findAllPersonalInfoActive() {
+		try {
+			return dao.findAllPersonalInfoActive();
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to retrieve active personal info: " + e.getMessage(), e);
+		}
+	}
+
 }

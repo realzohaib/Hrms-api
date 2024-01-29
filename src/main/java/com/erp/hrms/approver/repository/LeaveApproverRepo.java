@@ -12,4 +12,6 @@ public interface LeaveApproverRepo extends JpaRepository<LeaveApprover, Long> {
 
 	List<LeaveApprover> findByFirstApproverEmpId(Long firstApproverEmpId);
 
+	List<LeaveApprover> findBySecondApproverEmpId(Long secondApproverEmpId);
+
 }

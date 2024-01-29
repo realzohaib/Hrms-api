@@ -15,8 +15,9 @@ public interface LeaveApproverService {
 	public List<LeaveApprover> findAllLeaveApprovers();
 
 	public LeaveApprover updateLeaveApproverEndDate(Long lAId, LeaveApprover leaveApprover);
-	
-//	public List<LeaveApprover> findByFirstApproverEmpId(Long firstApproverEmpId);
 
 	public List<LeaveApproverDTO> findByFirstApproverEmpId(Long firstApproverEmpId);
+
+	public List<LeaveApproverDTO> findBySecondApproverEmpId(Long secondApproverEmpId);
+
 }

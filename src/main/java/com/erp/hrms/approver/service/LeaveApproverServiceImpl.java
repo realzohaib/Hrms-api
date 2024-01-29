@@ -17,6 +17,7 @@ import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.response.EmployeeResponseDTO;
 import com.erp.hrms.entity.response.LeaveApproverDTO;
 import com.erp.hrms.entity.response.LocationDTO;
+import com.erp.hrms.form.repository.ILeaveRepository;
 
 @Service
 public class LeaveApproverServiceImpl implements LeaveApproverService {
@@ -71,14 +72,14 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 	public List<LeaveApproverDTO> findByFirstApproverEmpId(Long firstApproverEmpId) {
 		List<LeaveApprover> leaveApprovers = leaveApproverRepo.findByFirstApproverEmpId(firstApproverEmpId);
 
-		List<LeaveApproverDTO> resultDTOList = new ArrayList<>();
+		System.out.println("Retrieved leaveApprovers: " + leaveApprovers);
 
+		List<LeaveApproverDTO> resultDTOList = new ArrayList<>();
 		for (LeaveApprover leaveApprover : leaveApprovers) {
 			LeaveApproverDTO leaveApproverDTO = mapToDTO(leaveApprover);
 			leaveApproverDTO.setEmployeeData(getEmployeeDataForLocations(leaveApprover.getLocations()));
 			resultDTOList.add(leaveApproverDTO);
 		}
-
 		return resultDTOList;
 	}
 
@@ -86,9 +87,7 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 		List<EmployeeResponseDTO> employeeResponseList = new ArrayList<>();
 
 		for (Location location : locations) {
-			// Convert Long to String before calling the existing method
 			String locationIdAsString = String.valueOf(location.getLocationId());
-
 			List<PersonalInfo> personalInfoList = dao.getByPostedLocation(locationIdAsString);
 
 			for (PersonalInfo personalInfo : personalInfoList) {
@@ -96,7 +95,6 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 				employeeResponseList.add(responseDTO);
 			}
 		}
-
 		return employeeResponseList;
 	}
 
@@ -112,7 +110,6 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 		leaveApproverDTO.setApproverLevels(leaveApprover.getApproverLevels());
 		leaveApproverDTO.setLAId(leaveApprover.getLAId());
 
-		// Set employee data for each location
 		leaveApproverDTO.setEmployeeData(getEmployeeDataForLocations(leaveApprover.getLocations()));
 
 		return leaveApproverDTO;
@@ -122,7 +119,6 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 		if (locations == null || locations.isEmpty()) {
 			return Collections.emptyList();
 		}
-
 		return locations.stream().map(this::mapLocationToDTO).collect(Collectors.toList());
 	}
 
@@ -138,13 +134,26 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 		locationDTO.setCommentsForMaintenance(location.getCommentsForMaintenance());
 		locationDTO.setCountry(location.getCountry());
 		locationDTO.setInchargeInfo(location.getInchargeInfo());
-
 		return locationDTO;
 	}
 
 	private EmployeeResponseDTO createEmployeeResponseDTO(PersonalInfo personalInfo) {
 		EmployeeResponseDTO responseDTO = new EmployeeResponseDTO(personalInfo);
 		return responseDTO;
+	}
+
+	@Override
+	public List<LeaveApproverDTO> findBySecondApproverEmpId(Long secondApproverEmpId) {
+		List<LeaveApprover> leaveApprovers = leaveApproverRepo.findBySecondApproverEmpId(secondApproverEmpId);
+		List<LeaveApproverDTO> resultDTOList = new ArrayList<>();
+
+		for (LeaveApprover leaveApprover : leaveApprovers) {
+			LeaveApproverDTO leaveApproverDTO = mapToDTO(leaveApprover);
+			leaveApproverDTO.setEmployeeData(getEmployeeDataForLocations(leaveApprover.getLocations()));
+			resultDTOList.add(leaveApproverDTO);
+		}
+		return resultDTOList;
+
 	}
 
 }

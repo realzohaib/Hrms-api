@@ -81,7 +81,7 @@ public class PersonalInfoController {
 		}
 	}
 
-	@GetMapping("/personal-info/find/all/active")
+	@GetMapping("/personal-info/find/all")
 	public ResponseEntity<?> findAllPersonalInfo() {
 		try {
 			List<PersonalInfo> findAllPersonalInfo = personalInfoService.findAllPersonalInfo();
@@ -240,4 +240,13 @@ public class PersonalInfoController {
 		}
 	}
 
+	 @GetMapping("/find-all/personal-info/active")
+	    public ResponseEntity<List<PersonalInfo>> getAllActivePersonalInfo() {
+	        try {
+	            List<PersonalInfo> activePersonalInfo = personalInfoService.findAllPersonalInfoActive();
+	            return new ResponseEntity<>(activePersonalInfo, HttpStatus.OK);
+	        } catch (Exception e) {
+	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    }
 }

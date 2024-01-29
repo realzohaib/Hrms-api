@@ -8,7 +8,7 @@ import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 public interface IPersonalInfoDAO {
 
 	public boolean existsByEmail(String email);
-	
+
 	public boolean existsByPersonalContactNo(String personalContactNo);
 
 	public boolean existByID(long Id);
@@ -42,8 +42,11 @@ public interface IPersonalInfoDAO {
 	public void update1dayBeforeVisaEmailSend(String email);
 
 	public List<NotificationHelper> getNotificationFields();
-	
+
 	public List<PersonalInfo> getPersonalInfoWithPendingBackgroundCheck();
-	
+
 	public List<PersonalInfo> getByPostedLocation(String postedLocation);
+
+	public List<PersonalInfo> findAllPersonalInfoActive();
+
 }

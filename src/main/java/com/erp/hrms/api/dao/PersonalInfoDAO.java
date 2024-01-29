@@ -315,4 +315,15 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 		}
 	}
 
+	@Override
+	public List<PersonalInfo> findAllPersonalInfoActive() {
+		try {
+			List<PersonalInfo> resultList = entityManager
+					.createQuery("SELECT p FROM PersonalInfo p WHERE p.status = 'Active'", PersonalInfo.class)
+					.getResultList();
+			return resultList;
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to retrieve active personal info: " + e.getMessage());
+		}
+	}
 }

@@ -2,6 +2,7 @@ package com.erp.hrms.approver.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,26 +57,27 @@ public class LeaveApproverController {
 		return new ResponseEntity<>(updatedApprover, HttpStatus.OK);
 	}
 
-//	 @GetMapping("/findByFirstApproverEmpId/{firstApproverEmpId}")
-//	    public ResponseEntity<List<LeaveApprover>> findByFirstApproverEmpId(@PathVariable Long firstApproverEmpId) {
-//	        List<LeaveApprover> leaveApprovers = leaveApproverService.findByFirstApproverEmpId(firstApproverEmpId);
-//
-//	        if (leaveApprovers.isEmpty()) {
-//	            return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
-//	        } else {
-//	            return new ResponseEntity<>(leaveApprovers, HttpStatus.OK);
-//	        }
-//	    }
-	
 	@GetMapping("/findByFirstApproverEmpId/{firstApproverEmpId}")
 	public ResponseEntity<List<LeaveApproverDTO>> findByFirstApproverEmpId(@PathVariable Long firstApproverEmpId) {
-	    List<LeaveApproverDTO> leaveApproverDTOs = leaveApproverService.findByFirstApproverEmpId(firstApproverEmpId);
+		List<LeaveApproverDTO> leaveApproverDTOs = leaveApproverService.findByFirstApproverEmpId(firstApproverEmpId);
 
-	    if (leaveApproverDTOs.isEmpty()) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	    } else {
-	        return new ResponseEntity<>(leaveApproverDTOs, HttpStatus.OK);
-	    }
+		if (leaveApproverDTOs.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<>(leaveApproverDTOs, HttpStatus.OK);
+		}
 	}
+
+	@GetMapping("/findBySecondApproverEmpId/{secondApproverEmpId}")
+	public ResponseEntity<List<LeaveApproverDTO>> findBySecondApproverEmpId(@PathVariable Long secondApproverEmpId) {
+		List<LeaveApproverDTO> leaveApproverDTOs = leaveApproverService.findBySecondApproverEmpId(secondApproverEmpId);
+
+		if (leaveApproverDTOs.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<>(leaveApproverDTOs, HttpStatus.OK);
+		}
+	}
+
 	
 }

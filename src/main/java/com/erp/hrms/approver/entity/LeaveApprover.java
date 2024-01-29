@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
 import com.erp.hrms.Location.entity.Location;
+import com.erp.hrms.entity.form.LeaveApproval;
 
 import lombok.Data;
 
@@ -34,14 +35,5 @@ public class LeaveApprover {
 
 	@ElementCollection
 	private List<String> approverLevels;
-	
-	
-//	DTO
-//	
-//	Private leaveApprover;
-//	private int empid
-	
-	
-	//public list<DTO> apprioverAndEmpUnderSameL;
-	
+
 }
