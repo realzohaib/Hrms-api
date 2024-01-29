@@ -19,7 +19,7 @@ public class TaskController {
 	@Autowired
 	private TaskServiceImpl service;
 
-	@PostMapping("/save _task")
+	@PostMapping("/save_task")
 	public ResponseEntity<?> savetask(@RequestBody TaskRequest req) {
 		try {
 			service.saveTask(req);

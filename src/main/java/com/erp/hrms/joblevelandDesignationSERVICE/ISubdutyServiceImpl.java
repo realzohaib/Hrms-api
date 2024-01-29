@@ -50,7 +50,11 @@ public class ISubdutyServiceImpl implements ISubdutyService {
 
 	@Override
 	public List<SubDuties> loadAllSubduties() {
-		return subrepo.findAll();
+		 List<SubDuties> findAll = subrepo.findAll();
+		 for(SubDuties subduty : findAll) {
+			 subduty.setTask(null);
+		 }
+		 return findAll;
 	}
 
 }

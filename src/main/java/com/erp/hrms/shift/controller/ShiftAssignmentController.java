@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -88,17 +89,14 @@ public class ShiftAssignmentController {
 
 	}
 
-	@PutMapping("/update-shift-ById /{id}")
-	public ResponseEntity<?> updateShftById(@PathVariable long id, @RequestBody ShiftAssignment asign) {
-		if (!repo.existsByEmployeeId(id)) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Please enter valid Employee Id"));
-		}
+	@PutMapping("/update-shift-ById")
+	public ResponseEntity<?> updateShftById(@RequestBody ShiftAssignment asign) {
 		try {
-			return ResponseEntity.ok(service.updateShift(asign, id));
+			return ResponseEntity.ok(service.updateShift(asign));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(new MessageResponse("failed to fetch data shift" + e.getMessage()));
 		}
-
+		
 	}
 
 	// fetches All employee details through their shift start date
@@ -151,6 +149,16 @@ public class ShiftAssignmentController {
 			return ResponseEntity.badRequest()
 					.body(new MessageResponse("Failed to fetch data shift: " + e.getMessage()));
 		}
+	}
+	
+	@DeleteMapping("/shift-allocation/cancel/{assignmentId}")
+	public ResponseEntity<?>deleteShiftAssignment(@PathVariable Long assignmentId){
+		try {
+			service.deleteShiftAllocation(assignmentId);
+			return ResponseEntity.ok().body("Shift allocation cancelled successfully");			
+		} catch (Exception e) {
+			return ResponseEntity.badRequest()
+					.body(e.getMessage());		}
 	}
 
 }

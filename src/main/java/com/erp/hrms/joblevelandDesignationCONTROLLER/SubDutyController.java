@@ -19,7 +19,7 @@ public class SubDutyController {
 	@Autowired
 	private ISubdutyServiceImpl service;
 	
-	@PostMapping("/save _subduties")
+	@PostMapping("/save_subduties")
 	public ResponseEntity<?> saveSubDuties(@RequestBody SubDutiesRequest req) {
 		try {
 			service.saveSubduty(req);

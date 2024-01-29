@@ -515,6 +515,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			user.setEmail(PersonalInfo.getEmail());
 			user.setUsername(String.valueOf(employeeId));
 			user.setPersonalinfo(PersonalInfo);
+			user.setMobileNo(PersonalInfo.getPersonalContactNo());
 			user.setRoles(roles);
 			user.setEnabled(false);
 
