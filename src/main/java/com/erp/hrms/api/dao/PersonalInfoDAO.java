@@ -106,6 +106,13 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 	}
 
 	@Override
+	public PersonalInfo loadPersonalInfoByEmployeeId(Long employeeId) {
+		Query query = entityManager.createQuery("SELECT p FROM PersonalInfo p WHERE p.employeeId = :employeeId");
+		query.setParameter("employeeId", employeeId);
+		return (PersonalInfo) query.getSingleResult();
+	}
+
+	@Override
 	public PersonalInfo deletePersonalInfoByEmail(String email, PersonalInfo personalInfo) {
 		try {
 			personalInfo.setEmail(email);
@@ -326,4 +333,5 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 			throw new RuntimeException("Failed to retrieve active personal info: " + e.getMessage());
 		}
 	}
+
 }
