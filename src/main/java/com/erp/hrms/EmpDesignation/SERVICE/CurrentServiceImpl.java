@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.erp.hrms.EmpDesignation.ENTITY.CurrentDesignationAndTask;
 import com.erp.hrms.EmpDesignation.REPO.ICurrentDsAndTskRepo;
@@ -16,7 +15,7 @@ import com.erp.hrms.EmpDesignation.REQandRES.CurrentRes;
 import com.erp.hrms.Location.entity.Location;
 import com.erp.hrms.Location.repository.LocationRepository;
 import com.erp.hrms.api.dao.IjobDetailsDAO;
-import com.erp.hrms.api.service.PersonalInfoServiceImpl;
+import com.erp.hrms.api.dao.PersonalInfoDAO;
 import com.erp.hrms.entity.JobDetails;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.joblevelandDesignationEntity.Designations;
@@ -44,7 +43,7 @@ public class CurrentServiceImpl implements ICurrentService {
 
 	@Autowired
 	@Lazy
-	private PersonalInfoServiceImpl personalInfoservice;
+	private PersonalInfoDAO personalInfoservice;
 
 	@Autowired
 	private IjobDetailsDAO jobrepo;
@@ -63,53 +62,53 @@ public class CurrentServiceImpl implements ICurrentService {
 	@Override
 	@org.springframework.transaction.annotation.Transactional
 	public void saveCurrent(CurrentReq current) throws IOException {
-		CurrentDesignationAndTask obj = new CurrentDesignationAndTask();
+		CurrentDesignationAndTask currentDesignationAndTask = new CurrentDesignationAndTask();
 
-		obj.setEmpId(current.getEmpId());
-		obj.setEndDate(current.getEndDate());
-		obj.setStartDate(current.getStartDate());
-		obj.setLevelId(current.getLevelId());
+		currentDesignationAndTask.setEmpId(current.getEmpId());
+		currentDesignationAndTask.setEndDate(current.getEndDate());
+		currentDesignationAndTask.setStartDate(current.getStartDate());
+		currentDesignationAndTask.setLevelId(current.getLevelId());
 
-//		PersonalInfo employee = personalInfoservice.getPersonalInfoByEmployeeId(current.getEmpId());
-//		List<JobDetails> jobDetails = employee.getJobDetails();
-
-		List<Integer> designationIdList = current.getDesignationId();
-		List<Designations> designationList = new ArrayList<Designations>();
-		for (Integer designationId : designationIdList) {
-			Designations designations = desigrepo.findByDesignationId(designationId);
-			designationList.add(designations);
+		List<JobDetails> jobDetails = null;
+		PersonalInfo employee = personalInfoservice.loadPersonalInfoByEmployeeId(current.getEmpId());
+		if (employee != null) {
+			jobDetails = employee.getJobDetails();
 		}
-		obj.setDesignation(designationList);
 
-		List<Integer> taskIdList = current.getTaskId();
-		List<Task> taskList = new ArrayList<Task>();
-		for (Integer taskId : taskIdList) {
-			Task task = taskrepo.findByTaskId(taskId);
-			taskList.add(task);
+		List<Designations> designationList = new ArrayList<>();
+		for (Integer designationId : current.getDesignationId()) {
+			designationList.add(desigrepo.findByDesignationId(designationId));
 		}
-		obj.setTask(taskList);
+		currentDesignationAndTask.setDesignation(designationList);
 
-		List<Location> locationList = new ArrayList<Location>();
-		List<Integer> locationIdList = current.getLocationId();
-		for (Integer locationId : locationIdList) {
+		List<Task> taskList = new ArrayList<>();
+		for (Integer taskId : current.getTaskId()) {
+			taskList.add(taskrepo.findByTaskId(taskId));
+		}
+		currentDesignationAndTask.setTask(taskList);
+
+		List<Location> locationList = new ArrayList<>();
+		for (Integer locationId : current.getLocationId()) {
 			Location location = locationrepo.findByLocationId(locationId);
 
-//			for (JobDetails jd : jobDetails) {
-//				String postedLocation = jd.getPostedLocation();
-//
-//				if (locationId != Integer.valueOf(postedLocation)) {
-//					jd.setPostedLocation(String.valueOf(locationId));
-//					jobrepo.save(jd);
-//				}
-//			}
+			if (employee != null) {
+				for (JobDetails jd : jobDetails) {
+					String postedLocation = jd.getPostedLocation();
+
+					if (!locationId.toString().equals(postedLocation)) {
+						jd.setPostedLocation(locationId.toString());
+						jobrepo.save(jd);
+					}
+				}
+			}
 			locationList.add(location);
 		}
-		obj.setLocation(locationList);
+		currentDesignationAndTask.setLocation(locationList);
 
-		repo.save(obj);
-
+		repo.save(currentDesignationAndTask);
 	}
 
+	
 	// it fetches all the data of an employee , means current AND ended task also;
 	@Override
 	public List<CurrentRes> loadAllDesignationAndTaskByEmpId(long empid) {

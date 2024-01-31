@@ -473,13 +473,15 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 			PersonalInfo.setUserentity(user);
 			currentDesignationandTask.setEmpId(employeeId);
-			currentService.saveCurrent(currentDesignationandTask);
+//			currentService.saveCurrent(currentDesignationandTask);
 			dao.savePersonalInfo(PersonalInfo);
+			currentService.saveCurrent(currentDesignationandTask);
+
 
 			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp);
 			
 		} catch (Exception e) {
-			throw new RuntimeException("An error occurred while saving personal information.", e);
+			throw new RuntimeException(e.getMessage());
 		}
 	}
 

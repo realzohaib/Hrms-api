@@ -96,6 +96,14 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 					"An error occurred while retrieving personal information for employee ID: " + employeeId, ex);
 		}
 	}
+	
+	@Override
+	public PersonalInfo loadPersonalInfoByEmployeeId(Long employeeId) {
+		Query query = entityManager.createQuery("SELECT p FROM PersonalInfo p WHERE p.employeeId = :employeeId");
+		query.setParameter("employeeId", employeeId);
+		return (PersonalInfo) query.getSingleResult();
+	}
+
 
 	@Override
 	public PersonalInfo deletePersonalInfoByEmail(String email, PersonalInfo personalInfo) {
@@ -280,5 +288,6 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 				NotificationHelper.class).getResultList();
 		return query;
 	}
+
 
 }

@@ -20,6 +20,9 @@ public interface IPersonalInfoDAO {
 	public PersonalInfo getPersonalInfoByEmailForUpdate(String email);
 
 	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId);
+	
+	//this method and the above method are same ,but this method is used in CurrentServiceImpl
+	public PersonalInfo loadPersonalInfoByEmployeeId(Long employeeId);
 
 	public PersonalInfo deletePersonalInfoByEmail(String email, PersonalInfo existingPersonalInfo);
 
