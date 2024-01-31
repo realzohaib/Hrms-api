@@ -19,6 +19,7 @@ public class EmployeeResponseDTO {
 	private String email;
 	private String postedLocation;
 
+	
 	public EmployeeResponseDTO() {
 	}
 
@@ -31,9 +32,12 @@ public class EmployeeResponseDTO {
 		this.phoneCode = personalInfo.getPhoneCode();
 		this.personalContactNo = personalInfo.getPersonalContactNo();
 		this.email = personalInfo.getEmail();
+		
 
 		if (personalInfo.getJobDetails() != null && !personalInfo.getJobDetails().isEmpty()) {
-			this.postedLocation = personalInfo.getJobDetails().get(0).getPostedLocation();
-		}
+            this.postedLocation = personalInfo.getJobDetails().get(0).getPostedLocation();
+        }
 	}
+	
+	
 }

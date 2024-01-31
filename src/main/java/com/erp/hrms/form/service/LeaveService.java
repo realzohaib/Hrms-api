@@ -308,6 +308,7 @@ public class LeaveService implements ILeaveService {
 			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
 		}
 	}
+
 // In this method find approver of employee with the help of location id and level 
 	private LeaveApprover getLeaveApprover(LeaveApproval leaveApproval) {
 		Location locations = getLocationForLeaveApproval(leaveApproval);

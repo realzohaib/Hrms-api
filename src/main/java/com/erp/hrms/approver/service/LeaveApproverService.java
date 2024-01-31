@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.erp.hrms.approver.entity.LeaveApprover;
+import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.response.LeaveApproverDTO;
 
 public interface LeaveApproverService {

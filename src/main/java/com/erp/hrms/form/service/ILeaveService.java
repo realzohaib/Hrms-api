@@ -15,7 +15,8 @@ import com.erp.hrms.entity.form.MarkedDate;
 
 public interface ILeaveService {
 
-	public LeaveApprover createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName) throws IOException;
+	public LeaveApprover createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName)
+			throws IOException;
 
 	public LeaveApproval getleaveRequestById(Long leaveRequestID) throws IOException;
 
@@ -45,8 +46,7 @@ public interface ILeaveService {
 
 	public List<MarkedDate> markCalendarDates();
 
-	public BigDecimal calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(Long employeeId, int year,
-			int month);
+	public BigDecimal calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(Long employeeId, int year, int month);
 
 	public List<LeaveCountDTO> getAllLeavesByEmployeeIdAndYear(Long employeeId, int year, String countryName);
 

@@ -17,4 +17,6 @@ public class LeaveApproverDTO {
 	private List<String> approverLevels;
 
 	private List<EmployeeResponseDTO> employeeData;
+
+	private List<EmployeeNotificationDTO> employeeNotifications;
 }

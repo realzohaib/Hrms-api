@@ -54,7 +54,7 @@ public class VisaDetail {
 				this.visaDocsData = data;
 			}
 		} else {
-			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (2 MB)");
 		}
 	}
 
