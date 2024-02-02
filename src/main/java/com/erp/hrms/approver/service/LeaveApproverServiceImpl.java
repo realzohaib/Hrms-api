@@ -188,6 +188,8 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 			notificationDTO.setContactNumber(leaveApproval.getContactNumber());
 			notificationDTO.setEmergencyContactNumber(leaveApproval.getEmergencyContactNumber());
 			notificationDTO.setNoOfLeavesApproved(leaveApproval.getNoOfLeavesApproved());
+			notificationDTO.setApprovedStartDate(leaveApproval.getApprovedStartDate());
+			notificationDTO.setApprovedEndDate(leaveApproval.getApprovedEndDate());
 
 			employeeNotifications.add(notificationDTO);
 		}
@@ -207,5 +209,20 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 		}
 		return resultDTOList;
 	}
+	
+	@Override
+	public List<LeaveApproverDTO> findByApproverEmpId(Long approverEmpId) {
+	    List<LeaveApprover> leaveApprovers = leaveApproverRepo.findByFirstApproverEmpIdOrSecondApproverEmpId(approverEmpId, approverEmpId);
+
+	    List<LeaveApproverDTO> resultDTOList = new ArrayList<>();
+	    for (LeaveApprover leaveApprover : leaveApprovers) {
+	        LeaveApproverDTO leaveApproverDTO = mapToDTO(leaveApprover);
+	        leaveApproverDTO.setEmployeeData(getEmployeeDataForLocations(leaveApprover.getLocations()));
+	        resultDTOList.add(leaveApproverDTO);
+	    }
+	    return resultDTOList;
+	}
+	
+
 
 }

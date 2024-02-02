@@ -32,5 +32,8 @@ public class EmployeeNotificationDTO {
 	private String contactNumber;
 	private String emergencyContactNumber;
 	private double noOfLeavesApproved;
+	private String approvedStartDate;
+	private String approvedEndDate;
+
 
 }

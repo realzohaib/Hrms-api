@@ -79,5 +79,15 @@ public class LeaveApproverController {
 		}
 	}
 
+    @GetMapping("/findByApproverEmpId/{approverEmpId}")
+    public ResponseEntity<List<LeaveApproverDTO>> findByApproverEmpId(@PathVariable Long approverEmpId) {
+        List<LeaveApproverDTO> leaveApproverDTOs = leaveApproverService.findByApproverEmpId(approverEmpId);
+
+        if (leaveApproverDTOs.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(leaveApproverDTOs, HttpStatus.OK);
+        }
+    }
 	
 }

@@ -91,12 +91,12 @@ public class LeaveController {
 			throws IOException {
 		try {
 			iLeaveService.approvedByManager(leaveRequestId, leaveApproval, medicalDocumentsName);
-			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By manager"),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new MessageResponse("Done."), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse("Error while approving leave request. " + e),
 					HttpStatus.BAD_REQUEST);
 		}
+
 	}
 
 //	This method for update the leave request by the hr Accepted or Rejected with the help of leaveRequestId
@@ -107,7 +107,7 @@ public class LeaveController {
 			throws IOException {
 		try {
 			iLeaveService.approvedOrDenyByHR(leaveRequestId, leaveApproval, medicalDocumentsName);
-			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By HR"), HttpStatus.OK);
+			return new ResponseEntity<>(new MessageResponse("Done."), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse("Error while approving leave request. " + e),
 					HttpStatus.BAD_REQUEST);

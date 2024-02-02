@@ -243,13 +243,28 @@ public class LeaveService implements ILeaveService {
 					existingApproval);
 			LeaveApprover approver = getLeaveApprover(existingApproval);
 
+//			if (noOfLeavesApproved > 3) {
+//				sendLeaveRequestEmailApproved(approver.getSecondApproverEmail(), "Leave Request Approval Needed",
+//						existingApproval);
+//				existingApproval.setHrApprovalStatus("Pending");
+//			} else {
+////	            sendLeaveRequestEmailApproved(approver.getFirstApproverEmail(), "Leave Request Approval Needed", existingApproval);
+//				existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
+//			}
+			
 			if (noOfLeavesApproved > 3) {
-				sendLeaveRequestEmailApproved(approver.getSecondApproverEmail(), "Leave Request Approval Needed",
-						existingApproval);
-				existingApproval.setHrApprovalStatus("Pending");
+			    if (approver.getFirstApproverEmpId().equals(approver.getSecondApproverEmpId())) {
+			        // If firstApproverEmpId and secondApproverEmpId are the same, set both statuses to the same value
+			        existingApproval.setApprovalStatus(leaveApprovalJson.getApprovalStatus());
+			        existingApproval.setHrApprovalStatus(leaveApprovalJson.getApprovalStatus());
+			    } else {
+			        // If they are different, proceed with the normal workflow
+			        sendLeaveRequestEmailApproved(approver.getSecondApproverEmail(), "Leave Request Approval Needed", existingApproval);
+			        existingApproval.setHrApprovalStatus("Pending");
+			    }
 			} else {
-//	            sendLeaveRequestEmailApproved(approver.getFirstApproverEmail(), "Leave Request Approval Needed", existingApproval);
-				existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
+			    // If noOfLeavesApproved is not greater than 3, set hrApprovalStatus to the same value as approvalStatus
+			    existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
 			}
 
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {

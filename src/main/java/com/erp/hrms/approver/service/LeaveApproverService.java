@@ -20,5 +20,7 @@ public interface LeaveApproverService {
 	public List<LeaveApproverDTO> findByFirstApproverEmpId(Long firstApproverEmpId);
 
 	public List<LeaveApproverDTO> findBySecondApproverEmpId(Long secondApproverEmpId);
+	
+	public List<LeaveApproverDTO> findByApproverEmpId(Long approverEmpId);
 
 }
