@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class EmployeeNotificationDTO {
 
+	private Long leaveRequestId;
 	private Long employeeId;
 	private String nameOfEmployee;
 	private String designation;

@@ -165,6 +165,7 @@ public class LeaveApproverServiceImpl implements LeaveApproverService {
 		List<EmployeeNotificationDTO> employeeNotifications = new ArrayList<>();
 		for (LeaveApproval leaveApproval : leaveApprovals) {
 			EmployeeNotificationDTO notificationDTO = new EmployeeNotificationDTO();
+			notificationDTO.setLeaveRequestId(leaveApproval.getLeaveRequestId());
 			notificationDTO.setEmployeeId(leaveApproval.getEmployeeId());
 			notificationDTO.setHrApprovalStatus(leaveApproval.getHrApprovalStatus());
 			notificationDTO.setNameOfEmployee(leaveApproval.getNameOfEmployee());

@@ -6,12 +6,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -24,7 +22,6 @@ import com.erp.hrms.EmpDesignation.REQandRES.CurrentReq;
 import com.erp.hrms.EmpDesignation.SERVICE.CurrentServiceImpl;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.repo.IRoleRepository;
-import com.erp.hrms.api.security.entity.RoleEntity;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.entity.BackgroundCheck;
@@ -86,10 +83,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	 */
 	@Transactional
 	@Override
-	public void savedata(String personalinfo, String SignupRequest, String url,
-			String CurrentDesignationandAdditionalTask, MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
-			MultipartFile passportScan, MultipartFile licensecopy, MultipartFile relativeid,
-			MultipartFile raddressproof, MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
+	public void savedata(String personalinfo, String CurrentDesignationandAdditionalTask,
+			MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc, MultipartFile passportScan,
+			MultipartFile licensecopy, MultipartFile relativeid, MultipartFile raddressproof,
+			MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
 			MultipartFile graduationDocumentScan, MultipartFile postGraduationDocumentScan,
 			MultipartFile[] othersDocumentScan, MultipartFile[] degreeScan, MultipartFile payslipScan,
 			MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
@@ -98,8 +95,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
-		com.erp.hrms.api.request.SignupRequest Signuprequest = mapper.readValue(SignupRequest,
-				com.erp.hrms.api.request.SignupRequest.class);
 		CurrentReq currentDesignationandTask = mapper.readValue(CurrentDesignationandAdditionalTask, CurrentReq.class);
 
 		String email = PersonalInfo.getEmail();
@@ -507,16 +502,12 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				PersonalInfo.setTraining(training);
 			}
 
-			Set<String> strRoles = Signuprequest.getRole();
-			Set<RoleEntity> roles = new HashSet<>();
-
 			UserEntity user = new UserEntity();
 
 			user.setEmail(PersonalInfo.getEmail());
 			user.setUsername(String.valueOf(employeeId));
 			user.setPersonalinfo(PersonalInfo);
 			user.setMobileNo(PersonalInfo.getPersonalContactNo());
-			user.setRoles(roles);
 			user.setEnabled(false);
 
 			Random random = new Random();

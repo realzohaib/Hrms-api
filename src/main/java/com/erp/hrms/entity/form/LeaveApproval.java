@@ -48,6 +48,8 @@ public class LeaveApproval {
 	private String medicalDocumentsName;
 
 	private double noOfLeavesApproved;
+	private String approvedStartDate;
+	private String approvedEndDate;
 
 	@Transient
 	private byte[] medicalDocumentData;

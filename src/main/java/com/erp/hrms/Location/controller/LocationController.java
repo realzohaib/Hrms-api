@@ -17,7 +17,6 @@ import com.erp.hrms.Location.entity.Location;
 import com.erp.hrms.Location.entity.response.LocationDto;
 import com.erp.hrms.Location.service.LocationService;
 import com.erp.hrms.api.security.response.MessageResponse;
-import com.erp.hrms.approver.entity.LeaveApprover;
 
 @RestController
 @RequestMapping("/api/v1")

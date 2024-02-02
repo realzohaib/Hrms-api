@@ -85,47 +85,6 @@ public class LeaveService implements ILeaveService {
 
 //	This method for send the leave request to manager and send email to manager and admin
 	@Override
-//	public LeaveApprover createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName)
-//			throws IOException {
-//		try {
-//			LeaveApprover approver = null;
-//			ObjectMapper mapper = new ObjectMapper();
-//			LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
-//
-//			LeaveType leaveType = entityManager.find(LeaveType.class,
-//					leaveApprovalJson.getLeaveType().getLeaveTypeId());
-//			leaveApprovalJson.setLeaveType(leaveType);
-//			leaveApprovalJson.setNoOfLeavesApproved(leaveApprovalJson.getNumberOfDaysRequested());
-//			Long locationId = Long.parseLong(leaveApprovalJson.getLocation());
-//			Location locations = locationRepository.findByLocationId(locationId);
-//
-//			if (locations == null) {
-//				throw new RuntimeException("Location not found");
-//			}
-//			List<LeaveApprover> approvers = locations.getLeaveApprover();
-//			if (!approvers.isEmpty()) {
-//				approver = approvers.stream().filter(leaveApprover -> leaveApprover.getEndDate() == null).findFirst()
-//						.orElse(null);
-//				if (approver == null) {
-//					throw new RuntimeException("No LeaveApprover with null endDate found for the location");
-//				}
-//			}
-//			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
-//				String uniqueIdentifier = UUID.randomUUID().toString();
-//				String originalFileName = medicalDocumentsName.getOriginalFilename();
-//				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
-//
-//				Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
-//				Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
-//				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
-//			}
-//			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
-//			return approver;
-//		} catch (Exception e) {
-//			throw new RuntimeException("An error occurred while send your request." + e);
-//		}
-//	}
-
 	public LeaveApprover createLeaveApproval(String leaveApproval, MultipartFile medicalDocumentsName)
 			throws IOException {
 		try {
@@ -136,6 +95,9 @@ public class LeaveService implements ILeaveService {
 					leaveApprovalJson.getLeaveType().getLeaveTypeId());
 			leaveApprovalJson.setLeaveType(leaveType);
 			leaveApprovalJson.setNoOfLeavesApproved(leaveApprovalJson.getNumberOfDaysRequested());
+			leaveApprovalJson.setApprovedStartDate(leaveApprovalJson.getStartDate());
+			leaveApprovalJson.setApprovedEndDate(leaveApprovalJson.getEndDate());
+			
 			Long locationId = Long.parseLong(leaveApprovalJson.getLocation());
 			Location locations = locationRepository.findByLocationId(locationId);
 			if (locations == null) {
