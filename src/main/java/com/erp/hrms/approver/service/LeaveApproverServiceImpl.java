@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.erp.hrms.Location.entity.Location;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.approver.entity.LeaveApprover;
 import com.erp.hrms.approver.repository.LeaveApproverRepo;
@@ -20,6 +19,7 @@ import com.erp.hrms.entity.response.EmployeeResponseDTO;
 import com.erp.hrms.entity.response.LeaveApproverDTO;
 import com.erp.hrms.entity.response.LocationDTO;
 import com.erp.hrms.form.repository.ILeaveRepository;
+import com.erp.hrms.locationentity.Location;
 
 @Service
 public class LeaveApproverServiceImpl implements LeaveApproverService {

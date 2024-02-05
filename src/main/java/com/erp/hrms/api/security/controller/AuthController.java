@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.erp.hrms.EmpDesignation.REQandRES.CurrentRes;
-import com.erp.hrms.EmpDesignation.SERVICE.CurrentServiceImpl;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.repo.UserRepository;
 import com.erp.hrms.api.request.LoginRequest;
@@ -30,6 +28,8 @@ import com.erp.hrms.api.security.response.JwtResponse;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.api.security.utll.JwtTokenUtill;
 import com.erp.hrms.api.service.impl.UserDetailsImpl;
+import com.erp.hrms.employeedesignationandtask.requestresponseentity.CurrentRes;
+import com.erp.hrms.employeedesignationandtask.service.CurrentServiceImpl;
 import com.erp.hrms.entity.PersonalInfo;
 
 /**

@@ -20,18 +20,14 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.erp.hrms.AcademicCalendar.calendarRepository.CalendarRepository;
-import com.erp.hrms.AcademicCalendar.entity.AcademicCalendar;
-import com.erp.hrms.Location.entity.Location;
-import com.erp.hrms.Location.repository.LocationRepository;
+import com.erp.hrms.academiccalender.dao.CalendarRepository;
+import com.erp.hrms.academiccalender.entity.AcademicCalendar;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.approver.entity.LeaveApprover;
@@ -47,12 +43,12 @@ import com.erp.hrms.exception.LeaveRequestApprovalException;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 import com.erp.hrms.form.repository.ILeaveRepository;
 import com.erp.hrms.form.repository.IleaveApprovalRepo;
+import com.erp.hrms.locationdao.LocationRepository;
+import com.erp.hrms.locationentity.Location;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class LeaveService implements ILeaveService {
-
-	private static final Logger logger = LoggerFactory.getLogger(LeaveApproval.class);
 
 	public static String uplaodDirectory = System.getProperty("user.dir") + "/src/main/webapp/images";
 
@@ -61,9 +57,6 @@ public class LeaveService implements ILeaveService {
 
 	@Autowired
 	private JavaMailSender mailSender;
-
-	@Autowired
-	private UserServiceForLeaveNotification userService;
 
 	@Autowired
 	private EntityManager entityManager;
@@ -97,7 +90,7 @@ public class LeaveService implements ILeaveService {
 			leaveApprovalJson.setNoOfLeavesApproved(leaveApprovalJson.getNumberOfDaysRequested());
 			leaveApprovalJson.setApprovedStartDate(leaveApprovalJson.getStartDate());
 			leaveApprovalJson.setApprovedEndDate(leaveApprovalJson.getEndDate());
-			
+
 			Long locationId = Long.parseLong(leaveApprovalJson.getLocation());
 			Location locations = locationRepository.findByLocationId(locationId);
 			if (locations == null) {
@@ -115,13 +108,16 @@ public class LeaveService implements ILeaveService {
 				}
 				// Determine whether to send to both approvers or only the first approver
 				if (leaveApprovalJson.getNoOfLeavesApproved() <= 3) {
-					sendLeaveRequestEmail(approver.getFirstApproverEmail(), "Leave Request Approval Needed",
+					sendLeaveRequestEmail(approver.getFirstApproverEmail(),
+							leaveApprovalJson.getEmployeeId() + " Leave request submitted by employeeId for review",
 							leaveApprovalJson);
 				} else {
-					sendLeaveRequestEmail(approver.getFirstApproverEmail(), "Leave Request Approval Needed",
+					sendLeaveRequestEmail(approver.getFirstApproverEmail(),
+							leaveApprovalJson.getEmployeeId() + " Leave request submitted by employeeId for review",
 							leaveApprovalJson);
 					if (approver.getSecondApproverEmail() != null) {
-						sendLeaveRequestEmail(approver.getSecondApproverEmail(), "Leave Request Approval Needed",
+						sendLeaveRequestEmail(approver.getSecondApproverEmail(),
+								leaveApprovalJson.getEmployeeId() + " Leave request submitted by employeeId for review",
 								leaveApprovalJson);
 					}
 				}
@@ -238,33 +234,35 @@ public class LeaveService implements ILeaveService {
 			existingApproval.setManagerEmail(leaveApprovalJson.getManagerEmail());
 			existingApproval.setNoOfLeavesApproved(leaveApprovalJson.getNoOfLeavesApproved());
 			double noOfLeavesApproved = leaveApprovalJson.getNoOfLeavesApproved();
+			existingApproval.setApprovedStartDate(leaveApprovalJson.getApprovedStartDate());
+			existingApproval.setApprovedEndDate(leaveApprovalJson.getApprovedEndDate());
 
-			sendLeaveRequestEmailApproved(existingApproval.getEmail(), "Leave Request Status Updated",
-					existingApproval);
+			if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
+				sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
+						leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved", existingApproval);
+			} else {
+				sendLeaveRequestRejectedEmail(existingApproval.getEmail(),
+						leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected", existingApproval);
+			}
+
 			LeaveApprover approver = getLeaveApprover(existingApproval);
 
-//			if (noOfLeavesApproved > 3) {
-//				sendLeaveRequestEmailApproved(approver.getSecondApproverEmail(), "Leave Request Approval Needed",
-//						existingApproval);
-//				existingApproval.setHrApprovalStatus("Pending");
-//			} else {
-////	            sendLeaveRequestEmailApproved(approver.getFirstApproverEmail(), "Leave Request Approval Needed", existingApproval);
-//				existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
-//			}
-			
 			if (noOfLeavesApproved > 3) {
-			    if (approver.getFirstApproverEmpId().equals(approver.getSecondApproverEmpId())) {
-			        // If firstApproverEmpId and secondApproverEmpId are the same, set both statuses to the same value
-			        existingApproval.setApprovalStatus(leaveApprovalJson.getApprovalStatus());
-			        existingApproval.setHrApprovalStatus(leaveApprovalJson.getApprovalStatus());
-			    } else {
-			        // If they are different, proceed with the normal workflow
-			        sendLeaveRequestEmailApproved(approver.getSecondApproverEmail(), "Leave Request Approval Needed", existingApproval);
-			        existingApproval.setHrApprovalStatus("Pending");
-			    }
+//				If the employee ID of the first approver and the employee ID of the second approver are the same
+				if (approver.getFirstApproverEmpId().equals(approver.getSecondApproverEmpId())) {
+					existingApproval.setApprovalStatus(leaveApprovalJson.getApprovalStatus());
+					existingApproval.setHrApprovalStatus(leaveApprovalJson.getApprovalStatus());
+				} else {
+
+					sendLeaveRequestForwardedToHREmail(approver.getSecondApproverEmail(),
+							leaveApprovalJson.getEmployeeId()
+									+ " Leave request by employeeId submitted for final review",
+							existingApproval);
+
+					existingApproval.setHrApprovalStatus("Pending");
+				}
 			} else {
-			    // If noOfLeavesApproved is not greater than 3, set hrApprovalStatus to the same value as approvalStatus
-			    existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
+				existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
 			}
 
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
@@ -313,7 +311,7 @@ public class LeaveService implements ILeaveService {
 		return locationRepository.findByLocationId(locationId);
 	}
 
-//	This method forup date the leave request by the manager Accepted or Rejected with the help of leaveRequestId
+//	This method for update the leave request by the manager Accepted or Rejected with the help of leaveRequestId
 	@Override
 	public LeaveApproval approvedOrDenyByHR(Long leaveRequestId, String leaveApproval,
 			MultipartFile medicalDocumentsName) throws IOException {
@@ -348,6 +346,8 @@ public class LeaveService implements ILeaveService {
 			existingApproval.setHrApprovalRemarks(leaveApprovalJson.getHrApprovalRemarks());
 			existingApproval.setHrEmail(leaveApprovalJson.getHrEmail());
 			existingApproval.setNoOfLeavesApproved(leaveApprovalJson.getNoOfLeavesApproved());
+			existingApproval.setApprovedStartDate(leaveApprovalJson.getApprovedStartDate());
+			existingApproval.setApprovedEndDate(leaveApprovalJson.getApprovedEndDate());
 
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
 				if (existingApproval.getMedicalDocumentsName() != null) {
@@ -357,14 +357,19 @@ public class LeaveService implements ILeaveService {
 				String uniqueIdentifier = UUID.randomUUID().toString();
 				String originalFileName = medicalDocumentsName.getOriginalFilename();
 				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
-
 				Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
 				Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
 				leaveApprovalJson.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
 			}
 
-			sendLeaveRequestEmailApprovedOrDenyByHR(existingApproval.getEmail(), "Leave Request Status Updated",
-					existingApproval);
+			if (leaveApprovalJson.getHrApprovalStatus().equals("Accepted")) {
+				sendHRLeaveRequestApprovedEmail(existingApproval.getEmail(),
+						leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved", existingApproval);
+			} else {
+				sendHRLeaveRequestRejectedEmail(existingApproval.getEmail(),
+						leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected", existingApproval);
+			}
+
 			return iLeaveRepository.approvedOrDenyByHR(leaveRequestId, existingApproval);
 		} catch (Exception e) {
 			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
@@ -378,7 +383,6 @@ public class LeaveService implements ILeaveService {
 		if (leaveApprovals.isEmpty()) {
 			throw new LeaveRequestNotFoundException(new MessageResponse("No leave request now "));
 		}
-
 		for (LeaveApproval leaveApproval : leaveApprovals) {
 			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
@@ -388,7 +392,6 @@ public class LeaveService implements ILeaveService {
 				}
 			}
 		}
-
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
 	}
@@ -432,78 +435,6 @@ public class LeaveService implements ILeaveService {
 		}
 		leaveApprovals.sort((l1, l2) -> Long.compare(l2.getLeaveRequestId(), l1.getLeaveRequestId()));
 		return leaveApprovals;
-	}
-
-////	This method for calculate total number of leave days with employee id  
-//	@Override
-//	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId) {
-//		return iLeaveRepository.calculateTotalNumberOfDaysRequestedByEmployee(employeeId);
-//	}
-
-////	This method for calculate total number of leave days with employee id with leave name
-//	@Override
-//	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName) {
-//		return iLeaveRepository.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName);
-//	}
-
-//	This method for send email send to hr and manager and employee.
-	private void sendLeaveRequestEmail(String to, String subject, LeaveApproval leaveApproval) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(to);
-		message.setSubject(subject);
-		String emailContent = "Dear " + leaveApproval.getNameOfEmployee() + ",\n\n"
-				+ "Your leave request has been received and is currently under review. Here are the details:\n\n"
-				+ "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n" + "Leave Type: "
-				+ leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: " + leaveApproval.getStartDate()
-				+ "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: " + leaveApproval.getLeaveReason()
-				+ "\n\n"
-				+ "You will be notified once the request is approved or if any further information is required.\n\n"
-				+ "Thank you,\n" + "SI Global";
-		message.setText(emailContent);
-		mailSender.send(message);
-	}
-
-//	This method for send email send to hr and manager and employee when manager accepted or rejected  
-	private void sendLeaveRequestEmailApproved(String to, String subject, LeaveApproval leaveApproval) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(to);
-		message.setSubject(subject);
-		String emailContent = "Dear ,\n\n"
-				+ "I trust this message finds you well. I am writing to inform you about the updated status of a recent leave request. The details are as follows:\n\n"
-				+ "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n" + "Leave Type: "
-				+ leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: " + leaveApproval.getStartDate()
-				+ "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: " + leaveApproval.getLeaveReason()
-				+ "\n" + "Manager Name: " + leaveApproval.getApprovingManagerName() + "\n" + "Status: "
-				+ leaveApproval.getApprovalStatus() + "\n" + "Manager Remark: " + leaveApproval.getApprovalRemarks()
-				+ "\n\n"
-				+ "I kindly request your attention to this matter and appreciate your prompt consideration. If further action is required, please do not hesitate to contact me.\n\n"
-				+ "Thank you for your time and assistance.\n\n" + "Sincerely,\n"
-				+ leaveApproval.getApprovingManagerName() + "\n" + leaveApproval.getJobLevel() + "\n" + "SI Global\n";
-		message.setText(emailContent);
-		mailSender.send(message);
-	}
-
-//	This method for send email send to hr and manager and employee when manager accepted or rejected  
-	private void sendLeaveRequestEmailApprovedOrDenyByHR(String to, String subject, LeaveApproval leaveApproval) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(to);
-		message.setSubject(subject);
-		String emailContent = "Dear ,\n\n"
-				+ "I hope this message finds you well. I am writing to inform you about the status of the recent leave request. The details are as follows:\n\n"
-				+ "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n" + "Leave Type: "
-				+ leaveApproval.getLeaveType().getLeaveName() + "\n" + "Start Date: " + leaveApproval.getStartDate()
-				+ "\n" + "End Date: " + leaveApproval.getEndDate() + "\n" + "Reason: " + leaveApproval.getLeaveReason()
-				+ "\n" + "Manager Name: " + leaveApproval.getApprovingManagerName() + "\n" + "Status (Manager): "
-				+ leaveApproval.getApprovalStatus() + "\n" + "Manager Remark: " + leaveApproval.getApprovalRemarks()
-				+ "\n\n" + "HR Name: " + leaveApproval.getHrName() + "\n" + "Status (HR): "
-				+ leaveApproval.getHrApprovalStatus() + "\n" + "HR Remark: " + leaveApproval.getHrApprovalRemarks()
-				+ "\n\n"
-				+ "Please take note of the provided information and feel free to reach out if you have any questions or concerns.\n\n"
-				+ "Thank you for your attention to this matter.\n\n" + "Sincerely,\n" + leaveApproval.getHrName() + "\n"
-				+ "SI Global\n";
-
-		message.setText(emailContent);
-		mailSender.send(message);
 	}
 
 //	Find all accepted leaves for calendar 
@@ -591,9 +522,9 @@ public class LeaveService implements ILeaveService {
 //	This method find all leave in a year of particular employee 
 	@Override
 	public List<LeaveCountDTO> getAllLeavesByEmployeeIdAndYear(Long employeeId, int year, String countryName) {
+
 		List<LeaveApproval> leaveApprovals = repo.findByEmployeeIdAndHrApprovalStatus(employeeId, "Accepted");
 		List<AcademicCalendar> holidays = calendarRepository.findByYearAndCountry(year, countryName);
-
 		Map<String, Double> leaveTypeTotalDaysMap = new HashMap<>();
 
 		for (LeaveApproval leaveApproval : leaveApprovals) {
@@ -608,7 +539,6 @@ public class LeaveService implements ILeaveService {
 						: endDate;
 
 				double diffInDays = ChronoUnit.DAYS.between(startOfYear, endOfYear) + 1;
-
 				String leaveName = leaveApproval.getLeaveType().getLeaveName();
 				if ("Half Day".equalsIgnoreCase(leaveName)) {
 					diffInDays = diffInDays / 2.0;
@@ -702,7 +632,7 @@ public class LeaveService implements ILeaveService {
 		return (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
 	}
 
-//	This method give the total count of employee on leave on a particular date and also give the list of employee
+//	This method give the total count of employee on leave on a particular date and also give the list of employee.
 	@Override
 	public LeaveDataDTO getLeaveDataByDate(String date) {
 		List<LeaveApproval> leaveApprovals = repo.findByDate(date);
@@ -711,6 +641,104 @@ public class LeaveService implements ILeaveService {
 				.collect(Collectors.toList());
 		long employeeIdCount = leaveApprovals.stream().map(LeaveApproval::getEmployeeId).distinct().count();
 		return new LeaveDataDTO(acceptedLeaveApprovals, employeeIdCount);
+	}
+
+//	This method is for sending the mail to the manager.
+	private void sendLeaveRequestEmail(String to, String subject, LeaveApproval leaveApproval) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+
+		String emailContent = "Hi Manager,\n\n" + "Your delegate " + leaveApproval.getNameOfEmployee()
+				+ " (" + leaveApproval.getEmployeeId() + ") has applied for a leave request for "
+				+ leaveApproval.getNumberOfDaysRequested() + " on " + leaveApproval.getRequestDate()
+				+ ". Please review and take the necessary action on it.\n\n" + "Employee Name: "
+				+ leaveApproval.getNameOfEmployee() + "\n" + "Employee Id: " + leaveApproval.getEmployeeId() + "\n"
+				+ "Request date: " + leaveApproval.getRequestDate() + "\n" + "Leave start date: "
+				+ leaveApproval.getStartDate() + "\n" + "Leave end date: " + leaveApproval.getEndDate() + "\n"
+				+ "Reason: " + leaveApproval.getLeaveReason() + "\n" + "Alternate contact number: "
+				+ leaveApproval.getEmergencyContactNumber() + "\n\n" + "Regards,\n" + "HRMS System mailer";
+		message.setText(emailContent);
+		mailSender.send(message);
+	}
+
+//	This method is for sending to the employee if his leave request is accepted.
+	private void sendLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+
+		String emailContent = "Hi " + leaveApproval.getNameOfEmployee() + ",\n\n" + "Your leave request "
+				+ leaveApproval.getEmployeeId() + " has been approved by your manager "
+				+ leaveApproval.getApprovingManagerName() + " for " + leaveApproval.getNoOfLeavesApproved() + " days. "
+				+ "Your leave starts from " + leaveApproval.getApprovedStartDate() + " till "
+				+ leaveApproval.getApprovedEndDate() + ".\n\n" + "Regards,\n" + "HRMS Mailer system";
+		message.setText(emailContent);
+		mailSender.send(message);
+	}
+
+//	This method is for sending to the employee if his leave request is rejected.
+	private void sendLeaveRequestRejectedEmail(String to, String subject, LeaveApproval leaveApproval) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+
+		String emailContent = "Hi " + leaveApproval.getNameOfEmployee() + ",\n\n" + "Your leave request "
+				+ leaveApproval.getLeaveRequestId() + " has been rejected by your manager "
+				+ leaveApproval.getApprovingManagerName() + ".\n\n" + "Regards,\n" + "HRMS Mailer system";
+		message.setText(emailContent);
+		mailSender.send(message);
+	}
+
+//	This method is for sending the leave request if the number of requested days is more than 3 days and after the first approver's response. 
+	private void sendLeaveRequestForwardedToHREmail(String to, String subject, LeaveApproval leaveApproval) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+
+		String emailContent = "Hi HR"  + ",\n\n" + "Leave request "
+				+ leaveApproval.getEmployeeId() + " submitted by " + leaveApproval.getNameOfEmployee() + " ("
+				+ leaveApproval.getEmployeeId() + "), " + leaveApproval.getDesignation() + " at location "
+				+ leaveApproval.getLocation()
+				+ ", is pending for HR review. Please review and take the necessary action on it.\n\n"
+				+ "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n" + "Employee Id: "
+				+ leaveApproval.getEmployeeId() + "\n" + "Manager name: " + leaveApproval.getApprovingManagerName()
+				+ "\n" + "Approval manager email id: " + leaveApproval.getManagerEmail() + "\n" + "Leave reason: "
+				+ leaveApproval.getLeaveReason() + "\n" + "Manager remarks: " + leaveApproval.getApprovalRemarks()
+				+ "\n" + "Number of leaves requested: " + leaveApproval.getNumberOfDaysRequested() + "\n"
+				+ "Number of leaves approved: " + leaveApproval.getNoOfLeavesApproved() + "\n"
+				+ "Alternate contact number: " + leaveApproval.getEmergencyContactNumber() + "\n\n" + "Regards,\n"
+				+ "HRMS Mail system";
+		message.setText(emailContent);
+		mailSender.send(message);
+	}
+
+//	This method is for sending to the employee if his leave request is accepted by hr.
+	private void sendHRLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+
+		String emailContent = "Hi " + leaveApproval.getNameOfEmployee() + ",\n\n" + "Your leave request "
+				+ leaveApproval.getLeaveRequestId() + " has been approved by HR manager " + leaveApproval.getHrName()
+				+ " for " + leaveApproval.getNoOfLeavesApproved() + " days. " + "Your leave starts from "
+				+ leaveApproval.getApprovedStartDate() + " till " + leaveApproval.getApprovedEndDate() + ".\n\n"
+				+ "Regards,\n" + "HRMS Mailer system";
+		message.setText(emailContent);
+		mailSender.send(message);
+	}
+
+//	This method is for sending to the employee if his leave request is rejected by hr.
+	private void sendHRLeaveRequestRejectedEmail(String to, String subject, LeaveApproval leaveApproval) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+
+		String emailContent = "Hi " + leaveApproval.getNameOfEmployee() + ",\n\n" + "Your leave request "
+				+ leaveApproval.getEmployeeId() + " has been rejected by HR manager " + leaveApproval.getHrName()
+				+ ".\n\n" + "Regards,\n" + "HRMS Mailer system";
+		message.setText(emailContent);
+		mailSender.send(message);
 	}
 
 }

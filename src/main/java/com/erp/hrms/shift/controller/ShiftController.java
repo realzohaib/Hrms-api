@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.erp.hrms.api.security.response.MessageResponse;
-import com.erp.hrms.shift.Dao.ShiftDaoImpl;
+import com.erp.hrms.shift.dao.ShiftDaoImpl;
 import com.erp.hrms.shift.entity.Shift;
 
 @Controller

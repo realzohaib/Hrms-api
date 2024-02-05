@@ -10,8 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
-import com.erp.hrms.Location.entity.Location;
 import com.erp.hrms.entity.form.LeaveApproval;
+import com.erp.hrms.locationentity.Location;
 
 import lombok.Data;
 

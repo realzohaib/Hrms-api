@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.erp.hrms.api.dao.DepartmentRepository;
@@ -52,8 +53,21 @@ public class DepartmentService implements IDepartmentService {
 		return findAllDepartments;
 	}
 
-//	@Override
-//	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName) {
-//		return idepartmentRepository.findFirstAndLastNameByDepartmentName(departmentName);
-//	}
+	@Override
+	public Department updateDepartment(Long departmentId, Department updatedDepartment) {
+		Department existingDepartment = idepartmentRepository.findById(departmentId)
+				.orElseThrow(() -> new RuntimeException("Department not found with id: " + departmentId));
+		try {
+			existingDepartment.setDepartmentName(updatedDepartment.getDepartmentName());
+
+			return idepartmentRepository.save(existingDepartment);
+		} catch (DataAccessException e) {
+			throw new RuntimeException("An error occurred while updating the Department.", e);
+		}
+
+	}
+	@Override
+	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName) {
+		return idepartmentRepository.findFirstAndLastNameByDepartmentName(departmentName);
+	}
 }

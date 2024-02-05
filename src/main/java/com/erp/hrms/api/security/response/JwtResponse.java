@@ -3,7 +3,7 @@ package com.erp.hrms.api.security.response;
 import java.io.Serializable;
 import java.util.List;
 
-import com.erp.hrms.EmpDesignation.REQandRES.CurrentRes;
+import com.erp.hrms.employeedesignationandtask.requestresponseentity.CurrentRes;
 import com.erp.hrms.entity.PersonalInfo;
 
 import lombok.Getter;

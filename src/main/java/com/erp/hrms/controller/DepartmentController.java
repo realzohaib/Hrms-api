@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -78,20 +79,31 @@ public class DepartmentController {
 			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	@PutMapping("/update/department/by/id/{departmentId}")
+	public ResponseEntity<Department> updateDepartment(@PathVariable Long departmentId,
+			@RequestBody Department updatedDepartment) {
+		try {
+			Department updated = idepartmentService.updateDepartment(departmentId, updatedDepartment);
+			return ResponseEntity.ok(updated);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+	}
+
 // is ko un comment karna hai repository me sahi karna hai abhi vo personal info me tha ab job details me hai
-//	@GetMapping("/department/name/{departmentName}/personalInfo")
-//	public ResponseEntity<?> findPersonalInfoByDepartmentName(@PathVariable String departmentName) {
-//		try {
-//			List<PersonalInfoDTO> personalInfoDTOs = idepartmentService
-//					.getPersonalInfoByDepartmentName(departmentName);
-//
-//			if (personalInfoDTOs.isEmpty()) {
-//				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
-//			} else {
-//				return new ResponseEntity<>(personalInfoDTOs, HttpStatus.OK);
-//			}
-//		} catch (Exception e) {
-//			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
+	@GetMapping("/department/name/{departmentName}/personalInfo")
+	public ResponseEntity<?> findPersonalInfoByDepartmentName(@PathVariable String departmentName) {
+		try {
+			List<PersonalInfoDTO> personalInfoDTOs = idepartmentService.getPersonalInfoByDepartmentName(departmentName);
+
+			if (personalInfoDTOs.isEmpty()) {
+				return new ResponseEntity<>(new MessageResponse("No records found"), HttpStatus.NOT_FOUND);
+			} else {
+				return new ResponseEntity<>(personalInfoDTOs, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(new MessageResponse("An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.erp.hrms.EmpDesignation.REQandRES.CurrentReq;
-import com.erp.hrms.EmpDesignation.SERVICE.CurrentServiceImpl;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.repo.IRoleRepository;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.employeedesignationandtask.requestresponseentity.CurrentReq;
+import com.erp.hrms.employeedesignationandtask.service.CurrentServiceImpl;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
 import com.erp.hrms.entity.Department;

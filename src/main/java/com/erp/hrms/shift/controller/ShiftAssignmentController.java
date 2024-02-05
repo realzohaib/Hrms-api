@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.erp.hrms.api.security.response.MessageResponse;
-import com.erp.hrms.shift.Dao.ShiftAssignmentDaoImpl;
+import com.erp.hrms.shift.dao.ShiftAssignmentDaoImpl;
 import com.erp.hrms.shift.entity.ShiftAssignment;
 import com.erp.hrms.shift.repo.ShiftAssignmentRepo;
 
