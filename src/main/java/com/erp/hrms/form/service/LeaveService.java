@@ -30,8 +30,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.erp.hrms.AcademicCalendar.calendarRepository.CalendarRepository;
-import com.erp.hrms.AcademicCalendar.entity.AcademicCalendar;
+import com.erp.hrms.academiccalender.dao.CalendarRepository;
+import com.erp.hrms.academiccalender.entity.AcademicCalendar;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.security.entity.RoleEntity;
 import com.erp.hrms.api.security.entity.UserEntity;

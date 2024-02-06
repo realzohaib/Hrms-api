@@ -19,13 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.erp.hrms.EmpDesignation.REQandRES.CurrentReq;
-import com.erp.hrms.EmpDesignation.SERVICE.CurrentServiceImpl;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.repo.IRoleRepository;
 import com.erp.hrms.api.security.entity.RoleEntity;
 import com.erp.hrms.api.security.entity.UserEntity;
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.employeedesignationandtask.requestresponseentity.CurrentReq;
+import com.erp.hrms.employeedesignationandtask.service.CurrentServiceImpl;
 import com.erp.hrms.entity.BackgroundCheck;
 import com.erp.hrms.entity.BloodRelative;
 import com.erp.hrms.entity.Department;
@@ -59,7 +59,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	public static long concatenateIdWithRandomNumber(long id, int randomPart) {
 		return (id * 10000L) + randomPart;
 	}
-	
 
 	@Autowired
 	private IPersonalInfoDAO dao;
@@ -69,13 +68,13 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 	@Autowired
 	private JavaMailSender sender;
-	
+
 	@Autowired
 	private weekOffserviceImpl weekoff;
-	
+
 	@Autowired
 	private IRoleRepository roleRepository;
-	
+
 	@Autowired
 	private CurrentServiceImpl currentService;
 
@@ -84,18 +83,18 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	 */
 	@Transactional
 	@Override
-	public void savedata(String personalinfo, String SignupRequest, String url,String CurrentDesignationandAdditionalTask ,MultipartFile passportSizePhoto,
-			MultipartFile OtherIdProofDoc, MultipartFile passportScan, MultipartFile licensecopy,
-			MultipartFile relativeid, MultipartFile raddressproof, MultipartFile secondaryDocumentScan,
-			MultipartFile seniorSecondaryDocumentScan, MultipartFile graduationDocumentScan,
-			MultipartFile postGraduationDocumentScan, MultipartFile[] othersDocumentScan, MultipartFile[] degreeScan,
-			MultipartFile payslipScan, MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
+	public void savedata(String personalinfo, String CurrentDesignationandAdditionalTask,
+			MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc, MultipartFile passportScan,
+			MultipartFile licensecopy, MultipartFile relativeid, MultipartFile raddressproof,
+			MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
+			MultipartFile graduationDocumentScan, MultipartFile postGraduationDocumentScan,
+			MultipartFile[] othersDocumentScan, MultipartFile[] degreeScan, MultipartFile payslipScan,
+			MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
 			MultipartFile CertificateUploadedForOutsource, MultipartFile visaDocs, MultipartFile diplomaDocumentScan,
 			MultipartFile declarationRequired, MultipartFile[] achievementsRewardsDocs) throws IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
-		com.erp.hrms.api.request.SignupRequest Signuprequest = mapper.readValue(SignupRequest, com.erp.hrms.api.request.SignupRequest.class);
 		CurrentReq currentDesignationandTask = mapper.readValue(CurrentDesignationandAdditionalTask, CurrentReq.class);
 
 		String email = PersonalInfo.getEmail();
@@ -413,56 +412,12 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				PersonalInfo.setTraining(training);
 			}
 
-			Set<String> strRoles = Signuprequest.getRole();
-			Set<RoleEntity> roles = new HashSet<>();
-
-//			System.out.println(strRoles);
-
-//			if (strRoles == null) {
-//				RoleEntity userRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
-//						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//				roles.add(userRole);
-//			} else {
-//				strRoles.forEach(role -> {
-//					switch (role) {
-//					case "admin":
-//						RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-//								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//						roles.add(adminRole);
-//						break;
-//					case "employee":
-//						RoleEntity empRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
-//								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//						roles.add(empRole);
-//						break;
-//					case "manager":
-//						RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MANAGER)
-//								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//						roles.add(modRole);
-//						break;
-//					case "hr":
-//						RoleEntity hrRole = roleRepository.findByName(ERole.ROLE_HR)
-//								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//						roles.add(hrRole);
-//						break;
-//					case "subadmin":
-//						RoleEntity subAdminRole = roleRepository.findByName(ERole.ROLE_SUBADMIN)
-//								.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-//						roles.add(subAdminRole);
-//					}
-//				});
-//
-//			}
-//			System.out.println(strRoles);
-
-
 			UserEntity user = new UserEntity();
 
 			user.setEmail(PersonalInfo.getEmail());
 			user.setUsername(String.valueOf(employeeId));
 			user.setPersonalinfo(PersonalInfo);
 			user.setMobileNo(PersonalInfo.getPersonalContactNo());
-			user.setRoles(roles);
 			user.setEnabled(false);
 
 			Random random = new Random();
@@ -473,13 +428,11 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 			PersonalInfo.setUserentity(user);
 			currentDesignationandTask.setEmpId(employeeId);
-//			currentService.saveCurrent(currentDesignationandTask);
 			dao.savePersonalInfo(PersonalInfo);
 			currentService.saveCurrent(currentDesignationandTask);
 
-
 			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp);
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
 		}

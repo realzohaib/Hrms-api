@@ -12,7 +12,7 @@ import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
 public interface IPersonalInfoService {
 
-	public void savedata(String personalinfo,String SignupRequest,String url ,String CurrentDesignationandAdditionalTask ,MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
+	public void savedata(String personalinfo,String CurrentDesignationandAdditionalTask ,MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
 			MultipartFile passportScan, MultipartFile licensecopy, MultipartFile relativeid,
 			MultipartFile raddressproof, MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
 			MultipartFile graduationDocumentScan, MultipartFile postGraduationDocumentScan,
