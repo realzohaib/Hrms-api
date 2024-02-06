@@ -771,24 +771,6 @@ public class LeaveService implements ILeaveService {
 		mailSender.send(message);
 	}
 
-//	private void sendLeaveRequestEmail(String to, String subject, LeaveApproval leaveApproval) {
-//		SimpleMailMessage message = new SimpleMailMessage();
-//		message.setTo(to);
-//		message.setSubject(subject);
-//
-//		String emailContent = "Hi Manager,\n\n" + "Your delegate " + leaveApproval.getNameOfEmployee()
-//				+ " (" + leaveApproval.getEmployeeId() + ") has applied for a leave request for "
-//				+ leaveApproval.getNumberOfDaysRequested() + " on " + leaveApproval.getRequestDate()
-//				+ ". Please review and take the necessary action on it.\n\n" + "Employee Name: "
-//				+ leaveApproval.getNameOfEmployee() + "\n" + "Employee Id: " + leaveApproval.getEmployeeId() + "\n"
-//				+ "Request date: " + leaveApproval.getRequestDate() + "\n" + "Leave start date: "
-//				+ leaveApproval.getStartDate() + "\n" + "Leave end date: " + leaveApproval.getEndDate() + "\n"
-//				+ "Reason: " + leaveApproval.getLeaveReason() + "\n" + "Alternate contact number: "
-//				+ leaveApproval.getEmergencyContactNumber() + "\n\n" + "Regards,\n" + "HRMS System mailer";
-//		message.setText(emailContent);
-//		mailSender.send(message);
-//	}
-
 //	This method is for sending to the employee if his leave request is accepted.
 	private void sendLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
@@ -826,27 +808,6 @@ public class LeaveService implements ILeaveService {
 		message.setText(emailContent);
 		mailSender.send(message);
 	}
-
-//	private void sendLeaveRequestForwardedToHREmail(String to, String subject, LeaveApproval leaveApproval) {
-//		SimpleMailMessage message = new SimpleMailMessage();
-//		message.setTo(to);
-//		message.setSubject(subject);
-//
-//		String emailContent = "Hi HR" + ",\n\n" + "Leave request " + leaveApproval.getEmployeeId() + " submitted by "
-//				+ leaveApproval.getNameOfEmployee() + " (" + leaveApproval.getEmployeeId() + "), "
-//				+ leaveApproval.getDesignation() + " at location " + leaveApproval.getLocation()
-//				+ ", is pending for HR review. Please review and take the necessary action on it.\n\n"
-//				+ "Employee Name: " + leaveApproval.getNameOfEmployee() + "\n" + "Employee Id: "
-//				+ leaveApproval.getEmployeeId() + "\n" + "Manager name: " + leaveApproval.getApprovingManagerName()
-//				+ "\n" + "Approval manager email id: " + leaveApproval.getManagerEmail() + "\n" + "Leave reason: "
-//				+ leaveApproval.getLeaveReason() + "\n" + "Manager remarks: " + leaveApproval.getApprovalRemarks()
-//				+ "\n" + "Number of leaves requested: " + leaveApproval.getNumberOfDaysRequested() + "\n"
-//				+ "Number of leaves approved: " + leaveApproval.getNoOfLeavesApproved() + "\n"
-//				+ "Alternate contact number: " + leaveApproval.getEmergencyContactNumber() + "\n\n" + "Regards,\n"
-//				+ "HRMS Mail system";
-//		message.setText(emailContent);
-//		mailSender.send(message);
-//	}
 
 //	This method is for sending to the employee if his leave request is accepted by hr.
 	private void sendHRLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
