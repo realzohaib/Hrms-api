@@ -600,7 +600,7 @@ public class LeaveService implements ILeaveService {
 
 				double diffInDays = ChronoUnit.DAYS.between(startOfYear, endOfYear) + 1;
 				String leaveName = leaveApproval.getLeaveType().getLeaveName();
-				if ("Half Day".equalsIgnoreCase(leaveName)) {
+				if ("HalfDay".equalsIgnoreCase(leaveName)) {
 					diffInDays = diffInDays / 2.0;
 					leaveName = "Casual"; // Assign "Casual" as the leave name for half days
 				}
@@ -652,7 +652,7 @@ public class LeaveService implements ILeaveService {
 				endDate = endDate.isAfter(lastDayOfMonth) ? lastDayOfMonth : endDate;
 				double daysBetweenInclusive = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 
-				if ("Half Day".equalsIgnoreCase(leave.getLeaveType().getLeaveName())) {
+				if ("HalfDay".equalsIgnoreCase(leave.getLeaveType().getLeaveName())) {
 					daysBetweenInclusive = (double) daysBetweenInclusive / 2;
 				}
 
@@ -676,7 +676,7 @@ public class LeaveService implements ILeaveService {
 				}
 
 				String leaveName = leave.getLeaveType().getLeaveName();
-				if ("Half Day".equalsIgnoreCase(leaveName)) {
+				if ("HalfDay".equalsIgnoreCase(leaveName)) {
 					leaveName = "Casual"; // Assign "Casual" as the leave name for half days
 				}
 				leaveTypeTotalDaysMap.merge(leaveName, (double) daysBetweenInclusive, Double::sum);
