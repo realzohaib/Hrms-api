@@ -22,6 +22,9 @@ public class LeaveApproval {
 	private String nameOfEmployee;
 	private String designation;
 	private String department;
+	private String jobLevel;
+	private String location;
+
 	private double numberOfDaysRequested;
 	private String leaveReason;
 	private String requestDate;
@@ -31,6 +34,7 @@ public class LeaveApproval {
 	private String approvingManagerName;
 	private String approvalStatus;
 	private String approvalRemarks;
+	private String managerEmail;
 
 	private String hrName;
 	private String hrApprovalStatus;
@@ -42,18 +46,27 @@ public class LeaveApproval {
 	private String emergencyContactNumber;
 
 	private String medicalDocumentsName;
-	private String jobLevel;
-	private String location;
 
-	private String managerEmail;
-	
-	private double NoOfLeavesApproved;
+	private double noOfLeavesApproved;
+	private String approvedStartDate;
+	private String approvedEndDate;
 
 	@Transient
 	private byte[] medicalDocumentData;
 
-//	private Double remainingMedicalLeaves;
-//	private Double remainingCasualLeaves;
+	public void setMedicalDocumentData(byte[] medicalDocumentData) {
+		validateAndSetData(medicalDocumentData, "Medical Document Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 100 * 1024) {
+			if ("Medical Document Data".equals(dataType)) {
+				this.medicalDocumentData = data;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+		}
+	}
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "leaveTypeLeaveApproval", referencedColumnName = "leaveTypeId")

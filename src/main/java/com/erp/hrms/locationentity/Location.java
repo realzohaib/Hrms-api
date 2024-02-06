@@ -3,12 +3,13 @@ package com.erp.hrms.locationentity;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
-import com.erp.hrms.employeedesignationandtask.entity.CurrentDesignationAndTask;
+import com.erp.hrms.approver.entity.LeaveApprover;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.Getter;
@@ -22,20 +23,22 @@ public class Location {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long locationId;
-	
+
 	private Long ConcernedAuthorityEmpId;
 
 	private String name;
 
 	private String address;
 
-	private String langitude;
+	private String latitude;
 
 	private String longitude;
 
-	private boolean isMantenanceRequired;
+	private Boolean isMaintenanceRequired;
 
 	private String commentsForMaintenance;
+
+	private String country;
 
 //	@ManyToMany(cascade = { CascadeType.ALL }) 
 //	@JoinTable(name = "countryLocation", joinColumns = @JoinColumn(name = "locationId"), inverseJoinColumns = @JoinColumn(name = "countryId"))
@@ -45,9 +48,8 @@ public class Location {
 	 * in-charge info
 	 */
 	private String inchargeInfo;
-	
-//	@ManyToMany(mappedBy = "location")
-//	@JsonBackReference
-//	private List<CurrentDesignationAndTask> current;
 
+	@ManyToMany(mappedBy = "locations", fetch = FetchType.EAGER)
+	@JsonBackReference
+	private List<LeaveApprover> leaveApprover;
 }

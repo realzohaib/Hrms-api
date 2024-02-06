@@ -106,6 +106,7 @@ public class JoblevelController<E> {
 	    } catch (Exception e) {
 	        return ResponseEntity.ok().body(e.getMessage());
 	    }
+
 	}
 
 }

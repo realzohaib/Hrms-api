@@ -22,8 +22,6 @@ public class PersonalInfoDTO {
 	private String phoneCode;
 	private String personalContactNo;
 	private String email;
-	private String designationName;
-	private String level;
 	private String postedLocation;
 
 }

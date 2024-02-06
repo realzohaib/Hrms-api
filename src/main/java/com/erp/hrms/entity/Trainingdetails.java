@@ -46,6 +46,29 @@ public class Trainingdetails {
 	@Transient
 	private byte[] CertificateUploadedForOutsourceData;
 
+	public void setPaidTrainingDocumentProofData(byte[] paidTrainingDocumentProofData) {
+		validateAndSetData(paidTrainingDocumentProofData, "Paid Training Document Proof Data");
+	}
+
+	public void setCertificateUploadedForOutsourceData(byte[] certificateUploadedForOutsourceData) {
+		validateAndSetData(certificateUploadedForOutsourceData, "Certificate Uploaded For Outsource Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 100 * 1024) {
+			switch (dataType) {
+			case "Paid Training Document Proof Data":
+				this.PaidTrainingDocumentProofData = data;
+				break;
+			case "Certificate Uploaded For Outsource Data":
+				this.CertificateUploadedForOutsourceData = data;
+				break;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+		}
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	@JsonBackReference

@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
@@ -27,6 +28,14 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 	public boolean existsByEmail(String email) {
 		String query = "SELECT COUNT(p) FROM PersonalInfo p WHERE p.email = :email";
 		Long count = entityManager.createQuery(query, Long.class).setParameter("email", email).getSingleResult();
+		return count > 0;
+	}
+
+	@Override
+	public boolean existsByPersonalContactNo(String personalContactNo) {
+		String query = "SELECT COUNT(p) FROM PersonalInfo p WHERE p.personalContactNo = :personalContactNo";
+		Long count = entityManager.createQuery(query, Long.class).setParameter("personalContactNo", personalContactNo)
+				.getSingleResult();
 		return count > 0;
 	}
 
@@ -73,9 +82,8 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 			query.setParameter("email", email);
 			return (PersonalInfo) query.getSingleResult();
 		} catch (NoResultException ex) {
-			throw new PersonalInfoNotFoundException(
-					new MessageResponse("No personal information found for this email ID: " + email
-							+ " or this eamil is inactived." ));
+			throw new PersonalInfoNotFoundException(new MessageResponse(
+					"No personal information found for this email ID: " + email + " or this eamil is inactived."));
 		} catch (Exception ex) {
 			throw new RuntimeException("An error occurred while retrieving personal information for email: " + email,
 					ex);
@@ -96,14 +104,13 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 					"An error occurred while retrieving personal information for employee ID: " + employeeId, ex);
 		}
 	}
-	
+
 	@Override
 	public PersonalInfo loadPersonalInfoByEmployeeId(Long employeeId) {
 		Query query = entityManager.createQuery("SELECT p FROM PersonalInfo p WHERE p.employeeId = :employeeId");
 		query.setParameter("employeeId", employeeId);
 		return (PersonalInfo) query.getSingleResult();
 	}
-
 
 	@Override
 	public PersonalInfo deletePersonalInfoByEmail(String email, PersonalInfo personalInfo) {
@@ -133,7 +140,8 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 	@Override
 	public boolean existByID(long employeeId) {
 		String query = "SELECT COUNT(p) FROM PersonalInfo p WHERE p.employeeId = :employeeId";
-		Long count = entityManager.createQuery(query, Long.class).setParameter("employeeId", employeeId).getSingleResult();
+		Long count = entityManager.createQuery(query, Long.class).setParameter("employeeId", employeeId)
+				.getSingleResult();
 		return count == 0;
 	}
 
@@ -289,5 +297,41 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 		return query;
 	}
 
+	@Override
+	public List<PersonalInfo> getPersonalInfoWithPendingBackgroundCheck() {
+		String jpqlQuery = "SELECT p FROM PersonalInfo p " + "JOIN p.bgcheck bg " + "WHERE bg.status = 'Pending'";
+		TypedQuery<PersonalInfo> query = entityManager.createQuery(jpqlQuery, PersonalInfo.class);
+		return query.getResultList();
+	}
+
+	@Override
+	public List<PersonalInfo> getByPostedLocation(String postedLocation) {
+		try {
+			TypedQuery<PersonalInfo> query = entityManager.createQuery(
+					"SELECT p FROM PersonalInfo p JOIN p.jobDetails j WHERE j.postedLocation = :postedLocation",
+					PersonalInfo.class);
+			query.setParameter("postedLocation", postedLocation);
+			return query.getResultList();
+		} catch (NoResultException ex) {
+			throw new PersonalInfoNotFoundException(
+					new MessageResponse("No personal information found for this posted location: " + postedLocation));
+		} catch (Exception ex) {
+			throw new RuntimeException(
+					"An error occurred while retrieving personal information for posted location: " + postedLocation,
+					ex);
+		}
+	}
+
+	@Override
+	public List<PersonalInfo> findAllPersonalInfoActive() {
+		try {
+			List<PersonalInfo> resultList = entityManager
+					.createQuery("SELECT p FROM PersonalInfo p WHERE p.status = 'Active'", PersonalInfo.class)
+					.getResultList();
+			return resultList;
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to retrieve active personal info: " + e.getMessage());
+		}
+	}
 
 }

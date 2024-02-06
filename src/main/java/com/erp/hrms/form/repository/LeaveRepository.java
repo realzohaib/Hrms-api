@@ -98,7 +98,7 @@ public class LeaveRepository implements ILeaveRepository {
 		List<LeaveApproval> leaveApprovals = null;
 		try {
 			leaveApprovals = entityManager
-					.createQuery("SELECT l FROM LeaveApproval l WHERE l.approvalStatus = 'Pending'",
+					.createQuery("SELECT l FROM LeaveApproval l WHERE l.hrApprovalStatus = 'Pending'",
 							LeaveApproval.class)
 					.getResultList();
 
@@ -113,7 +113,7 @@ public class LeaveRepository implements ILeaveRepository {
 		List<LeaveApproval> leaveApprovals = null;
 		try {
 			leaveApprovals = entityManager
-					.createQuery("SELECT l FROM LeaveApproval l WHERE l.approvalStatus = 'Accepted'",
+					.createQuery("SELECT l FROM LeaveApproval l WHERE l.hrApprovalStatus = 'Accepted'",
 							LeaveApproval.class)
 					.getResultList();
 
@@ -130,7 +130,7 @@ public class LeaveRepository implements ILeaveRepository {
 		List<LeaveApproval> leaveApprovals = null;
 		try {
 			leaveApprovals = entityManager
-					.createQuery("SELECT l FROM LeaveApproval l WHERE l.approvalStatus = 'Rejected'",
+					.createQuery("SELECT l FROM LeaveApproval l WHERE l.hrApprovalStatus = 'Rejected'",
 							LeaveApproval.class)
 					.getResultList();
 
@@ -140,53 +140,50 @@ public class LeaveRepository implements ILeaveRepository {
 		}
 	}
 
+//	@Override
+//	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId) {
+//		String sql = "SELECT SUM(noOfLeavesApproved) FROM LeaveApproval WHERE employeeId = :employeeId";
+//		Query query = entityManager.createQuery(sql);
+//		query.setParameter("employeeId", employeeId);
+//
+//		List<?> result = query.getResultList();
+//		if (result != null && !result.isEmpty()) {
+//			Object obj = result.get(0);
+//			if (obj instanceof Number) {
+//				return new BigDecimal(((Number) obj).doubleValue());
+//			}
+//		}
+//		throw new LeaveRequestNotFoundException(new MessageResponse("No data available now"));
+//	}
+
+//	@Override
+//	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName) {
+//		String sql = "SELECT SUM(la.noOfLeavesApproved) FROM LeaveApproval la " + "JOIN la.leaveType lt "
+//				+ "WHERE la.employeeId = :employeeId AND lt.leaveName = :leaveName";
+//		Query query = entityManager.createQuery(sql);
+//		query.setParameter("employeeId", employeeId);
+//		query.setParameter("leaveName", leaveName);
+//
+//		List<?> result = query.getResultList();
+//		if (result != null && !result.isEmpty()) {
+//			Object obj = result.get(0);
+//			if (obj instanceof Number) {
+//				return new BigDecimal(((Number) obj).doubleValue());
+//			}
+//		}
+//		throw new LeaveRequestNotFoundException(new MessageResponse("No data available now"));
+//	}
+
 	@Override
-	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployee(Long employeeId) {
-		String sql = "SELECT SUM(numberOfDaysRequested) FROM LeaveApproval WHERE employeeId = :employeeId";
-		Query query = entityManager.createQuery(sql);
-		query.setParameter("employeeId", employeeId);
-
-		List<?> result = query.getResultList();
-		if (result != null && !result.isEmpty()) {
-			Object obj = result.get(0);
-			if (obj instanceof Number) {
-				return new BigDecimal(((Number) obj).doubleValue());
-			}
-		}
-		throw new LeaveRequestNotFoundException(new MessageResponse("No data available now"));
-	}
-
-	@Override
-	public BigDecimal calculateTotalSpecificNumberOfDaysRequestedByEmployee(Long employeeId, String leaveName) {
-		String sql = "SELECT SUM(la.numberOfDaysRequested) FROM LeaveApproval la " + "JOIN la.leaveType lt "
-				+ "WHERE la.employeeId = :employeeId AND lt.leaveName = :leaveName";
-		Query query = entityManager.createQuery(sql);
-		query.setParameter("employeeId", employeeId);
-		query.setParameter("leaveName", leaveName);
-
-		List<?> result = query.getResultList();
-		if (result != null && !result.isEmpty()) {
-			Object obj = result.get(0);
-			if (obj instanceof Number) {
-				return new BigDecimal(((Number) obj).doubleValue());
-			}
-		}
-		throw new LeaveRequestNotFoundException(new MessageResponse("No data available now"));
-	}
-
-	@Override
-	public BigDecimal calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(Long employeeId, int year,
-			int month) {
+	public BigDecimal calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(Long employeeId, int year, int month) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<BigDecimal> query = cb.createQuery(BigDecimal.class);
 		Root<LeaveApproval> root = query.from(LeaveApproval.class);
-
-		query.select(cb.sum(root.get("numberOfDaysRequested").as(BigDecimal.class))).where(
+		query.select(cb.sum(root.get("noOfLeavesApproved").as(BigDecimal.class))).where(
 				cb.equal(root.get("employeeId"), employeeId),
 				cb.equal(cb.function("YEAR", Integer.class, root.get("startDate")), year),
 				cb.equal(cb.function("MONTH", Integer.class, root.get("startDate")), month),
-				cb.equal(root.get("approvalStatus"), "ACCEPTED"));
-
+				cb.equal(root.get("hrApprovalStatus"), "ACCEPTED"));
 		return entityManager.createQuery(query).getSingleResult();
 	}
 
@@ -195,8 +192,9 @@ public class LeaveRepository implements ILeaveRepository {
 		try {
 			TypedQuery<LeaveCountDTO> query = entityManager.createQuery(
 					"SELECT NEW com.erp.hrms.entity.form.LeaveCountDTO(l.leaveType.leaveName, SUM(l.numberOfDaysRequested)) "
-							+ "FROM LeaveApproval l "
-							+ "WHERE l.employeeId = :employeeId AND YEAR(l.startDate) = :year AND MONTH(l.startDate) = :month AND l.hrApprovalStatus = 'Accepted' "
+							+ "FROM LeaveApproval l " + "WHERE l.employeeId = :employeeId "
+							+ "AND YEAR(l.startDate) = :year " + "AND MONTH(l.startDate) = :month "
+							+ "AND (l.hrApprovalStatus = 'Accepted' OR l.approvalStatus = 'Accepted') "
 							+ "GROUP BY l.leaveType.leaveName",
 					LeaveCountDTO.class);
 
@@ -204,13 +202,11 @@ public class LeaveRepository implements ILeaveRepository {
 			query.setParameter("year", year);
 			query.setParameter("month", month);
 
-			System.out
-					.println("Generated SQL Query: " + query.unwrap(org.hibernate.query.Query.class).getQueryString());
-
 			return query.getResultList();
 		} catch (NoResultException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
+
 }

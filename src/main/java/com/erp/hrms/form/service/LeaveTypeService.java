@@ -23,8 +23,9 @@ public class LeaveTypeService implements ILeaveTypeService {
 	public void predefinedLeaveType() {
 		if (iLeaveTypeRepository.findAllLeaveType().isEmpty()) {
 			List<LeaveType> initialLeaveType = new ArrayList<>();
-			initialLeaveType.add(new LeaveType("Medical", 15.0));
-			initialLeaveType.add(new LeaveType("Casual", 30.0));
+			initialLeaveType.add(new LeaveType("HalfDay", 0.0));
+			initialLeaveType.add(new LeaveType("Medical", 15.0)); 
+			initialLeaveType.add(new LeaveType("Casual", 30.0)); 
 			iLeaveTypeRepository.predefinedLeaveType(initialLeaveType);
 		}
 	}

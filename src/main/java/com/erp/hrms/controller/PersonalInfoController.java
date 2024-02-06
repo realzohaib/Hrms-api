@@ -24,6 +24,7 @@ import com.erp.hrms.api.security.response.StatusResponse;
 import com.erp.hrms.api.service.IPersonalInfoService;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
+import com.erp.hrms.entity.response.EmployeeResponseDTO;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
@@ -64,8 +65,9 @@ public class PersonalInfoController {
 		url = url.replace(req.getServletPath(), "");
 
 		try {
-			personalInfoService.savedata(personalinfo,CurrentDesignationandAdditionalTask, passportSizePhoto, OtherIdProofDoc,
-					passportScan, licensecopy, relativeid, raddressproof, secondaryDocumentScan,
+
+			personalInfoService.savedata(personalinfo, CurrentDesignationandAdditionalTask, passportSizePhoto,
+					OtherIdProofDoc, passportScan, licensecopy, relativeid, raddressproof, secondaryDocumentScan,
 					seniorSecondaryDocumentScan, graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan,
 					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,
 					visaDocs, diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
@@ -78,7 +80,7 @@ public class PersonalInfoController {
 		}
 	}
 
-	@GetMapping("/personal-info/find/all/active")
+	@GetMapping("/personal-info/find/all")
 	public ResponseEntity<?> findAllPersonalInfo() {
 		try {
 			List<PersonalInfo> findAllPersonalInfo = personalInfoService.findAllPersonalInfo();
@@ -209,4 +211,41 @@ public class PersonalInfoController {
 		}
 	}
 
+	@GetMapping("/find-all/personal-info/background-check/pending")
+	public ResponseEntity<?> getPersonalInfoWithPendingBackgroundCheck() {
+		try {
+			List<PersonalInfo> personalInfoWithPendingBackgroundCheck = personalInfoService
+					.getPersonalInfoWithPendingBackgroundCheck();
+			return ResponseEntity.ok(personalInfoWithPendingBackgroundCheck);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Exception occurred: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/employees/postedLocation/{postedLocation}")
+	public ResponseEntity<List<EmployeeResponseDTO>> getByPostedLocationResponse(@PathVariable String postedLocation) {
+		try {
+			List<EmployeeResponseDTO> employeeResponseList = personalInfoService.getByPostedLocation(postedLocation);
+
+			if (employeeResponseList.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			} else {
+				return new ResponseEntity<>(employeeResponseList, HttpStatus.OK);
+			}
+		} catch (PersonalInfoNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/find-all/personal-info/active")
+	public ResponseEntity<List<PersonalInfo>> getAllActivePersonalInfo() {
+		try {
+			List<PersonalInfo> activePersonalInfo = personalInfoService.findAllPersonalInfoActive();
+			return new ResponseEntity<>(activePersonalInfo, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

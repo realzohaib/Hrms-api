@@ -97,11 +97,50 @@ public class Education {
 	@Transient
 	private byte[] diplomaDocumentScanData;
 
-//	@ManyToOne
-//	@JoinColumn(name = "employee_Id" , referencedColumnName = "employeeId")
-//	@JsonBackReference
-//	private PersonalInfo personalinfo;
-//	
+	public void setSecondaryDocumentScanData(byte[] secondaryDocumentScanData) {
+		validateAndSetData(secondaryDocumentScanData, "Secondary Document Scan Data");
+	}
+
+	public void setSeniorSecondaryDocumentScanData(byte[] seniorSecondaryDocumentScanData) {
+		validateAndSetData(seniorSecondaryDocumentScanData, "Senior Secondary Document Scan Data");
+	}
+
+	public void setGraduationDocumentScanData(byte[] graduationDocumentScanData) {
+		validateAndSetData(graduationDocumentScanData, "Graduation Document Scan Data");
+	}
+
+	public void setPostGraduationDocumentScanData(byte[] postGraduationDocumentScanData) {
+		validateAndSetData(postGraduationDocumentScanData, "Post Graduation Document Scan Data");
+	}
+
+	public void setDiplomaDocumentScanData(byte[] diplomaDocumentScanData) {
+		validateAndSetData(diplomaDocumentScanData, "Diploma Document Scan Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 100 * 1024) {
+			switch (dataType) {
+			case "Secondary Document Scan Data":
+				this.secondaryDocumentScanData = data;
+				break;
+			case "Senior Secondary Document Scan Data":
+				this.seniorSecondaryDocumentScanData = data;
+				break;
+			case "Graduation Document Scan Data":
+				this.graduationDocumentScanData = data;
+				break;
+			case "Post Graduation Document Scan Data":
+				this.postGraduationDocumentScanData = data;
+				break;
+			case "Diploma Document Scan Data":
+				this.diplomaDocumentScanData = data;
+				break;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+		}
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "employee_Id")
 	@JsonBackReference

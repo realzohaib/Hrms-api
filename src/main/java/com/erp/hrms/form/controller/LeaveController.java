@@ -1,6 +1,7 @@
 package com.erp.hrms.form.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.approver.entity.LeaveApprover;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
 import com.erp.hrms.entity.form.LeaveCountDTO;
@@ -37,8 +39,9 @@ public class LeaveController {
 			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
 			throws IOException {
 		try {
-			iLeaveService.createLeaveApproval(leaveApproval, medicalDocumentsName);
-			return new ResponseEntity<>(new MessageResponse("Your leave request send to your manager."), HttpStatus.OK);
+			LeaveApprover approval = iLeaveService.createLeaveApproval(leaveApproval, medicalDocumentsName);
+
+			return ResponseEntity.ok(approval);
 		} catch (Exception e) {
 			return new ResponseEntity<>((new MessageResponse("Error while creating leave approval. " + e)),
 					HttpStatus.BAD_REQUEST);
@@ -88,12 +91,12 @@ public class LeaveController {
 			throws IOException {
 		try {
 			iLeaveService.approvedByManager(leaveRequestId, leaveApproval, medicalDocumentsName);
-			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By manager"),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new MessageResponse("Done."), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse("Error while approving leave request. " + e),
 					HttpStatus.BAD_REQUEST);
 		}
+
 	}
 
 //	This method for update the leave request by the hr Accepted or Rejected with the help of leaveRequestId
@@ -104,7 +107,7 @@ public class LeaveController {
 			throws IOException {
 		try {
 			iLeaveService.approvedOrDenyByHR(leaveRequestId, leaveApproval, medicalDocumentsName);
-			return new ResponseEntity<>(new MessageResponse("Your request is approved or denied By HR"), HttpStatus.OK);
+			return new ResponseEntity<>(new MessageResponse("Done."), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse("Error while approving leave request. " + e),
 					HttpStatus.BAD_REQUEST);
@@ -142,30 +145,29 @@ public class LeaveController {
 		}
 	}
 
-	@GetMapping("/calculateTotalLeaveDays/{employeeId}")
-	public ResponseEntity<?> calculateTotalLeaveDays(@PathVariable Long employeeId) {
-		try {
-			return new ResponseEntity<>(iLeaveService.calculateTotalNumberOfDaysRequestedByEmployee(employeeId),
-					HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
-		}
-	}
+//	@GetMapping("/calculateTotalLeaveDays/{employeeId}")
+//	public ResponseEntity<?> calculateTotalLeaveDays(@PathVariable Long employeeId) {
+//		try {
+//			return new ResponseEntity<>(iLeaveService.calculateTotalNumberOfDaysRequestedByEmployee(employeeId),
+//					HttpStatus.OK);
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
+//		}
+//	}
 
-//	This method for calculate total number of leave days with employee id and leave name
-	@GetMapping("/calculateTotalLeaveDays/{employeeId}/leaveName/{leaveName}")
-	public ResponseEntity<?> calculateTotalSpecificLeaveDays(@PathVariable Long employeeId,
-			@PathVariable String leaveName) {
-		try {
-			return new ResponseEntity<>(
-					iLeaveService.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName),
-					HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
-		}
-	}
+////	This method for calculate total number of leave days with employee id and leave name
+//	@GetMapping("/calculateTotalLeaveDays/{employeeId}/leaveName/{leaveName}")
+//	public ResponseEntity<?> calculateTotalSpecificLeaveDays(@PathVariable Long employeeId,
+//			@PathVariable String leaveName) {
+//		try {
+//			return new ResponseEntity<>(
+//					iLeaveService.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName),
+//					HttpStatus.OK);
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
+//		}
+//	}
 
-//	mujhe is me employee ka naam add karna hai
 //	This method is to calculate how many employees are on leave in a day.
 	@GetMapping("/leave-calendar")
 	public ResponseEntity<List<LeaveCalendarData>> getLeaveCalendar() {
@@ -185,6 +187,14 @@ public class LeaveController {
 			return new ResponseEntity<>(new MessageResponse("An error occurred while fetching marked calendar dates."),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@GetMapping("/calculateTotalDays/{employeeId}/{year}/{month}")
+	public ResponseEntity<BigDecimal> calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(
+			@PathVariable Long employeeId, @PathVariable int year, @PathVariable int month) {
+		BigDecimal totalDays = iLeaveService.calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(employeeId,
+				year, month);
+		return ResponseEntity.ok(totalDays);
 	}
 
 //	This method the total leaves in a year of particular employee
@@ -211,4 +221,5 @@ public class LeaveController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
 }

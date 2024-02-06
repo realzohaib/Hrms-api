@@ -15,6 +15,8 @@ public interface IDepartmentService {
 	public Optional<Department> getDepartmentById(Long departmentId);
 
 	public List<Department> getAllDepartment();
+	
+	public Department updateDepartment(Long departmentId, Department updatedDepartment);
 
-//	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName);
+	public List<PersonalInfoDTO> getPersonalInfoByDepartmentName(String departmentName);
 }

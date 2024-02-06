@@ -122,6 +122,29 @@ public class PersonalInfo implements Serializable {
 	@Column(name = "hobbies")
 	private String hobbies;
 
+	public void setPassportSizePhotoData(byte[] passportSizePhotoData) {
+		validateAndSetData(passportSizePhotoData, "Passport Size Photo Data");
+	}
+
+	public void setOtherIdProofDocData(byte[] otherIdProofDocData) {
+		validateAndSetData(otherIdProofDocData, "Other ID Proof Doc Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 100 * 1024) {
+			switch (dataType) {
+			case "Passport Size Photo Data":
+				this.passportSizePhotoData = data;
+				break;
+			case "Other ID Proof Doc Data":
+				this.otherIdProofDocData = data;
+				break;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+		}
+	}
+
 	private String status;// Active or InActive
 
 	private String empStatus;// old or new

@@ -52,10 +52,26 @@ public class BackgroundCheck {
 	@Transient
 	private byte[] recordSheetData;
 
+	public void setRecordSheetData(byte[] recordSheetData) {
+		if (recordSheetData != null && recordSheetData.length <= 100 * 1024) {
+			this.recordSheetData = recordSheetData;
+		} else {
+			throw new IllegalArgumentException("Record Sheet Data size exceeds the allowed limit (100 KB)");
+		}
+	}
+
 	private String declarationRequired;
 
 	@Transient
 	private byte[] declarationRequiredData;
+
+	public void setDeclarationRequiredData(byte[] declarationRequiredData) {
+		if (declarationRequiredData != null && declarationRequiredData.length <= 100 * 1024) {
+			this.declarationRequiredData = declarationRequiredData;
+		} else {
+			throw new IllegalArgumentException("Declaration Required Data size exceeds the allowed limit (100 KB)");
+		}
+	}
 
 	@ManyToOne
 	@JoinColumn(name = "employee_id")

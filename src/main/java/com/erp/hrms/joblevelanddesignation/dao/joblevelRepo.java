@@ -20,4 +20,5 @@ public interface joblevelRepo extends JpaRepository<JobLevel, Integer> {
 	public List<JobLevel> loadAllJobLevel();
 	
 
+
 }

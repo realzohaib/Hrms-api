@@ -296,7 +296,7 @@ public class PayRollServiceImpl implements IPayRollService {
 		AttendenceResponse fullAttendence = attendence.fullAttendence(empId, year, month);
 
 		// Retrieve total leaves
-		BigDecimal leaves = leave.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(empId, year, month);
+		BigDecimal leaves = leave.calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(empId, year, month);
 
 		PayRoll payroll = repo.findByEmployeeIdAndMonthAndYear(empId, month, year);
 		if (payroll != null) {
@@ -415,7 +415,7 @@ public class PayRollServiceImpl implements IPayRollService {
 		AttendenceResponse fullAttendence = attendence.fullAttendence(empId, year, month);
 
 		// Calculate and set total leaves
-		BigDecimal leaves = leave.calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(empId, year, month);
+		BigDecimal leaves = leave.calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(empId, year, month);
 
 		PayRollResponse response = new PayRollResponse();
 		response.setPayroll(payroll);

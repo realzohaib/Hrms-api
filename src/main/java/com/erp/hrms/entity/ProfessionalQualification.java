@@ -34,6 +34,20 @@ public class ProfessionalQualification {
 	@Transient
 	private byte[] degreeScanData;
 
+	public void setDegreeScanData(byte[] degreeScanData) {
+		validateAndSetData(degreeScanData, "Degree Scan Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 100 * 1024) {
+			if ("Degree Scan Data".equals(dataType)) {
+				this.degreeScanData = data;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (100 KB)");
+		}
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	@JsonBackReference

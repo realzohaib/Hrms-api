@@ -40,8 +40,22 @@ public class VisaDetail {
 	private boolean visaEmailSend1dayBefore;
 
 	private String visaDocs;
-	
+
 	@Transient
 	private byte[] visaDocsData;
+
+	public void setVisaDocsData(byte[] visaDocsData) {
+		validateAndSetData(visaDocsData, "Visa Docs Data");
+	}
+
+	private void validateAndSetData(byte[] data, String dataType) {
+		if (data != null && data.length <= 2000 * 1024) {
+			if ("Visa Docs Data".equals(dataType)) {
+				this.visaDocsData = data;
+			}
+		} else {
+			throw new IllegalArgumentException(dataType + " size exceeds the allowed limit (2 MB)");
+		}
+	}
 
 }

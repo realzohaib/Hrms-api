@@ -24,5 +24,5 @@ public class PersonalEmailExistsException extends RuntimeException {
 		super(messageResponse.getMessage());
 		this.messageResponse = messageResponse;
 	}
-	
+
 }
