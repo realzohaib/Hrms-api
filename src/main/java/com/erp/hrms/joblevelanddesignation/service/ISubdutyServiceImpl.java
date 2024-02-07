@@ -21,29 +21,6 @@ public class ISubdutyServiceImpl implements ISubdutyService {
 	@Autowired
 	private SubDutiesRepo subrepo;
 
-//	@Override
-//	public void saveSubduty(SubDutiesRequest req) {
-//		
-//		ArrayList<SubDuties> list = new ArrayList();
-//		Duties duties = repo.findByDutiesId(req.getDutiesIdl());	
-//		List<String> subDuties = req.getSubDuties();
-//		
-//		for (String dutyName : subDuties) {
-//			String SubDutyName = dutyName.trim();
-//			
-//			if(subrepo.findBySubDutyName(SubDutyName) != null) {
-//				throw new IllegalStateException("SubDuty:" + SubDutyName+"already exist");
-//			}
-//			
-//			SubDuties obj = new SubDuties();		
-//			obj.setSubDutyName(SubDutyName);
-//			
-//			list.add(obj);
-//		}	
-//		duties.setSubduties(list);	
-//		Duties save = repo.save(duties);
-//	}
-
 	@Override
 	public void saveSubduty(SubDutiesRequest req) {
 		Duties duties = repo.findByDutiesId(req.getDutiesIdl());

@@ -17,35 +17,37 @@ public class TaskServiceImpl implements ITaskService {
 
 	@Autowired
 	private SubDutiesRepo repo;
-	
+
 	@Autowired
 	private TaskRepo taskrepo;
 
 	@Override
 	public void saveTask(TaskRequest req) {
+		List<Task> list = new ArrayList<>();
 
-		List<Task> list = new ArrayList();
-
-		List<String> taskName = req.getTaskName();
+		List<String> taskNames = req.getTaskName();
 		Integer subDutiesId = req.getSubDutiesId();
 
 		SubDuties subDuties = repo.findBySubDutiesId(subDutiesId);
 
-		for (String name : taskName) {
-			
-			if(taskrepo.findByTaskName(name) != null) {
-				throw new IllegalStateException("Task: "+
-			name +" Already exist");	
+		if (subDuties == null) {
+			throw new IllegalArgumentException("SubDuties with ID " + subDutiesId + " not found!");
+		}
+
+		for (String name : taskNames) {
+			if (taskrepo.findByTaskName(name) != null) {
+				throw new IllegalStateException("Task: " + name + " already exists!");
 			}
 
-			Task obj = new Task();
+			Task task = new Task();
+			task.setTaskName(name);
+			task.getSubduties().add(subDuties);
+			subDuties.getTask().add(task);
 
-			obj.setTaskName(name);
-
-			list.add(obj);
+			list.add(task);
 		}
-		
-		subDuties.setTask(list);
+		taskrepo.saveAll(list);
+		subDuties.getTask().addAll(list);
 		repo.save(subDuties);
 	}
 
