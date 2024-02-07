@@ -518,7 +518,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 			PersonalInfo.setUserentity(user);
 			currentDesignationandTask.setEmpId(employeeId);
-//			currentService.saveCurrent(currentDesignationandTask);
 			dao.savePersonalInfo(PersonalInfo);
 			currentService.saveCurrent(currentDesignationandTask);
 

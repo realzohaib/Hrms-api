@@ -12,6 +12,6 @@ public interface LocationService {
 	public LocationDto findByLocationId(Long locationId);
 
 	public List<Location> findAllLocations();
-	
+
 	public Location updateLocation(Long locationId, Location location);
 }

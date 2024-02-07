@@ -2,7 +2,9 @@ package com.erp.hrms.employeedesignationandtask.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -14,6 +16,7 @@ import com.erp.hrms.employeedesignationandtask.dao.ICurrentDsAndTskRepo;
 import com.erp.hrms.employeedesignationandtask.entity.CurrentDesignationAndTask;
 import com.erp.hrms.employeedesignationandtask.requestresponseentity.CurrentReq;
 import com.erp.hrms.employeedesignationandtask.requestresponseentity.CurrentRes;
+import com.erp.hrms.employeedesignationandtask.requestresponseentity.EmplopyeeByTaskEntity;
 import com.erp.hrms.entity.JobDetails;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.joblevelanddesignation.dao.DesignationRepo;
@@ -47,6 +50,9 @@ public class CurrentServiceImpl implements ICurrentService {
 
 	@Autowired
 	private IjobDetailsDAO jobrepo;
+
+	@Autowired
+	private PersonalInfoDAO personalinforepo;
 
 	/*
 	 * earlier we were accepting multiple designation , location and additional task
@@ -108,7 +114,6 @@ public class CurrentServiceImpl implements ICurrentService {
 		repo.save(currentDesignationAndTask);
 	}
 
-	
 	// it fetches all the data of an employee , means current AND ended task also;
 	@Override
 	public List<CurrentRes> loadAllDesignationAndTaskByEmpId(long empid) {
@@ -158,6 +163,7 @@ public class CurrentServiceImpl implements ICurrentService {
 		List<CurrentRes> responseList = new ArrayList<CurrentRes>();
 
 		List<CurrentDesignationAndTask> obj = repo.findByEmpId(empid);
+
 		for (CurrentDesignationAndTask current : obj) {
 			CurrentRes res = new CurrentRes();
 			res.setCurrentDesAndTaskId(current.getCurrentDsAndTskId());
@@ -177,8 +183,25 @@ public class CurrentServiceImpl implements ICurrentService {
 					DesignationResponse designationResponse = new DesignationResponse();
 					designationResponse.setDesignationId(desig.getDesignationId());
 					designationResponse.setDesignationName(desig.getDesignationName());
-					designationResponse.setJobLevel(desig.getJoblevel().getLevelName());
-					designationResponse.setJobLevelID(desig.getJoblevel().getLevelId());
+					String levelName = null;
+
+					if (desig != null && desig.getJoblevel() != null) {
+						levelName = desig.getJoblevel().getLevelName();
+					}
+
+					if (levelName != null) {
+						designationResponse.setJobLevel(levelName);
+					} else {
+						designationResponse.setJobLevel(null);
+					}
+
+					Integer levelId = null;
+
+					if (desig != null && desig.getJoblevel() != null) {
+						levelId = desig.getJoblevel().getLevelId();
+					}
+
+					designationResponse.setJobLevelID(Objects.equals(levelId, null) ? null : levelId);
 
 					List<Duties> duties = desig.getDuties();
 					for (Duties duty : duties) {
@@ -267,6 +290,36 @@ public class CurrentServiceImpl implements ICurrentService {
 
 		}
 		return findByLevelId;
+	}
+
+	@Override
+	public List<EmplopyeeByTaskEntity> findAllEmpByTaskId(Integer taskId) {
+		List<EmplopyeeByTaskEntity> employeeByTaskIdList = new ArrayList<EmplopyeeByTaskEntity>();
+		List<CurrentDesignationAndTask> list = repo.findByTaskIdInJoinTable(taskId);
+
+		for (CurrentDesignationAndTask currentDesignationAndTask : list) {
+		    if(currentDesignationAndTask.getEndDate() == null){
+			EmplopyeeByTaskEntity emplopyeeByTaskEntity = new EmplopyeeByTaskEntity();
+			
+			PersonalInfo personalInfo = personalinforepo.loadPersonalInfoByEmployeeId(currentDesignationAndTask.getEmpId());
+			
+			emplopyeeByTaskEntity.setCurrentDsAndTskId(currentDesignationAndTask.getCurrentDsAndTskId());
+			emplopyeeByTaskEntity.setEmpName(personalInfo.getFirstName() +" " +personalInfo.getLastName());
+			emplopyeeByTaskEntity.setEmpId(currentDesignationAndTask.getEmpId());
+			emplopyeeByTaskEntity.setStartDate(currentDesignationAndTask.getStartDate());
+			
+			List<Designations> designationList = currentDesignationAndTask.getDesignation();
+			for(Designations designation :designationList) {
+				emplopyeeByTaskEntity.setDesignationName(designation.getDesignationName());
+			}
+			
+			employeeByTaskIdList.add(emplopyeeByTaskEntity);
+		}
+
+		}
+
+		return employeeByTaskIdList;
+
 	}
 
 }

@@ -35,7 +35,7 @@ public class ShiftController {
 		try {
 			return ResponseEntity.ok(service.getAllShifts());
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new MessageResponse("failed to fetched shift" + e.getMessage()));
+			return ResponseEntity.badRequest().body(new MessageResponse("failed to fetch shift" + e.getMessage()));
 		}
 		
 	}

@@ -2,6 +2,9 @@ package com.erp.hrms.joblevelanddesignation.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,15 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.joblevelanddesignation.dao.joblevelRepo;
+import com.erp.hrms.joblevelanddesignation.entity.Designations;
 import com.erp.hrms.joblevelanddesignation.entity.JobLevel;
 import com.erp.hrms.joblevelanddesignation.service.joblevelServiceImpl;
 
 @RestController
-public class JoblevelController {
+public class JoblevelController<E> {
 
 	@Autowired
 	private joblevelServiceImpl service;
-	
+
 	@Autowired
 	private joblevelRepo repo;
 
@@ -31,7 +35,7 @@ public class JoblevelController {
 		try {
 			levelName = levelName.replaceAll("\\p{Space}", ""); // Removes all whitespace characters
 			JobLevel name = repo.findByLevelName(levelName);
-			if(name != null) {
+			if (name != null) {
 				return ResponseEntity.ok("Level Already Exist");
 			}
 			JobLevel joblevel = new JobLevel();
@@ -73,6 +77,36 @@ public class JoblevelController {
 		} catch (Exception e) {
 			return ResponseEntity.ok().body(e.getMessage());
 		}
+	}
+
+	@PostConstruct
+	public ResponseEntity<?> loadJobLevel() {
+	    try {
+	        // Check if the job level with the specified criteria already exists
+	        JobLevel findByLevelName = repo.findByLevelName("Default");
+
+	        if (findByLevelName != null) {
+	            // Job level already exists, no need to save again
+	            return ResponseEntity.ok().body("Job level already exists in the database.");
+	        }
+
+	        // Job level doesn't exist, create and save it
+	        JobLevel jobLevel = new JobLevel();
+	        jobLevel.setLevelName("Default");
+
+	        ArrayList<Designations> list = new ArrayList<>();
+	        Designations designations = new Designations();
+	        designations.setDesignationName("Admin");
+	        designations.setJoblevel(jobLevel);
+	        list.add(designations);
+
+	        jobLevel.setDesignations(list);
+
+	        return ResponseEntity.ok().body(repo.save(jobLevel));
+	    } catch (Exception e) {
+	        return ResponseEntity.ok().body(e.getMessage());
+	    }
+
 	}
 
 }

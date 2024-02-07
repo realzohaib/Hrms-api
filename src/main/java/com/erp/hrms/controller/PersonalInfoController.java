@@ -65,12 +65,12 @@ public class PersonalInfoController {
 		url = url.replace(req.getServletPath(), "");
 
 		try {
-			personalInfoService.savedata(personalinfo, CurrentDesignationandAdditionalTask,
-					passportSizePhoto, OtherIdProofDoc, passportScan, licensecopy, relativeid, raddressproof,
-					secondaryDocumentScan, seniorSecondaryDocumentScan, graduationDocumentScan,
-					postGraduationDocumentScan, othersDocumentScan, degreeScan, payslipScan, recordsheet,
-					PaidTrainingDocumentProof, CertificateUploadedForOutsource, visaDocs, diplomaDocumentScan,
-					declarationRequired, achievementsRewardsDocs);
+
+			personalInfoService.savedata(personalinfo, CurrentDesignationandAdditionalTask, passportSizePhoto,
+					OtherIdProofDoc, passportScan, licensecopy, relativeid, raddressproof, secondaryDocumentScan,
+					seniorSecondaryDocumentScan, graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan,
+					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,
+					visaDocs, diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
 			return ResponseEntity.ok(new MessageResponse("Insert Personal info successfully"));
 		} catch (PersonalEmailExistsException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Email ID already exists"));
@@ -239,13 +239,13 @@ public class PersonalInfoController {
 		}
 	}
 
-	 @GetMapping("/find-all/personal-info/active")
-	    public ResponseEntity<List<PersonalInfo>> getAllActivePersonalInfo() {
-	        try {
-	            List<PersonalInfo> activePersonalInfo = personalInfoService.findAllPersonalInfoActive();
-	            return new ResponseEntity<>(activePersonalInfo, HttpStatus.OK);
-	        } catch (Exception e) {
-	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
-	    }
+	@GetMapping("/find-all/personal-info/active")
+	public ResponseEntity<List<PersonalInfo>> getAllActivePersonalInfo() {
+		try {
+			List<PersonalInfo> activePersonalInfo = personalInfoService.findAllPersonalInfoActive();
+			return new ResponseEntity<>(activePersonalInfo, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

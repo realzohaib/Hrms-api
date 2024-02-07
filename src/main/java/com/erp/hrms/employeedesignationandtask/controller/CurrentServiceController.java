@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.erp.hrms.employeedesignationandtask.dao.ICurrentDsAndTskRepo;
 import com.erp.hrms.employeedesignationandtask.entity.CurrentDesignationAndTask;
 import com.erp.hrms.employeedesignationandtask.requestresponseentity.CurrentReq;
 import com.erp.hrms.employeedesignationandtask.requestresponseentity.CurrentRes;
+import com.erp.hrms.employeedesignationandtask.requestresponseentity.EmplopyeeByTaskEntity;
 import com.erp.hrms.employeedesignationandtask.service.CurrentServiceImpl;
 
 @RestController
@@ -23,6 +24,9 @@ public class CurrentServiceController {
 
 	@Autowired
 	private CurrentServiceImpl service;
+	
+	@Autowired
+	private ICurrentDsAndTskRepo repo;
 
 	@PostMapping("/save_designationTask")
 	public ResponseEntity<?> saveCurrentsave(@RequestBody CurrentReq obj) {
@@ -86,6 +90,23 @@ public class CurrentServiceController {
 	public ResponseEntity<?> findAllEmpByLevelId(@PathVariable Integer levelId) {
 		try {
 			List<CurrentDesignationAndTask> list = service.findAllEmpByLevelId(levelId);
+			if (list.isEmpty() || list == null) {
+				return ResponseEntity.badRequest().body("No employee found..!!");
+			}
+			return ResponseEntity.ok(list);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+
+	}
+	
+	@GetMapping("/findAllEmpByTaskId/{taskId}")
+	public ResponseEntity<?> findAllEmpByTaskId(@PathVariable Integer taskId) {
+		try {
+			//List<CurrentDesignationAndTask> list = repo.findByTaskIdInJoinTable(taskId);
+			
+			List<EmplopyeeByTaskEntity> list = service.findAllEmpByTaskId(taskId);
+			
 			if (list.isEmpty() || list == null) {
 				return ResponseEntity.badRequest().body("No employee found..!!");
 			}

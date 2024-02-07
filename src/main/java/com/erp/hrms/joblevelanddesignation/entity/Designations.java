@@ -41,9 +41,9 @@ public class Designations implements Serializable {
 	private String designationName;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	   @JoinTable(name = "designation_duties", 
-       joinColumns = { @JoinColumn(name = "designation_id" , referencedColumnName = "designation_id") }, 
-       inverseJoinColumns = { @JoinColumn(name = "duties_id", referencedColumnName = "duties_id") })
+	@JoinTable(name = "designation_duties", joinColumns = {
+			@JoinColumn(name = "designation_id", referencedColumnName = "designation_id") }, inverseJoinColumns = {
+					@JoinColumn(name = "duties_id", referencedColumnName = "duties_id") })
 	@JsonManagedReference
 	private List<Duties> duties = new ArrayList<Duties>();
 
@@ -51,16 +51,12 @@ public class Designations implements Serializable {
 	@JoinColumn(name = "joblevel_id")
 	@JsonBackReference
 	private JobLevel joblevel;
-	
-//	@ManyToMany(mappedBy = "designation")
-//	@JsonBackReference(value = "designationreference")
-//	private List<CurrentDesignationAndTask>current;
 
 	public Designations(Integer designationId, String designationName, List<Duties> duties, JobLevel joblevel) {
 		super();
 		this.designationId = designationId;
 		this.designationName = designationName;
-	    this.duties = duties;
+		this.duties = duties;
 		this.joblevel = joblevel;
 	}
 

@@ -1,6 +1,7 @@
 package com.erp.hrms.joblevelanddesignation.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,5 +18,7 @@ public interface joblevelRepo extends JpaRepository<JobLevel, Integer> {
 	
 	@Query("SELECT jl FROM JobLevel jl LEFT JOIN FETCH jl.designations")
 	public List<JobLevel> loadAllJobLevel();
+	
+
 
 }
