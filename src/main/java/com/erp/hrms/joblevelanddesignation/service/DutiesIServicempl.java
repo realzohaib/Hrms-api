@@ -27,22 +27,22 @@ public class DutiesIServicempl implements IDutiesService {
 	@Override
 	public void saveDuties(DutiesRequest duties) {
 		Designations designations = desigrepo.findByDesignationId(duties.getDesignationid());
-		List<Duties> dutiesList = new ArrayList<>();
 
+		if (designations == null) {
+			throw new IllegalArgumentException("Designation with ID " + duties.getDesignationid() + " not found!");
+		}
 		for (String dutyName : duties.getDuties()) {
 			String DutyName = dutyName.trim();
-			if(repo.findByDutyName(DutyName) != null) {
-				throw new IllegalStateException("DutyName: " + dutyName + " already exist!!");
+			if (repo.findByDutyName(DutyName) != null) {
+				throw new IllegalStateException("DutyName: " + dutyName + " already exists!!");
 			}
 			Duties duty = new Duties();
 			duty.setDutyName(DutyName);
-
-			dutiesList.add(duty);
+			duty.getDesignation().add(designations);
+			designations.getDuties().add(duty);
+			repo.save(duty);
 		}
-		designations.setDuties(dutiesList);
-
 		desigrepo.save(designations);
-
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class DutiesIServicempl implements IDutiesService {
 
 			List<SubDuties> subdutylist = new ArrayList<SubDuties>();
 			List<SubDuties> subduties = duties.getSubduties();
-			
+
 			for (SubDuties subduty : subduties) {
 				SubDuties sub = new SubDuties();
 				sub.setSubDutiesId(subduty.getSubDutiesId());
