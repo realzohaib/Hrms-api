@@ -455,7 +455,7 @@ public class LeaveService implements ILeaveService {
 
 					existingApproval.setHrApprovalStatus("Pending");
 				}
-			} else if (noOfLeavesApproved <= 3) {
+			} else if (noOfLeavesApproved <= 3) { 
 				if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
 					sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
 							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved",
