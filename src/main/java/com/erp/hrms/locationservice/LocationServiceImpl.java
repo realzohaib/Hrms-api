@@ -38,6 +38,7 @@ public class LocationServiceImpl implements LocationService {
 		response.setIsMaintenanceRequired(findByLocationId.getIsMaintenanceRequired());
 		response.setCommentsForMaintenance(findByLocationId.getCommentsForMaintenance());
 		response.setInchargeInfo(findByLocationId.getInchargeInfo());
+		response.setCountry(findByLocationId.getCountry());
 
 		List<LeaveApproverDto> leaveApprovers = new ArrayList<>();
 		List<LeaveApprover> leaveApproverEntities = findByLocationId.getLeaveApprover();

@@ -18,6 +18,7 @@ public class LocationDto {
 	private Boolean isMaintenanceRequired;
 	private String commentsForMaintenance;
 	private String inchargeInfo;
+	private String country;
 
 	private List<LeaveApproverDto> leaveApprovers;
 }

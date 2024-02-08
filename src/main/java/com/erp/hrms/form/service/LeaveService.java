@@ -137,12 +137,12 @@ public class LeaveService implements ILeaveService {
 						sendLeaveRequestEmail(approver.getFirstApproverEmail(),
 								leaveApprovalJson.getEmployeeId() + " Leave request submitted by employeeId for review",
 								leaveApprovalJson, emailContent);
-						if (approver.getSecondApproverEmail() != null) {
-							sendLeaveRequestEmail(approver.getSecondApproverEmail(),
-									leaveApprovalJson.getEmployeeId()
-											+ " Leave request submitted by employeeId for review",
-									leaveApprovalJson, emailContent);
-						}
+//						if (approver.getSecondApproverEmail() != null) {
+//							sendLeaveRequestEmail(approver.getSecondApproverEmail(),
+//									leaveApprovalJson.getEmployeeId()
+//											+ " Leave request submitted by employeeId for review",
+//									leaveApprovalJson, emailContent);
+//						}
 					}
 				} else {
 					throw new RuntimeException("Employee details not found");
@@ -230,6 +230,138 @@ public class LeaveService implements ILeaveService {
 	}
 
 //	This method for update the leave request by the manager Accepted or Rejected with the help of leaveRequestId
+//	@Transactional(rollbackFor = Exception.class)
+//	@Override
+//	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval,
+//			MultipartFile medicalDocumentsName) throws IOException {
+//		LeaveApproval existingApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
+//		if (existingApproval == null) {
+//			throw new LeaveRequestNotFoundException(
+//					new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
+//		}
+//		try {
+//			ObjectMapper mapper = new ObjectMapper();
+//			LeaveApproval leaveApprovalJson = mapper.readValue(leaveApproval, LeaveApproval.class);
+//			existingApproval.setEmployeeId(leaveApprovalJson.getEmployeeId());
+//			existingApproval.setNameOfEmployee(leaveApprovalJson.getNameOfEmployee());
+//			existingApproval.setEmail(leaveApprovalJson.getEmail());
+//			existingApproval.setContactNumber(leaveApprovalJson.getContactNumber());
+//			existingApproval.setDesignation(leaveApprovalJson.getDesignation());
+//			existingApproval.setDepartment(leaveApprovalJson.getDepartment());
+//			existingApproval.setJobLevel(leaveApprovalJson.getJobLevel());
+//			existingApproval.setLocation(leaveApprovalJson.getLocation());
+//			existingApproval.setEmergencyContactNumber(leaveApprovalJson.getEmergencyContactNumber());
+//			existingApproval.setRequestDate(leaveApprovalJson.getRequestDate());
+//			existingApproval.setLeaveType(leaveApprovalJson.getLeaveType());
+//			existingApproval.setStartDate(leaveApprovalJson.getStartDate());
+//			existingApproval.setEndDate(leaveApprovalJson.getEndDate());
+//			existingApproval.setNumberOfDaysRequested(leaveApprovalJson.getNumberOfDaysRequested());
+//			existingApproval.setApprovalStatus(leaveApprovalJson.getApprovalStatus());
+//			existingApproval.setApprovingManagerName(leaveApprovalJson.getApprovingManagerName());
+//			existingApproval.setApprovalRemarks(leaveApprovalJson.getApprovalRemarks());
+//			existingApproval.setManagerEmail(leaveApprovalJson.getManagerEmail());
+//			existingApproval.setNoOfLeavesApproved(leaveApprovalJson.getNoOfLeavesApproved());
+//			double noOfLeavesApproved = leaveApprovalJson.getNoOfLeavesApproved();
+//			existingApproval.setApprovedStartDate(leaveApprovalJson.getApprovedStartDate());
+//			existingApproval.setApprovedEndDate(leaveApprovalJson.getApprovedEndDate());
+//
+//			
+//
+//			LeaveType updatedLeaveType = leaveApprovalJson.getLeaveType();
+//			if (updatedLeaveType != null) {
+//				LeaveType attachedLeaveType = entityManager.find(LeaveType.class, updatedLeaveType.getLeaveTypeId());
+//				existingApproval.setLeaveType(attachedLeaveType);
+//			}
+//
+//			if (noOfLeavesApproved <= 3) {
+//				if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
+//					sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
+//							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved",
+//							existingApproval);
+//				} else {
+//					sendLeaveRequestRejectedEmail(existingApproval.getEmail(),
+//							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected",
+//							existingApproval);
+//				}
+//			}
+//			
+//			LeaveApprover approver = getLeaveApprover(existingApproval);
+//
+//			// Get details of the first approver based on firstApproverEmpId
+//
+//			PersonalInfo secondApproverDetails = iPersonalInfoDAO
+//					.loadPersonalInfoByEmployeeId(approver.getSecondApproverEmpId());
+//
+//			String emailContent = "Hi " + secondApproverDetails.getNamePrefix() + " "
+//					+ secondApproverDetails.getFirstName() + " " + secondApproverDetails.getMiddleName() + " "
+//					+ secondApproverDetails.getLastName() + ",\n\n" + "Leave request "
+//					+ leaveApprovalJson.getEmployeeId() + " submitted by " + leaveApprovalJson.getNameOfEmployee()
+//					+ " (" + leaveApprovalJson.getEmployeeId() + "), " + leaveApprovalJson.getDesignation()
+//					+ " at location " + leaveApprovalJson.getLocation()
+//					+ ", is pending for HR review. Please review and take the necessary action on it.\n\n"
+//					+ "Employee Name: " + leaveApprovalJson.getNameOfEmployee() + "\n" + "Employee Id: "
+//					+ leaveApprovalJson.getEmployeeId() + "\n" + "Manager name: "
+//					+ leaveApprovalJson.getApprovingManagerName() + "\n" + "Approval manager email id: "
+//					+ leaveApprovalJson.getManagerEmail() + "\n" + "Leave reason: " + leaveApprovalJson.getLeaveReason()
+//					+ "\n" + "Manager remarks: " + leaveApprovalJson.getApprovalRemarks() + "\n"
+//					+ "Number of leaves requested: " + leaveApprovalJson.getNumberOfDaysRequested() + "\n"
+//					+ "Number of leaves approved: " + leaveApprovalJson.getNoOfLeavesApproved() + "\n"
+//					+ "Alternate contact number: " + leaveApprovalJson.getEmergencyContactNumber() + "\n\n"
+//					+ "Regards,\n" + "HRMS Mail system";
+//
+//			if (noOfLeavesApproved > 3) {
+////				If the employee ID of the first approver and the employee ID of the second approver are the same
+//				if (approver.getFirstApproverEmpId().equals(approver.getSecondApproverEmpId())) {
+//					existingApproval.setApprovalStatus(leaveApprovalJson.getApprovalStatus());
+//					existingApproval.setHrApprovalStatus(leaveApprovalJson.getApprovalStatus());
+//					existingApproval.setHrName(leaveApprovalJson.getApprovingManagerName());
+//					existingApproval.setHrEmail(leaveApprovalJson.getManagerEmail());
+//					existingApproval.setHrApprovalRemarks(leaveApprovalJson.getApprovalRemarks());
+////					
+//					if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
+//						sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
+//								leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved",
+//								existingApproval);
+//					} else {
+//						sendLeaveRequestRejectedEmail(existingApproval.getEmail(),
+//								leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected",
+//								existingApproval);
+//					}
+//					
+//				} else {
+//
+//					sendLeaveRequestForwardedToHREmail(approver.getSecondApproverEmail(),
+//							leaveApprovalJson.getEmployeeId()
+//									+ " Leave request by employeeId submitted for final review",
+//							existingApproval, emailContent);
+//
+//					existingApproval.setHrApprovalStatus("Pending");
+//				}
+//			} else {
+//				existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
+//			}
+//			
+//			
+//
+//			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+//				if (existingApproval.getMedicalDocumentsName() != null) {
+//					Path oldMedicalDocument = Paths.get(uplaodDirectory, existingApproval.getMedicalDocumentsName());
+//					Files.deleteIfExists(oldMedicalDocument);
+//				}
+//				String uniqueIdentifier = UUID.randomUUID().toString();
+//				String originalFileName = medicalDocumentsName.getOriginalFilename();
+//				String fileNameWithUniqueIdentifier = uniqueIdentifier + "_" + originalFileName;
+//				Path fileNameAndPath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
+//				Files.write(fileNameAndPath, medicalDocumentsName.getBytes());
+//				existingApproval.setMedicalDocumentsName(fileNameWithUniqueIdentifier);
+//			}
+//
+//			return iLeaveRepository.approvedByManager(leaveRequestId, existingApproval);
+//		} catch (Exception e) {
+//			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
+//		}
+//	}
+
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public LeaveApproval approvedByManager(Long leaveRequestId, String leaveApproval,
@@ -264,18 +396,6 @@ public class LeaveService implements ILeaveService {
 			double noOfLeavesApproved = leaveApprovalJson.getNoOfLeavesApproved();
 			existingApproval.setApprovedStartDate(leaveApprovalJson.getApprovedStartDate());
 			existingApproval.setApprovedEndDate(leaveApprovalJson.getApprovedEndDate());
-
-			if (noOfLeavesApproved < 3) {
-				if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
-					sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
-							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved",
-							existingApproval);
-				} else {
-					sendLeaveRequestRejectedEmail(existingApproval.getEmail(),
-							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected",
-							existingApproval);
-				}
-			}
 
 			LeaveType updatedLeaveType = leaveApprovalJson.getLeaveType();
 			if (updatedLeaveType != null) {
@@ -312,6 +432,20 @@ public class LeaveService implements ILeaveService {
 				if (approver.getFirstApproverEmpId().equals(approver.getSecondApproverEmpId())) {
 					existingApproval.setApprovalStatus(leaveApprovalJson.getApprovalStatus());
 					existingApproval.setHrApprovalStatus(leaveApprovalJson.getApprovalStatus());
+					existingApproval.setHrName(leaveApprovalJson.getApprovingManagerName());
+					existingApproval.setHrEmail(leaveApprovalJson.getManagerEmail());
+					existingApproval.setHrApprovalRemarks(leaveApprovalJson.getApprovalRemarks());
+
+					if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
+						sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
+								leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved",
+								existingApproval);
+					} else {
+						sendLeaveRequestRejectedEmail(existingApproval.getEmail(),
+								leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected",
+								existingApproval);
+					}
+
 				} else {
 
 					sendLeaveRequestForwardedToHREmail(approver.getSecondApproverEmail(),
@@ -320,6 +454,16 @@ public class LeaveService implements ILeaveService {
 							existingApproval, emailContent);
 
 					existingApproval.setHrApprovalStatus("Pending");
+				}
+			} else if (noOfLeavesApproved <= 3) {
+				if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
+					sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
+							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved",
+							existingApproval);
+				} else {
+					sendLeaveRequestRejectedEmail(existingApproval.getEmail(),
+							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected",
+							existingApproval);
 				}
 			} else {
 				existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
