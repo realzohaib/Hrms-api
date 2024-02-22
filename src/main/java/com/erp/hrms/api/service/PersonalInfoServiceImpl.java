@@ -940,8 +940,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 	@Override
 	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) throws IOException {
-		try {
-			PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
+		
+			PersonalInfo personalInfoByEmployeeId = dao.loadPersonalInfoByEmployeeId(employeeId);
 			if (personalInfoByEmployeeId == null) {
 				throw new PersonalInfoNotFoundException(
 						new MessageResponse("No personal information found for this employee ID: " + employeeId));
@@ -1137,10 +1137,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			}
 
 			return personalInfoByEmployeeId;
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"An error occurred while retrieving personal information for Employee Id: " + employeeId, e);
-		}
+		
 	}
 
 	@Override

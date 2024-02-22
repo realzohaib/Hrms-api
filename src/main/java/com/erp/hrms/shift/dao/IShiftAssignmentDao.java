@@ -20,13 +20,14 @@ public interface IShiftAssignmentDao {
 	
 	public ShiftAssignment updateShift( ShiftAssignment asign);
 	
-	public List<ShiftAssignment> findByDate(LocalDate date);
+	public List<ShiftAssignment> findByStartDate(LocalDate date);
 	
 	public List<ShiftAssignment> findshiftById(long id , LocalDate date);
 	
 	List<ShiftAssignment> findByShift_ShiftNameAndStartDate(String shiftName, LocalDate date);
 	
 	public void deleteShiftAllocation(long assignmentId);
+	
 ;
 
 }

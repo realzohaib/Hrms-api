@@ -48,7 +48,7 @@ public class ShiftAssignmentDaoImpl implements IShiftAssignmentDao {
 	}
 
 	@Override
-	public List<ShiftAssignment> findByDate(LocalDate date) {
+	public List<ShiftAssignment> findByStartDate(LocalDate date) {
 		// TODO Auto-generated method stub
 		return repo.findByStartDate(date);
 	}
