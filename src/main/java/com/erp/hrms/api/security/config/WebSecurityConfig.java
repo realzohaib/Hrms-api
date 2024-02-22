@@ -79,10 +79,10 @@ public class WebSecurityConfig {
 			@Override
 			public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 				CorsConfiguration config = new CorsConfiguration();
-				config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-//				config.setAllowedOrigins(Collections.singletonList("https://swiftbizerp.com"));
-//				config.setAllowedOrigins(Arrays.asList("http://*", "https://*"));
-				config.setAllowedMethods(Collections.singletonList("*"));
+		        String requestOrigin = request.getHeader("Origin");
+		        
+				config.setAllowedOrigins(Collections.singletonList(requestOrigin));
+			    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 				config.setAllowCredentials(true);
 				config.setAllowedHeaders(Collections.singletonList("*"));
 				config.setMaxAge(3600L);
@@ -103,5 +103,5 @@ public class WebSecurityConfig {
 
 		return http.build();
 	}
-
+	
 }
