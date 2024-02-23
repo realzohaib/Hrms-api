@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -21,12 +22,13 @@ import com.erp.hrms.joblevelanddesignation.request_responseentity.DutiesResponse
 import com.erp.hrms.joblevelanddesignation.service.DutiesIServicempl;
 
 @RestController
+@RequestMapping("/api/v1")
 public class DutyController {
 
 	@Autowired
 	private DutiesIServicempl service;
 
-	@PostMapping("/saveduties")
+	@PostMapping("/duties")
 	public ResponseEntity<?> saveDuties(@RequestBody DutiesRequest req) {
 		try {
 			service.saveDuties(req);
@@ -36,7 +38,7 @@ public class DutyController {
 		}
 	}
 
-	@GetMapping("/loadAllDuties")
+	@GetMapping("/duties")
 	public ResponseEntity<?> getAllDuties() {
 		try {
 			List<DutiesResponse> response = new ArrayList<DutiesResponse>();
@@ -72,10 +74,13 @@ public class DutyController {
 
 	}
 	
-	@GetMapping("/getDutiesByDesignationId/{id}")
+	@GetMapping("/designation/{id}/duties")
 	public ResponseEntity<?> getDutiesByDesignationId(@PathVariable int id) {
 		try {
 			List<DutiesResponse> list = service.loadDutiesByDesignationId(id);
+			if (list.isEmpty()) {
+				return ResponseEntity.ok("No Records.");
+			}
 			return ResponseEntity.ok().body(list);
 		} catch (Exception e) {
 			return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);

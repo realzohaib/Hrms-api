@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -14,12 +15,13 @@ import com.erp.hrms.joblevelanddesignation.service.ISubdutyServiceImpl;
 
 
 @RestController
+@RequestMapping("/api/v1")
 public class SubDutyController {
 	
 	@Autowired
 	private ISubdutyServiceImpl service;
 	
-	@PostMapping("/save_subduties")
+	@PostMapping("/sub-duties")
 	public ResponseEntity<?> saveSubDuties(@RequestBody SubDutiesRequest req) {
 		try {
 			service.saveSubduty(req);
@@ -30,7 +32,8 @@ public class SubDutyController {
 	}
 	
 
-	@GetMapping("/getAllSubDuties")
+//	@GetMapping("/getAllSubDuties")
+	@GetMapping("/sub-duties")
 	public ResponseEntity<?> loadAllSubDuties() {
 		try {
 			return ResponseEntity.ok().body(service.loadAllSubduties());

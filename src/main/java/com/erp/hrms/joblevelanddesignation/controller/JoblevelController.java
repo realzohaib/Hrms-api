@@ -2,7 +2,6 @@ package com.erp.hrms.joblevelanddesignation.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -12,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +22,7 @@ import com.erp.hrms.joblevelanddesignation.entity.JobLevel;
 import com.erp.hrms.joblevelanddesignation.service.joblevelServiceImpl;
 
 @RestController
+@RequestMapping("/api/v1")
 public class JoblevelController<E> {
 
 	@Autowired
@@ -30,8 +31,8 @@ public class JoblevelController<E> {
 	@Autowired
 	private joblevelRepo repo;
 
-	@PostMapping(value = "/saveJobLevel")
-	public ResponseEntity<?> savePayRoll(@RequestParam("levelName") String levelName) {
+	@PostMapping("/job-level")
+	public ResponseEntity<?> saveJobLevel(@RequestParam("levelName") String levelName) {
 		try {
 			levelName = levelName.replaceAll("\\p{Space}", ""); // Removes all whitespace characters
 			JobLevel name = repo.findByLevelName(levelName);
@@ -46,7 +47,7 @@ public class JoblevelController<E> {
 		}
 	}
 
-	@GetMapping("/getAllJobLevel")
+	@GetMapping("/job-level")
 	public ResponseEntity<?> loadAllJobLevel() {
 		try {
 
@@ -70,8 +71,8 @@ public class JoblevelController<E> {
 		}
 	}
 
-	@GetMapping("/getJobLevel/{id}")
-	public ResponseEntity<?> loadJobLevel(@PathVariable Integer id) {
+	@GetMapping("/job-level/{id}")
+	public ResponseEntity<?> loadJobLevelByLevelId(@PathVariable Integer id) {
 		try {
 			return ResponseEntity.ok().body(service.getJobLevelById(id));
 		} catch (Exception e) {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -19,6 +20,7 @@ import com.erp.hrms.joblevelanddesignation.request_responseentity.DesignationRes
 import com.erp.hrms.joblevelanddesignation.service.DesignationServiceImpl;
 
 @RestController
+@RequestMapping("/api/v1")
 public class DesignationController {
 
 	@Autowired
@@ -27,7 +29,7 @@ public class DesignationController {
 	@Autowired
 	private DesignationRepo repo;
 
-	@PostMapping("/savedesignation")
+	@PostMapping("/designation")
 	public ResponseEntity<?> saveDesignation(@RequestBody DesignationRequest designation) {
 		try {
 			return ResponseEntity.ok().body(service.savedesigDesignations(designation));
@@ -36,7 +38,7 @@ public class DesignationController {
 		}
 	}
 
-	@GetMapping("/getAllDesignations")
+	@GetMapping("/designation")
 	public ResponseEntity<?> getAllDesignations() {
 		try {
 			return ResponseEntity.ok().body(service.loadAllDesignations());
@@ -46,7 +48,7 @@ public class DesignationController {
 		}
 	}
 
-	@GetMapping("/getDesignations/{id}")
+	@GetMapping("/designation/{id}")
 	public ResponseEntity<?> loadDesignationById(@PathVariable Integer id) {
 		try {
 			return ResponseEntity.ok().body(service.loadDesignationById(id));
@@ -56,14 +58,13 @@ public class DesignationController {
 		}
 	}
 
-	@GetMapping("/getDesignationsByLevelId/{id}")
+	@GetMapping("/designation/level/{id}")
 	public ResponseEntity<?> loadDesignationByLevelId(@PathVariable Integer id) {
 		try {
 			List<DesignationResponse> list = service.loadAllDesignationBYlevelId(id);
 
 			if (list.isEmpty()) {
-				ResponseEntity<Object> build = ResponseEntity.noContent().build();
-				return ResponseEntity.ok("list is empty");
+				return ResponseEntity.ok("No Records.");
 			}
 			return ResponseEntity.ok().body(list);
 		} catch (Exception e) {
@@ -72,7 +73,7 @@ public class DesignationController {
 		}
 	}
 
-	@PutMapping("/updateDesignation")
+	@PutMapping("/update-designation")
 	public ResponseEntity<?> updateDesignation(@RequestBody DesignationResponse designation) {
 		try {
 			return ResponseEntity.ok().body(service.updateDesignation(designation));
