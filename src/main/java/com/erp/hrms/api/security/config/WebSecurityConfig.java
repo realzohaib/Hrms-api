@@ -3,6 +3,7 @@
  */
 package com.erp.hrms.api.security.config;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
@@ -78,8 +79,10 @@ public class WebSecurityConfig {
 			@Override
 			public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 				CorsConfiguration config = new CorsConfiguration();
-				config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-				config.setAllowedMethods(Collections.singletonList("*"));
+				String requestOrigin = request.getHeader("Origin");
+
+				config.setAllowedOrigins(Collections.singletonList(requestOrigin));
+				config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 				config.setAllowCredentials(true);
 				config.setAllowedHeaders(Collections.singletonList("*"));
 				config.setMaxAge(3600L);
@@ -90,17 +93,8 @@ public class WebSecurityConfig {
 				.and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 
-//				 .anyRequest().permitAll();
-//				.antMatchers("/api/v1/personal-info").hasAnyRole("ADMIN", "HR")
-//				.antMatchers("/api/v1/personal-info/find/all/active").hasAnyRole("ADMIN", "HR")
-//				.antMatchers("/api/v1/personal-info/email/{email}").hasAnyRole("ADMIN", "HR" ,"EMPLOYEE" )
-//				.antMatchers("/api/v1/personal-info/employeeId/{employeeId}").hasAnyRole("ADMIN", "EMPLOYEE" , "HR")
-//				.antMatchers("/api/v1/personal-info/delete/{email}").hasAnyRole("ADMIN", "HR")
-//				.antMatchers("/api/v1/personal-info/update/email/{email}").hasAnyRole("ADMIN","HR" ,"EMPLOYEE")
-//				.antMatchers("/api/v1/dashboard").permitAll()
-
-				.antMatchers("/api/auth/**").permitAll()
-				.anyRequest().authenticated();
+				// .anyRequest().permitAll();
+				.antMatchers("/api/auth/**").permitAll().anyRequest().authenticated();
 
 		http.authenticationProvider(authenticationProvider());
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.shift.dao.ShiftAssignmentDaoImpl;
@@ -21,6 +22,7 @@ import com.erp.hrms.shift.entity.ShiftAssignment;
 import com.erp.hrms.shift.repo.ShiftAssignmentRepo;
 
 @Controller
+@RequestMapping("/api/v1")
 public class ShiftAssignmentController {
 	@Autowired
 	private ShiftAssignmentDaoImpl service;
@@ -42,7 +44,7 @@ public class ShiftAssignmentController {
 	}
 
 	// method to fetch all the employe shift
-	@GetMapping("/get-shift")
+	@GetMapping("/get-Allshift")
 	public ResponseEntity<?> getAllEmployeeShift() {
 		try {
 			List<ShiftAssignment> shifts = service.getAlEmployeeShifr();
@@ -57,7 +59,7 @@ public class ShiftAssignmentController {
 	}
 
 	// method to fetch emp shift data by id
-	@GetMapping("/get-shift-ById /{id}")
+	@GetMapping("/get-shift-ById/{id}")
 	public ResponseEntity<?> getAllEmployeeShiftById(@PathVariable long id) {
 
 		if (!repo.existsByEmployeeId(id)) {
@@ -100,11 +102,11 @@ public class ShiftAssignmentController {
 	}
 
 	// fetches All employee details through their shift start date
-	@GetMapping("/shift-byDate/{startDate}")
+	@GetMapping("/shift-byStartDate/{startDate}")
 	public ResponseEntity<?> shiftByDate(@PathVariable String startDate) {
 		try {
 			LocalDate localDate = LocalDate.parse(startDate);
-			List<ShiftAssignment> date = service.findByDate(localDate);
+			List<ShiftAssignment> date = service.findByStartDate(localDate);
 			if (date.isEmpty()) {
 				return ResponseEntity.noContent().build();
 			}

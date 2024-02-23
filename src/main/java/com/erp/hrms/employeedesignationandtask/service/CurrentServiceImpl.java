@@ -2,8 +2,9 @@ package com.erp.hrms.employeedesignationandtask.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,7 +131,7 @@ public class CurrentServiceImpl implements ICurrentService {
 			List<DesignationResponse> designationList = new ArrayList<DesignationResponse>();
 
 			// Designation
-			// using DesignationResponse to minimize data in response ,if we directly use
+			// using DesignationResponse to minimize data, in response ,if we directly use
 			// designation it will give all data that is irrevalent
 			List<Designations> designations = current.getDesignation();
 			for (Designations desig : designations) {
@@ -206,8 +207,8 @@ public class CurrentServiceImpl implements ICurrentService {
 					List<Duties> duties = desig.getDuties();
 					for (Duties duty : duties) {
 						for (SubDuties subduty : duty.getSubduties()) {
-							subduty.setTask(new ArrayList<>()); // Clear the task list, to reduce the server loading
-																// time
+							subduty.setTask(new ArrayList<>()); // Clear the task list, because it is irrelevant
+
 						}
 					}
 
@@ -277,44 +278,52 @@ public class CurrentServiceImpl implements ICurrentService {
 		return res;
 	}
 
+	
 	@Override
 	public List<CurrentDesignationAndTask> findAllEmpByLevelId(Integer levelId) {
-		// return repo.findByLevelId(levelId);
 		List<CurrentDesignationAndTask> findByLevelId = repo.findByLevelId(levelId);
-		for (CurrentDesignationAndTask obj : findByLevelId) {
-			List<Designations> designationlist = obj.getDesignation();
-			for (Designations designation : designationlist) {
-				designation.setDuties(null);
-			}
-			obj.setTask(null);
 
+		Map<Long, CurrentDesignationAndTask> latestRecordsMap = new HashMap<>();
+
+		for (CurrentDesignationAndTask obj : findByLevelId) {
+			Long employeeId = obj.getEmpId();
+
+			// Check if the employee ID is already in the map
+			if (latestRecordsMap.containsKey(employeeId)) {
+				latestRecordsMap.put(employeeId, obj);
+			} else {
+				// If the employee ID is not in the map, add the current entry
+				latestRecordsMap.put(employeeId, obj);
+			}
 		}
-		return findByLevelId;
+		return new ArrayList<>(latestRecordsMap.values());
 	}
 
+	// This method loads all the employee ,which have sasme Additional Task
 	@Override
 	public List<EmplopyeeByTaskEntity> findAllEmpByTaskId(Integer taskId) {
 		List<EmplopyeeByTaskEntity> employeeByTaskIdList = new ArrayList<EmplopyeeByTaskEntity>();
 		List<CurrentDesignationAndTask> list = repo.findByTaskIdInJoinTable(taskId);
 
 		for (CurrentDesignationAndTask currentDesignationAndTask : list) {
-		    if(currentDesignationAndTask.getEndDate() == null){
-			EmplopyeeByTaskEntity emplopyeeByTaskEntity = new EmplopyeeByTaskEntity();
-			
-			PersonalInfo personalInfo = personalinforepo.loadPersonalInfoByEmployeeId(currentDesignationAndTask.getEmpId());
-			
-			emplopyeeByTaskEntity.setCurrentDsAndTskId(currentDesignationAndTask.getCurrentDsAndTskId());
-			emplopyeeByTaskEntity.setEmpName(personalInfo.getFirstName() +" " +personalInfo.getLastName());
-			emplopyeeByTaskEntity.setEmpId(currentDesignationAndTask.getEmpId());
-			emplopyeeByTaskEntity.setStartDate(currentDesignationAndTask.getStartDate());
-			
-			List<Designations> designationList = currentDesignationAndTask.getDesignation();
-			for(Designations designation :designationList) {
-				emplopyeeByTaskEntity.setDesignationName(designation.getDesignationName());
+			if (currentDesignationAndTask.getEndDate() == null) {
+				EmplopyeeByTaskEntity emplopyeeByTaskEntity = new EmplopyeeByTaskEntity();
+
+				PersonalInfo personalInfo = personalinforepo
+						.loadPersonalInfoByEmployeeId(currentDesignationAndTask.getEmpId());
+
+				emplopyeeByTaskEntity.setCurrentDsAndTskId(currentDesignationAndTask.getCurrentDsAndTskId());
+				emplopyeeByTaskEntity.setEmpName(personalInfo.getFirstName() + " " + personalInfo.getLastName());
+				emplopyeeByTaskEntity.setEmpId(currentDesignationAndTask.getEmpId());
+				emplopyeeByTaskEntity.setStartDate(currentDesignationAndTask.getStartDate());
+
+				List<Designations> designationList = currentDesignationAndTask.getDesignation();
+				for (Designations designation : designationList) {
+					emplopyeeByTaskEntity.setDesignationName(designation.getDesignationName());
+				}
+
+				employeeByTaskIdList.add(emplopyeeByTaskEntity);
 			}
-			
-			employeeByTaskIdList.add(emplopyeeByTaskEntity);
-		}
 
 		}
 

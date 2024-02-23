@@ -67,7 +67,7 @@ public class PersonalInfoController {
 
 		try {
 
-			personalInfoService.savedata(personalinfo, CurrentDesignationandAdditionalTask, passportSizePhoto,
+			personalInfoService.savedata(personalinfo, CurrentDesignationandAdditionalTask, url, passportSizePhoto,
 					OtherIdProofDoc, passportScan, licensecopy, relativeid, raddressproof, secondaryDocumentScan,
 					seniorSecondaryDocumentScan, graduationDocumentScan, postGraduationDocumentScan, othersDocumentScan,
 					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,

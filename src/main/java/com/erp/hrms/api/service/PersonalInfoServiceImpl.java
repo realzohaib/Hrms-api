@@ -84,7 +84,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	 */
 	@Transactional
 	@Override
-	public void savedata(String personalinfo, String CurrentDesignationandAdditionalTask,
+	public void savedata(String personalinfo, String CurrentDesignationandAdditionalTask, String url,
 			MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc, MultipartFile passportScan,
 			MultipartFile licensecopy, MultipartFile relativeid, MultipartFile raddressproof,
 			MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
@@ -522,7 +522,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			dao.savePersonalInfo(PersonalInfo);
 			currentService.saveCurrent(currentDesignationandTask);
 
-			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp);
+			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp, url);
 
 		} catch (Exception e) {
 			if (e.getMessage().contains("Mail server connection failed")
@@ -949,8 +949,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 	@Override
 	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) throws IOException {
-		PersonalInfo personalInfoByEmployeeId = dao.loadPersonalInfoByEmployeeId(employeeId);
 
+		PersonalInfo personalInfoByEmployeeId = dao.loadPersonalInfoByEmployeeId(employeeId);
 		if (personalInfoByEmployeeId == null) {
 			throw new PersonalInfoNotFoundException(
 					new MessageResponse("No personal information found for this employee ID: " + employeeId));
@@ -1194,23 +1194,31 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		}
 	}
 
-	public void sendAccountActivationEmail(String email, long employeeId, String name, String activationLink) {
+	public void sendAccountActivationEmail(String email, long employeeId, String name, String otp, String url) {
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 
 		mailMessage.setFrom("SI Global Company <mfurqan9988@gmail.com>");
-
 		mailMessage.setTo(email);
 		mailMessage.setSubject("Account Activation");
 
+		String activationLink = "https://www.swiftbizerp.com" + "/register";
+
 		// Create the account activation email message
-		String emailText = "Dear Mr. " + name + ",\n\n" + "Welcome to our platform. Your employee ID is: " + employeeId
-				+ ".\n\n" + "To activate your account, please click on the following link:\n" + activationLink + "\n\n"
+		String otpSection = "";
+		if (otp != null && !otp.isEmpty()) {
+			otpSection = "Your one-time password (OTP) is: " + otp + ". Please use it during registration.\n";
+		}
+
+		String emailText = "Hey " + name + ",\n\n" + "Welcome to SI Global Group. Your employee ID is: " + employeeId
+				+ ".\n\n" + "To activate your account and set your password, please click on the following link:\n"
+				+ activationLink + "\n\n" + otpSection
 				+ "If you have any questions or need assistance, please contact our support team.\n\n"
 				+ "Best regards,\n" + "The SI Global Company Team";
 
 		mailMessage.setText(emailText);
 
 		sender.send(mailMessage);
+
 	}
 
 	@Override

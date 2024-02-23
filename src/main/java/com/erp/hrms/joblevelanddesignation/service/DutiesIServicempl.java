@@ -57,8 +57,11 @@ public class DutiesIServicempl implements IDutiesService {
 		List<Duties> listOfDuties = repo.findByDesignationId(designationId);
 		for (Duties duties : listOfDuties) {
 			DutiesResponse obj = new DutiesResponse();
+			
+			Designations designations = desigrepo.findByDesignationId(designationId);
 
 			obj.setDesignationId(designationId);
+			obj.setDesignationName(designations.getDesignationName());
 			obj.setDutiesId(duties.getDutiesId());
 			obj.setDutyName(duties.getDutyName());
 
@@ -73,6 +76,7 @@ public class DutiesIServicempl implements IDutiesService {
 				subdutylist.add(sub);
 
 			}
+			obj.setSubduties(subdutylist);
 			response.add(obj);
 
 		}

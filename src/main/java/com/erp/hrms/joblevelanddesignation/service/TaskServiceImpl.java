@@ -47,8 +47,8 @@ public class TaskServiceImpl implements ITaskService {
 			list.add(task);
 		}
 		taskrepo.saveAll(list);
-		subDuties.getTask().addAll(list);
-		repo.save(subDuties);
+//		subDuties.getTask().addAll(list);
+//		repo.save(subDuties);
 	}
 
 	@Override
