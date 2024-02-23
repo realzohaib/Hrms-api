@@ -780,6 +780,8 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending the mail to the manager.
 	private void sendLeaveRequestEmail(String to, String subject, LeaveApproval leaveApproval, String emailContent) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(emailContent);
@@ -789,6 +791,8 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is accepted.
 	private void sendLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 
@@ -804,6 +808,7 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is rejected.
 	private void sendLeaveRequestRejectedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 
@@ -818,6 +823,8 @@ public class LeaveService implements ILeaveService {
 	private void sendLeaveRequestForwardedToHREmail(String to, String subject, LeaveApproval leaveApproval,
 			String emailContent) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(emailContent);
@@ -827,6 +834,8 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is accepted by hr.
 	private void sendHRLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 
@@ -842,6 +851,8 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is rejected by hr.
 	private void sendHRLeaveRequestRejectedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 
