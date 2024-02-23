@@ -25,6 +25,7 @@ import com.erp.hrms.api.service.IPersonalInfoService;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.entity.response.EmployeeResponseDTO;
+import com.erp.hrms.exception.MailServerConnectionException;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
@@ -72,6 +73,11 @@ public class PersonalInfoController {
 					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,
 					visaDocs, diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
 			return ResponseEntity.ok(new MessageResponse("Insert Personal info successfully"));
+		}
+
+		catch (MailServerConnectionException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new MessageResponse("An error occurred: " + e.getMessage()));
 		} catch (PersonalEmailExistsException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Email ID already exists"));
 		} catch (Exception e) {
@@ -80,7 +86,7 @@ public class PersonalInfoController {
 		}
 	}
 
-	@GetMapping("/personal-info/find/all")
+	@GetMapping("/personal-infos")
 	public ResponseEntity<?> findAllPersonalInfo() {
 		try {
 			List<PersonalInfo> findAllPersonalInfo = personalInfoService.findAllPersonalInfo();
@@ -90,7 +96,8 @@ public class PersonalInfoController {
 		}
 	}
 
-	@GetMapping("/personal-info/email/{email}")
+//	@GetMapping("/personal-info/email/{email}")
+	@GetMapping("/personal-infos/email/{email}")
 	public ResponseEntity<?> getPersonalInfoByEmail(@PathVariable String email, HttpServletResponse response)
 			throws IOException {
 		try {
@@ -104,7 +111,8 @@ public class PersonalInfoController {
 		}
 	}
 
-	@GetMapping("/personal-info/employeeId/{employeeId}")
+//	@GetMapping("/personal-info/employeeId/{employeeId}")
+	@GetMapping("/personal-infos/employeeId/{employeeId}")
 	public ResponseEntity<?> getPersonalInfoByEmployeeId(@PathVariable Long employeeId) throws IOException {
 		try {
 			PersonalInfo personalInfo = personalInfoService.getPersonalInfoByEmployeeId(employeeId);
@@ -116,7 +124,8 @@ public class PersonalInfoController {
 		}
 	}
 
-	@PutMapping("/personal-info/delete/{email}")
+//	@PutMapping("/personal-info/delete/{email}")
+	@PutMapping("/personal-infos/delete/{email}")
 	public ResponseEntity<?> deletePersonalInfoByEmail(@PathVariable String email,
 			@RequestParam("PersonalInfo") String personalInfo) throws IOException {
 		try {
@@ -136,7 +145,8 @@ public class PersonalInfoController {
 
 	}
 
-	@PutMapping("/personal-info/update/email/{email}")
+//	@PutMapping("/personal-info/update/email/{email}")
+	@PutMapping("personal-infos/update/email/{email}")
 	public ResponseEntity<?> updatePersonalInfo(@PathVariable String email,
 			@RequestParam("PersonalInfo") String personalinfo,
 			@RequestParam(value = "passportSizePhoto", required = false) MultipartFile passportSizePhoto,
@@ -189,7 +199,8 @@ public class PersonalInfoController {
 		}
 	}
 
-	@PutMapping("/personal-info/update-visa-details/employeeId/{employeeId}")
+//	@PutMapping("/personal-info/update-visa-details/employeeId/{employeeId}")
+	@PutMapping("/personal-infos/update-visa-details/employeeId/{employeeId}")
 	public ResponseEntity<?> updateVisaDetails(@PathVariable Long employeeId, @RequestParam String visaIssueDate,
 			@RequestParam String visaExpiryDate) {
 		try {
@@ -200,7 +211,8 @@ public class PersonalInfoController {
 		}
 	}
 
-	@GetMapping("/visa-notification")
+//	@GetMapping("/visa-notification")
+	@GetMapping("/visa-notifications")
 	public ResponseEntity<?> getRequestFields() {
 		List<NotificationHelper> requestedField = null;
 		try {
@@ -211,7 +223,8 @@ public class PersonalInfoController {
 		}
 	}
 
-	@GetMapping("/find-all/personal-info/background-check/pending")
+//	@GetMapping("/find-all/personal-info/background-check/pending")
+	@GetMapping("personal-infos/background-check/pending")
 	public ResponseEntity<?> getPersonalInfoWithPendingBackgroundCheck() {
 		try {
 			List<PersonalInfo> personalInfoWithPendingBackgroundCheck = personalInfoService
@@ -222,7 +235,8 @@ public class PersonalInfoController {
 		}
 	}
 
-	@GetMapping("/employees/postedLocation/{postedLocation}")
+//	@GetMapping("/employees/postedLocation/{postedLocation}")
+	@GetMapping("/employees/posted-location/{postedLocation}")
 	public ResponseEntity<List<EmployeeResponseDTO>> getByPostedLocationResponse(@PathVariable String postedLocation) {
 		try {
 			List<EmployeeResponseDTO> employeeResponseList = personalInfoService.getByPostedLocation(postedLocation);
@@ -239,7 +253,8 @@ public class PersonalInfoController {
 		}
 	}
 
-	@GetMapping("/find-all/personal-info/active")
+//	@GetMapping("/find-all/personal-info/active")
+	@GetMapping("/personal-infos/active")
 	public ResponseEntity<List<PersonalInfo>> getAllActivePersonalInfo() {
 		try {
 			List<PersonalInfo> activePersonalInfo = personalInfoService.findAllPersonalInfoActive();

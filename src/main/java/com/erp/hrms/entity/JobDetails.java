@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -86,4 +88,22 @@ public class JobDetails {
 	@JsonBackReference
 	private PersonalInfo personalinfo;
 
+	@PrePersist
+	@PreUpdate
+	private void validateFields() {
+		validateAllowance("House Rent", houseRentAllowance, houseRentAmount);
+		validateAllowance("Food", foodAllowance, foodAllowanceAmount);
+		validateAllowance("Vehicle", vehicleAllowance, vehicleAllowanceAmount);
+		validateAllowance("Uniform", uniformAllowance, uniformAllowanceAmount);
+		validateAllowance("Travelling", travellingAllowances, travellingAllowancesAmount);
+		validateAllowance("Educational", educationalAllowance, educationalAllowanceAmount);
+		validateAllowance("Others", otherAllowance, otherAllowanceAmount);
+	}
+
+	private void validateAllowance(String allowanceName, String allowanceFlag, String allowanceAmount) {
+		if ("true".equalsIgnoreCase(allowanceFlag) && (allowanceAmount == null || allowanceAmount.trim().isEmpty())) {
+			throw new IllegalStateException(
+					allowanceName + " Amount cannot be null or empty when " + allowanceName + " Allowance is true");
+		}
+	}
 }

@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -32,6 +33,7 @@ import com.erp.hrms.academiccalender.entity.AcademicCalendar;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.approver.entity.LeaveApprover;
+import com.erp.hrms.entity.JobDetails;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.form.LeaveApproval;
 import com.erp.hrms.entity.form.LeaveCalendarData;
@@ -137,12 +139,7 @@ public class LeaveService implements ILeaveService {
 						sendLeaveRequestEmail(approver.getFirstApproverEmail(),
 								leaveApprovalJson.getEmployeeId() + " Leave request submitted by employeeId for review",
 								leaveApprovalJson, emailContent);
-						if (approver.getSecondApproverEmail() != null) {
-							sendLeaveRequestEmail(approver.getSecondApproverEmail(),
-									leaveApprovalJson.getEmployeeId()
-											+ " Leave request submitted by employeeId for review",
-									leaveApprovalJson, emailContent);
-						}
+
 					}
 				} else {
 					throw new RuntimeException("Employee details not found");
@@ -265,18 +262,6 @@ public class LeaveService implements ILeaveService {
 			existingApproval.setApprovedStartDate(leaveApprovalJson.getApprovedStartDate());
 			existingApproval.setApprovedEndDate(leaveApprovalJson.getApprovedEndDate());
 
-			if (noOfLeavesApproved < 3) {
-				if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
-					sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
-							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved",
-							existingApproval);
-				} else {
-					sendLeaveRequestRejectedEmail(existingApproval.getEmail(),
-							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected",
-							existingApproval);
-				}
-			}
-
 			LeaveType updatedLeaveType = leaveApprovalJson.getLeaveType();
 			if (updatedLeaveType != null) {
 				LeaveType attachedLeaveType = entityManager.find(LeaveType.class, updatedLeaveType.getLeaveTypeId());
@@ -312,6 +297,20 @@ public class LeaveService implements ILeaveService {
 				if (approver.getFirstApproverEmpId().equals(approver.getSecondApproverEmpId())) {
 					existingApproval.setApprovalStatus(leaveApprovalJson.getApprovalStatus());
 					existingApproval.setHrApprovalStatus(leaveApprovalJson.getApprovalStatus());
+					existingApproval.setHrName(leaveApprovalJson.getApprovingManagerName());
+					existingApproval.setHrEmail(leaveApprovalJson.getManagerEmail());
+					existingApproval.setHrApprovalRemarks(leaveApprovalJson.getApprovalRemarks());
+
+					if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
+						sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
+								leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved",
+								existingApproval);
+					} else {
+						sendLeaveRequestRejectedEmail(existingApproval.getEmail(),
+								leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected",
+								existingApproval);
+					}
+
 				} else {
 
 					sendLeaveRequestForwardedToHREmail(approver.getSecondApproverEmail(),
@@ -321,8 +320,18 @@ public class LeaveService implements ILeaveService {
 
 					existingApproval.setHrApprovalStatus("Pending");
 				}
-			} else {
-				existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
+			} else if (noOfLeavesApproved <= 3) {
+				if (leaveApprovalJson.getApprovalStatus().equals("Accepted")) {
+					sendLeaveRequestApprovedEmail(existingApproval.getEmail(),
+							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId approved",
+							existingApproval);
+					existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
+				} else {
+					sendLeaveRequestRejectedEmail(existingApproval.getEmail(),
+							leaveApprovalJson.getEmployeeId() + " Leave request for employeeId rejected",
+							existingApproval);
+					existingApproval.setHrApprovalStatus(existingApproval.getApprovalStatus());
+				}
 			}
 
 			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
@@ -583,8 +592,39 @@ public class LeaveService implements ILeaveService {
 	@Override
 	public List<LeaveCountDTO> getAllLeavesByEmployeeIdAndYear(Long employeeId, int year, String countryName) {
 
+		PersonalInfo personalInfoByEmployeeId = iPersonalInfoDAO.loadPersonalInfoByEmployeeId(employeeId);
+		List<JobDetails> jobDetails = personalInfoByEmployeeId.getJobDetails();
+
+		boolean countryMatched = false;
+
+		for (JobDetails details : jobDetails) {
+			String postedLocation = details.getPostedLocation();
+			long locationId = Long.parseLong(postedLocation);
+
+			Optional<Location> findByLocationId = locationRepository.findById(locationId);
+
+			if (findByLocationId.isPresent()) {
+				Location location = findByLocationId.get();
+				String country = location.getCountry();
+
+				if (country.equalsIgnoreCase(countryName)) {
+					countryMatched = true;
+					break;
+				}
+			}
+		}
+
+		if (!countryMatched) {
+			return Collections.emptyList();
+		}
+
 		List<LeaveApproval> leaveApprovals = repo.findByEmployeeIdAndHrApprovalStatus(employeeId, "Accepted");
 		List<AcademicCalendar> holidays = calendarRepository.findByYearAndCountry(year, countryName);
+
+		if (holidays.isEmpty()) {
+			throw new EntityNotFoundException("Holidays not found for country: " + countryName);
+		}
+
 		Map<String, Double> leaveTypeTotalDaysMap = new HashMap<>();
 
 		for (LeaveApproval leaveApproval : leaveApprovals) {
@@ -634,8 +674,40 @@ public class LeaveService implements ILeaveService {
 	@Override
 	public List<LeaveCountDTO> getAllLeaveByMonthByEmployeeId(int year, int month, long employeeId,
 			String countryName) {
+
+		PersonalInfo personalInfoByEmployeeId = iPersonalInfoDAO.loadPersonalInfoByEmployeeId(employeeId);
+		List<JobDetails> jobDetails = personalInfoByEmployeeId.getJobDetails();
+
+		boolean countryMatched = false;
+
+		for (JobDetails details : jobDetails) {
+			String postedLocation = details.getPostedLocation();
+			long locationId = Long.parseLong(postedLocation);
+
+			Optional<Location> findByLocationId = locationRepository.findById(locationId);
+
+			if (findByLocationId.isPresent()) {
+				Location location = findByLocationId.get();
+				String country = location.getCountry();
+
+				if (country.equalsIgnoreCase(countryName)) {
+					countryMatched = true;
+					break;
+				}
+			}
+		}
+
+		if (!countryMatched) {
+			return Collections.emptyList();
+		}
+
 		List<LeaveApproval> leaves = repo.findByEmployeeIdAndHrApprovalStatus(employeeId, "Accepted");
 		List<AcademicCalendar> holidays = calendarRepository.findByYearAndCountry(year, countryName);
+
+		if (holidays.isEmpty()) {
+			throw new EntityNotFoundException("Holidays not found for country: " + countryName);
+		}
+
 		Map<String, Double> leaveTypeTotalDaysMap = new HashMap<>();
 		YearMonth yearMonth = YearMonth.of(year, month);
 		LocalDate firstDayOfMonth = yearMonth.atDay(1);
@@ -682,8 +754,10 @@ public class LeaveService implements ILeaveService {
 				leaveTypeTotalDaysMap.merge(leaveName, (double) daysBetweenInclusive, Double::sum);
 			}
 		}
+
 		List<LeaveCountDTO> result = leaveTypeTotalDaysMap.entrySet().stream()
 				.map(entry -> new LeaveCountDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+
 		return result;
 	}
 
@@ -706,6 +780,8 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending the mail to the manager.
 	private void sendLeaveRequestEmail(String to, String subject, LeaveApproval leaveApproval, String emailContent) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(emailContent);
@@ -715,6 +791,8 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is accepted.
 	private void sendLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 
@@ -730,6 +808,7 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is rejected.
 	private void sendLeaveRequestRejectedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 
@@ -744,6 +823,8 @@ public class LeaveService implements ILeaveService {
 	private void sendLeaveRequestForwardedToHREmail(String to, String subject, LeaveApproval leaveApproval,
 			String emailContent) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(emailContent);
@@ -753,6 +834,8 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is accepted by hr.
 	private void sendHRLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 
@@ -768,6 +851,8 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is rejected by hr.
 	private void sendHRLeaveRequestRejectedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
+		
+		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
 
