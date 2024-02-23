@@ -79,10 +79,10 @@ public class WebSecurityConfig {
 			@Override
 			public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 				CorsConfiguration config = new CorsConfiguration();
-		        String requestOrigin = request.getHeader("Origin");
-		        
+				String requestOrigin = request.getHeader("Origin");
+
 				config.setAllowedOrigins(Collections.singletonList(requestOrigin));
-			    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+				config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 				config.setAllowCredentials(true);
 				config.setAllowedHeaders(Collections.singletonList("*"));
 				config.setMaxAge(3600L);
@@ -94,8 +94,7 @@ public class WebSecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 
 				// .anyRequest().permitAll();
-				.antMatchers("/api/auth/**").permitAll()
-				.anyRequest().authenticated();
+				.antMatchers("/api/auth/**").permitAll().anyRequest().authenticated();
 
 		http.authenticationProvider(authenticationProvider());
 
@@ -103,5 +102,5 @@ public class WebSecurityConfig {
 
 		return http.build();
 	}
-	
+
 }
