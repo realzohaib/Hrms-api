@@ -40,6 +40,7 @@ import com.erp.hrms.entity.Trainingdetails;
 import com.erp.hrms.entity.VisaDetail;
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.entity.response.EmployeeResponseDTO;
+import com.erp.hrms.exception.MailServerConnectionException;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 import com.erp.hrms.exception.PersonalPhoneNumberExistsException;
@@ -524,7 +525,15 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp);
 
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Handle the mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
 	}
 

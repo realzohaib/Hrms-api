@@ -25,6 +25,7 @@ import com.erp.hrms.api.service.IPersonalInfoService;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.notificationhelper.NotificationHelper;
 import com.erp.hrms.entity.response.EmployeeResponseDTO;
+import com.erp.hrms.exception.MailServerConnectionException;
 import com.erp.hrms.exception.PersonalEmailExistsException;
 import com.erp.hrms.exception.PersonalInfoNotFoundException;
 
@@ -72,6 +73,11 @@ public class PersonalInfoController {
 					degreeScan, payslipScan, recordsheet, PaidTrainingDocumentProof, CertificateUploadedForOutsource,
 					visaDocs, diplomaDocumentScan, declarationRequired, achievementsRewardsDocs);
 			return ResponseEntity.ok(new MessageResponse("Insert Personal info successfully"));
+		}
+
+		catch (MailServerConnectionException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new MessageResponse("An error occurred: " + e.getMessage()));
 		} catch (PersonalEmailExistsException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Email ID already exists"));
 		} catch (Exception e) {

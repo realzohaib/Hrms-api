@@ -21,7 +21,7 @@ import com.erp.hrms.academiccalender.service.ICalendarService;
 import com.erp.hrms.api.security.response.MessageResponse;
 
 @RestController
-@RequestMapping("/api/v1/calendar")
+@RequestMapping("/api/v1")
 public class CalendarController {
 
 	@Autowired
@@ -44,7 +44,8 @@ public class CalendarController {
 		}
 	}
 
-	@PostMapping("/add-holiday")
+//	@PostMapping("/add-holiday")
+	@PostMapping("/holidays")
 	public ResponseEntity<?> addHoliday(@RequestBody AcademicCalendar academicCalendar) {
 		try {
 			icalendarService.addHoliday(academicCalendar);
@@ -58,7 +59,8 @@ public class CalendarController {
 		}
 	}
 
-	@GetMapping("/getholidays/{countryName}")
+//	@GetMapping("/getholidays/{countryName}")
+	@GetMapping("/holidays/country/{countryName}")
 	public ResponseEntity<?> getAllHolidaysWithCountry(@PathVariable("countryName") String countryName) {
 		try {
 			List<AcademicCalendar> allHolidaysWithCountry = icalendarService.getAllHolidaysWithCountry(countryName);
@@ -76,7 +78,8 @@ public class CalendarController {
 		}
 	}
 
-	@PutMapping("/update/holiday/{holidayId}")
+//	@PutMapping("/update/holiday/{holidayId}")
+	@PutMapping("/holidays/{holidayId}")
 	public ResponseEntity<?> updateHoliday(@PathVariable Long holidayId,
 			@RequestBody AcademicCalendar academicCalendar) {
 		try {
@@ -96,7 +99,8 @@ public class CalendarController {
 		}
 	}
 
-	@GetMapping("/getholidays/{year}/{countryName}")
+//	@GetMapping("/getholidays/{year}/{countryName}")
+	@GetMapping("/holidays/year/{year}/country/{countryName}")
 	public ResponseEntity<?> getAllHolidaysWithYearAndCountry(@PathVariable("year") int year,
 			@PathVariable("countryName") String countryName) {
 		try {
@@ -115,7 +119,8 @@ public class CalendarController {
 		}
 	}
 
-	@GetMapping("/getholiday/{holidayId}")
+//	@GetMapping("/getholiday/{holidayId}")
+	@GetMapping("/holidays/{holidayId}")
 	public ResponseEntity<?> getHolidayWithHolidayId(@PathVariable("holidayId") Long holidayId) {
 		try {
 			AcademicCalendar holidayByid = icalendarService.getHolidayByid(holidayId);
@@ -133,7 +138,8 @@ public class CalendarController {
 		}
 	}
 
-	@GetMapping("/total-holidays-in-month/{countryName}/{year}/{month}")
+//	@GetMapping("/total-holidays-in-month/{countryName}/{year}/{month}")
+	@GetMapping("/holidays/monthly/{countryName}/{year}/{month}")
 	public int getAllHolidaysWithYearAndMonthAndCountryName(@PathVariable int year, @PathVariable String countryName,
 			@PathVariable int month) {
 		return icalendarService.getAllHolidaysWithYearAndMonthAndCountryName(year, month, countryName);

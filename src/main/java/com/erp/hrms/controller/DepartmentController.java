@@ -40,7 +40,8 @@ public class DepartmentController {
 		}
 	}
 
-	@PostMapping("/save/department")
+//	@PostMapping("/save/department")
+	@PostMapping("/departments")
 	public ResponseEntity<?> saveDepartment(@RequestBody Department department) {
 
 		try {
@@ -51,7 +52,8 @@ public class DepartmentController {
 		}
 	}
 
-	@GetMapping("/departmentId/{departmentId}")
+//	@GetMapping("/departmentId/{departmentId}")
+	@GetMapping("/departments/{departmentId}")
 	public ResponseEntity<?> findDepartmentById(@PathVariable Long departmentId) {
 
 		try {
@@ -66,7 +68,8 @@ public class DepartmentController {
 		}
 	}
 
-	@GetMapping("/all/departments")
+//	@GetMapping("/all/departments")
+	@GetMapping("/departments")
 	public ResponseEntity<?> findAllDepartments() {
 		try {
 			List<Department> departments = idepartmentService.getAllDepartment();
@@ -80,7 +83,8 @@ public class DepartmentController {
 		}
 	}
 
-	@PutMapping("/update/department/by/id/{departmentId}")
+//	@PutMapping("/update/department/by/id/{departmentId}")
+	@PutMapping("/departments/{departmentId}")
 	public ResponseEntity<Department> updateDepartment(@PathVariable Long departmentId,
 			@RequestBody Department updatedDepartment) {
 		try {
@@ -92,7 +96,8 @@ public class DepartmentController {
 	}
 
 // is ko un comment karna hai repository me sahi karna hai abhi vo personal info me tha ab job details me hai
-	@GetMapping("/department/name/{departmentName}/personalInfo")
+//	@GetMapping("/department/name/{departmentName}/personalInfo")
+	@GetMapping("/departments/{departmentName}/personal-info")
 	public ResponseEntity<?> findPersonalInfoByDepartmentName(@PathVariable String departmentName) {
 		try {
 			List<PersonalInfoDTO> personalInfoDTOs = idepartmentService.getPersonalInfoByDepartmentName(departmentName);
