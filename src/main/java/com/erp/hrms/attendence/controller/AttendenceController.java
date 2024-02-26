@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -23,8 +24,8 @@ import com.erp.hrms.attendence.service.AttendenceServiceImpl;
 import com.erp.hrms.attendence.service.AttendencenotRegistered;
 
 @RestController
-//@RequestMapping("/api/auth")
 @CrossOrigin("*")
+@RequestMapping("/api/v1")
 public class AttendenceController {
 
 	@Autowired
@@ -34,12 +35,13 @@ public class AttendenceController {
 	private IAttendencerepo repo;
 
 	// this method will need employee id
-	@PostMapping("/punch-In-Time")
+//	@PostMapping("/punch-In-Time")
+	@PostMapping("/attendance/punch-in")
 	public ResponseEntity<?> punchInTime(@RequestBody Attendence attendence) throws AttendencenotRegistered {
 
-//		if (repo.existsByEmployeeIdAndDate(attendence.getEmployeeId(), attendence.getDate())) {
-//			return ResponseEntity.badRequest().body(new MessageResponse("Error: Employee Already punched -in"));
-		//}
+		if (repo.existsByEmployeeIdAndDate(attendence.getEmployeeId(), attendence.getDate())) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error: Employee Already punched -in"));
+		}
 		try {
 			Attendence punchIn = service.punchIn(attendence);
 			return ResponseEntity.ok(punchIn);
@@ -50,7 +52,8 @@ public class AttendenceController {
 	}
 
 	// needs Employee Id
-	@GetMapping("/get-attendence")
+//	@GetMapping("/get-attendence")
+	@GetMapping("/attendence")
 	public ResponseEntity<?> getAttendenceById(@RequestBody AttendenceRequest req) throws AttendencenotRegistered {
 		try {
 			List<Attendence> list = service.getEmployeeAttendence(req.getId());
@@ -62,7 +65,8 @@ public class AttendenceController {
 	}
 
 	// needs AttendenceId
-	@PostMapping("/punch-out")
+//	@PostMapping("//punch-out")
+	@PostMapping("/attendence/punch-out")
 	public ResponseEntity<?> punchOut(@RequestBody AttendenceRequest req) throws AttendencenotRegistered {
 		try {
 			Attendence punchout = service.punchOut(req.getId());
@@ -74,7 +78,8 @@ public class AttendenceController {
 	}
 
 	// needs AttendenceId
-	@PostMapping("/break-start")
+//	@PostMapping("/break-start")
+	@PostMapping("/attendence/break-start")
 	public ResponseEntity<?> breakStart(@RequestBody AttendenceRequest req) throws AttendencenotRegistered {
 		try {
 			Attendence breakStart = service.breakStart(req.getId());
@@ -86,7 +91,8 @@ public class AttendenceController {
 	}
 
 	// needs Attendence Id
-	@PostMapping("/break-end")
+//	@PostMapping("/break-end")
+	@PostMapping("/attendence/break-end")
 	public ResponseEntity<?> breakEnd(@RequestBody AttendenceRequest req) throws AttendencenotRegistered {
 		try {
 			Attendence breakStart = service.breakEnd(req.getId());
@@ -98,7 +104,8 @@ public class AttendenceController {
 	}
 
 	// needs Employee Id
-	@GetMapping("/get-attendence-byDate/{employeeId}/{startDate}/{endDate}")
+//	@GetMapping("/get-attendence-byDate/{employeeId}/{startDate}/{endDate}")
+	@GetMapping("/attendence/date/{employeeId}/{startDate}/{endDate}")
 	public ResponseEntity<?> AttendenceByDate(@PathVariable("employeeId") Long employeeId,
 			@PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@PathVariable("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
@@ -117,7 +124,8 @@ public class AttendenceController {
 	}
 
 	// needs Employee Id
-	@GetMapping("/get-attendence-byMonth/{id}/{year}/{month}")
+//	@GetMapping("/get-attendence-byMonth/{id}/{year}/{month}")
+	@GetMapping("/attendence/month/{id}/{year}/{month}")
 	public ResponseEntity<?> AttendenceByMonth(@PathVariable long id, @PathVariable int year, @PathVariable int month) {
 		try {
 			AttendenceResponse fullAttendence = service.fullAttendence(id, year, month);
@@ -141,7 +149,8 @@ public class AttendenceController {
 		}
 	}
 
-	@GetMapping("/get-OvertimeRequest")
+//	@GetMapping("/get-OvertimeRequest")
+	@GetMapping("/attendence/overtime-request")
 	public ResponseEntity<?> getEmployeeWithOverTimeStatusPending() {
 		try {
 			List<Attendence> list = service.getEmployeeWithOverTimeStatusPending();
@@ -156,7 +165,8 @@ public class AttendenceController {
 	}
 
 	// need AttendenceId
-	@GetMapping("/approve-OvertimeRequest/{id}")
+//	@GetMapping("/approve-OvertimeRequest/{id}")
+	@GetMapping("/attendence/approve/overtime-request/{id}")
 	public ResponseEntity<?> ApproveOverTime(@PathVariable long id) {
 		try {
 			service.approveOverTime(id);
@@ -168,7 +178,8 @@ public class AttendenceController {
 	}
 
 	// need AttendenceId
-	@GetMapping("/deny-OvertimeRequest/{id}")
+//	@GetMapping("/deny-OvertimeRequest/{id}")
+	@GetMapping("/attendence/deny/overtime-request/{id}")
 	public ResponseEntity<?> DenyeOverTime(@PathVariable long id) {
 		try {
 			service.denyOverTime(id);
@@ -180,7 +191,8 @@ public class AttendenceController {
 	}
 
 	// need AttendenceId from Attendence Object
-	@PostMapping("/update-overtime")
+//	@PostMapping("/update-overtime")
+	@PostMapping("/attendence/update/overtime-request")
 	public ResponseEntity<?> updateOvertime(@RequestBody Attendence attendence) {
 		try {
 			Attendence updateOverTime = service.updateOverTime(attendence);
@@ -191,7 +203,8 @@ public class AttendenceController {
 
 	}
 
-	@GetMapping("/checkAttendance/{employeeId}/{date}")
+//	@GetMapping("/checkAttendance/{employeeId}/{date}")
+	@GetMapping("/attendance/{employeeId}/{date}")
 	public ResponseEntity<Boolean> checkAttendance(@PathVariable Long employeeId,
 			@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 

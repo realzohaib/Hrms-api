@@ -6,19 +6,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.erp.hrms.api.security.response.MessageResponse;
 import com.erp.hrms.shift.dao.ShiftDaoImpl;
 import com.erp.hrms.shift.entity.Shift;
 
 @Controller
+@RequestMapping("/api/v1")
 public class ShiftController {
 	
 	@Autowired
 	private ShiftDaoImpl service;
 	
 	
-	@PostMapping("/save-shift")
+//	@PostMapping("/save-shift")
+	@PostMapping("/shift")
 	public ResponseEntity<?>saveShift(@RequestBody Shift shift){
 		try {
 			service.saveShift(shift);
@@ -30,7 +33,8 @@ public class ShiftController {
 	}
 	
 	
-	@GetMapping("/get-Allshift")
+//	@GetMapping("/get-Allshift")
+	@GetMapping("/shift")
 	public ResponseEntity<?>getAllShift(){
 		try {
 			return ResponseEntity.ok(service.getAllShifts());
@@ -41,7 +45,8 @@ public class ShiftController {
 	}
 	
 	
-	@PostMapping("/update-shift")
+//	@PostMapping("/update-shift")
+	@PostMapping("/shift/update")
 	public ResponseEntity<?>updateShift(@RequestBody Shift shift){
 		try {
 			service.updateShift(shift);

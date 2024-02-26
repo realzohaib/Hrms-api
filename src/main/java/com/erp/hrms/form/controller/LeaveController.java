@@ -34,7 +34,8 @@ public class LeaveController {
 	private ILeaveService iLeaveService;
 
 //	This method for send the leave request to manager
-	@PostMapping("/leave/request")
+//	@PostMapping("/leave/request")
+	@PostMapping("/leave/requests")
 	public ResponseEntity<?> createLeaveApproval(@RequestParam("leaveApproval") String leaveApproval,
 			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
 			throws IOException {
@@ -49,7 +50,8 @@ public class LeaveController {
 	}
 
 //	This method for get the leave request by LeaveRequestId
-	@GetMapping("/leave/request/{leaveRequestId}")
+//	@GetMapping("/leave/request/{leaveRequestId}")
+	@GetMapping("/leave/requests/{leaveRequestId}")
 	public ResponseEntity<?> getleaveRequestById(@PathVariable Long leaveRequestId) throws IOException {
 		try {
 			LeaveApproval getleaveRequestById = iLeaveService.getleaveRequestById(leaveRequestId);
@@ -62,7 +64,8 @@ public class LeaveController {
 	}
 
 //	This method for find all the Leave Request by employeeId
-	@GetMapping("/findall/leave/request/with/employeeId/{employeeId}")
+//	@GetMapping("/findall/leave/request/with/employeeId/{employeeId}")
+	@GetMapping("/leave/requests/employee/{employeeId}")
 	public ResponseEntity<?> getLeaveRequestByEmployeeId(@PathVariable Long employeeId) throws IOException {
 		try {
 			return new ResponseEntity<>(iLeaveService.getLeaveRequestByEmployeeId(employeeId), HttpStatus.OK);
@@ -74,7 +77,8 @@ public class LeaveController {
 	}
 
 //	This method for find all leave request
-	@GetMapping("/findAll/leaverequest")
+//	@GetMapping("/findAll/leaverequest")
+	@GetMapping("/leave/requests/all")
 	public ResponseEntity<?> findAllLeaveApproval() {
 		try {
 			return new ResponseEntity<>(iLeaveService.findAllLeaveApproval(), HttpStatus.OK);
@@ -84,7 +88,8 @@ public class LeaveController {
 	}
 
 //	This method for update the leave request by the manager Accepted or Rejected with the help of leaveRequestId
-	@PutMapping("/leave/request/approvedByManager/{leaveRequestId}")
+//	@PutMapping("/leave/request/approvedByManager/{leaveRequestId}")
+	@PutMapping("/leave/requests/approved/manager/{leaveRequestId}")
 	public ResponseEntity<?> approvedByManager(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
 			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
@@ -100,7 +105,8 @@ public class LeaveController {
 	}
 
 //	This method for update the leave request by the hr Accepted or Rejected with the help of leaveRequestId
-	@PutMapping("/leave/request/approvedByhr/{leaveRequestId}")
+//	@PutMapping("/leave/request/approvedByhr/{leaveRequestId}")
+	@PutMapping("/leave/requests/approved/hr/{leaveRequestId}")
 	public ResponseEntity<?> approvedOrDenyByHR(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
 			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
@@ -115,7 +121,8 @@ public class LeaveController {
 	}
 
 //	This method for find all pending request
-	@GetMapping("/leave/request/findall/pending")
+//	@GetMapping("/leave/request/findall/pending")
+	@GetMapping("/leave/requests/pending")
 	public ResponseEntity<?> findAllLeaveApprovalPending() {
 		try {
 			return new ResponseEntity<>(iLeaveService.findAllLeaveApprovalPending(), HttpStatus.OK);
@@ -126,7 +133,8 @@ public class LeaveController {
 	}
 
 //	This method for find all accepted request
-	@GetMapping("/leave/request/findall/accepted")
+//	@GetMapping("/leave/request/findall/accepted")
+	@GetMapping("/leave/requests/accepted")
 	public ResponseEntity<?> findAllLeaveApprovalAccepted() {
 		try {
 			return new ResponseEntity<>(iLeaveService.findAllLeaveApprovalAccepted(), HttpStatus.OK);
@@ -136,7 +144,8 @@ public class LeaveController {
 	}
 
 //	This method for find all rejected request
-	@GetMapping("/leave/request/findall/rejected")
+//	@GetMapping("/leave/request/findall/rejected")
+	@GetMapping("/leave/requests/rejected")
 	public ResponseEntity<?> findAllLeaveApprovalRejected() {
 		try {
 			return new ResponseEntity<>(iLeaveService.findAllLeaveApprovalRejected(), HttpStatus.OK);
@@ -189,7 +198,8 @@ public class LeaveController {
 		}
 	}
 
-	@GetMapping("/calculateTotalDays/{employeeId}/{year}/{month}")
+//	@GetMapping("/calculateTotalDays/{employeeId}/{year}/{month}")
+	@GetMapping("/calculate-total-days/{employeeId}/{year}/{month}")
 	public ResponseEntity<BigDecimal> calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(
 			@PathVariable Long employeeId, @PathVariable int year, @PathVariable int month) {
 		BigDecimal totalDays = iLeaveService.calculateTotalNoOfLeavesApprovedByEmployeeInMonthAndStatus(employeeId,
@@ -212,7 +222,8 @@ public class LeaveController {
 	}
 
 //	This method give the total count of employee on leave on a particular date and also give the list of employee
-	@GetMapping("/by-date/{date}")
+//	@GetMapping("/by-date/{date}")
+	@GetMapping("/leave-by-date/{date}")
 	public ResponseEntity<LeaveDataDTO> getLeaveDataByDate(@PathVariable String date) {
 		try {
 			LeaveDataDTO leaveData = iLeaveService.getLeaveDataByDate(date);
