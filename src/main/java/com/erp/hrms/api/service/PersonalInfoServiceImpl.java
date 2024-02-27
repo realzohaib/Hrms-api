@@ -407,7 +407,7 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 		} catch (Exception e) {
 			if (e.getMessage().contains("Mail server connection failed")
 					|| e.getMessage().contains("java.net.UnknownHostException")) {
-				// Handle the mail server connection error here
+				// Mail server connection error here
 				throw new MailServerConnectionException(
 						"Mail server connection failed; please check your network or SMTP configuration.", e);
 			} else {
