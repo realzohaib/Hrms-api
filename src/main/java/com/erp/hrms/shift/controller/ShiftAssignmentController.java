@@ -31,7 +31,8 @@ public class ShiftAssignmentController {
 	private ShiftAssignmentRepo repo;
 
 	// handler Method to assign shift to employee
-	@PostMapping("/asign-shift")
+//	@PostMapping("/asign-shift")
+	@PostMapping("/shift/asign")
 	public ResponseEntity<?> saveShift(@RequestBody ShiftAssignment assign) {
 		try {
 			service.saveAssignedShift(assign);
@@ -44,7 +45,8 @@ public class ShiftAssignmentController {
 	}
 
 	// method to fetch all the employe shift
-	@GetMapping("/get-Allshift")
+//	@GetMapping("/get-Allshift")
+	@GetMapping("/shift/asign")
 	public ResponseEntity<?> getAllEmployeeShift() {
 		try {
 			List<ShiftAssignment> shifts = service.getAlEmployeeShifr();
@@ -59,7 +61,8 @@ public class ShiftAssignmentController {
 	}
 
 	// method to fetch emp shift data by id
-	@GetMapping("/get-shift-ById/{id}")
+//	@GetMapping("/get-shift-ById/{id}")
+	@GetMapping("/shift/asign/{id}")
 	public ResponseEntity<?> getAllEmployeeShiftById(@PathVariable long id) {
 
 		if (!repo.existsByEmployeeId(id)) {
@@ -78,7 +81,8 @@ public class ShiftAssignmentController {
 	}
 
 	// method to get emp current shift through emp id
-	@GetMapping("/current-shift-ById /{id}")
+//	@GetMapping("/current-shift-ById /{id}")
+	@GetMapping("/shift/asign/current/{id}")
 	public ResponseEntity<?> currenthftById(@PathVariable long id) {
 		if (!repo.existsByEmployeeId(id)) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Please enter valid Employee Id"));
@@ -91,7 +95,8 @@ public class ShiftAssignmentController {
 
 	}
 
-	@PutMapping("/update-shift-ById")
+//	@PutMapping("/update-shift-ById")
+	@PutMapping("/shift/asign")
 	public ResponseEntity<?> updateShftById(@RequestBody ShiftAssignment asign) {
 		try {
 			return ResponseEntity.ok(service.updateShift(asign));
@@ -102,7 +107,8 @@ public class ShiftAssignmentController {
 	}
 
 	// fetches All employee details through their shift start date
-	@GetMapping("/shift-byStartDate/{startDate}")
+//	@GetMapping("/shift-byStartDate/{startDate}")
+	@GetMapping("/sift/asign/start-date/{startDate}")
 	public ResponseEntity<?> shiftByDate(@PathVariable String startDate) {
 		try {
 			LocalDate localDate = LocalDate.parse(startDate);
@@ -118,7 +124,8 @@ public class ShiftAssignmentController {
 	}
 
 	// gives emp shift details by shift start date for single emp
-	@GetMapping("/shift-byDateandId/{id}/{startDate}")
+//	@GetMapping("/shift-byDateandId/{id}/{startDate}")
+	@GetMapping("/shift/asign/date-Id/{id}/{startDate}")
 	public ResponseEntity<?> shiftByDateandempid(@PathVariable long id, @PathVariable String startDate) {
 		if (!repo.existsByEmployeeId(id)) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Please enter valid Employee Id"));
@@ -137,7 +144,8 @@ public class ShiftAssignmentController {
 	}
 
 	// fetching employees on the basis of shift and shift start date
-	@GetMapping("/getShiftByName/{ShiftName}/{Date}")
+//	@GetMapping("/getShiftByName/{ShiftName}/{Date}")
+	@GetMapping("/shift/asign/shiftbyname/{ShiftName}/{Date}")
 	public ResponseEntity<?> findShiftAssignmentsByShiftNameAndDate(@PathVariable String ShiftName,
 			@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate Date) {
 		
@@ -153,7 +161,7 @@ public class ShiftAssignmentController {
 		}
 	}
 	
-	@DeleteMapping("/shift-allocation/cancel/{assignmentId}")
+	@DeleteMapping("/shift/asign/shift-allocation/cancel/{assignmentId}")
 	public ResponseEntity<?>deleteShiftAssignment(@PathVariable Long assignmentId){
 		try {
 			service.deleteShiftAllocation(assignmentId);

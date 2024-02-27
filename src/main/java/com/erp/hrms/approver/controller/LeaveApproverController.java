@@ -26,7 +26,8 @@ public class LeaveApproverController {
 	@Autowired
 	private LeaveApproverService leaveApproverService;
 
-	@PostMapping("/leaveApprovers")
+//	@PostMapping("/leaveApprovers")
+	@PostMapping("/leave-approvers")
 	public ResponseEntity<String> createLeaveApprover(@RequestBody LeaveApprover leaveApprover) {
 		try {
 			leaveApproverService.createLeaveApprover(leaveApprover);
@@ -37,27 +38,31 @@ public class LeaveApproverController {
 		}
 	}
 
-	@GetMapping("/leaveApprover/id/{lAId}")
+//	@GetMapping("/leaveApprover/id/{lAId}")
+	@GetMapping("/leave-approvers/{lAId}")
 	public ResponseEntity<LeaveApprover> getLeaveApproverById(@PathVariable Long lAId) {
 		Optional<LeaveApprover> leaveApprover = leaveApproverService.findLeaveApproverById(lAId);
 		return leaveApprover.map(response -> ResponseEntity.ok().body(response))
 				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
-	@GetMapping("/findall/leaveapprovers")
+//	@GetMapping("/findall/leaveapprovers")
+	@GetMapping("/leave-approvers/all")
 	public ResponseEntity<List<LeaveApprover>> getAllLeaveApprovers() {
 		List<LeaveApprover> leaveApprovers = leaveApproverService.findAllLeaveApprovers();
 		return ResponseEntity.ok().body(leaveApprovers);
 	}
 
-	@PutMapping("/leave/approver/{lAId}")
+//	@PutMapping("/leave/approver/{lAId}")
+	@PutMapping("/leave-approvers/{lAId}")
 	public ResponseEntity<LeaveApprover> updateLeaveApproverEndDate(@PathVariable Long lAId,
 			@RequestBody LeaveApprover updatedLeaveApprover) {
 		LeaveApprover updatedApprover = leaveApproverService.updateLeaveApproverEndDate(lAId, updatedLeaveApprover);
 		return new ResponseEntity<>(updatedApprover, HttpStatus.OK);
 	}
 
-	@GetMapping("/findByFirstApproverEmpId/{firstApproverEmpId}")
+//	@GetMapping("/findByFirstApproverEmpId/{firstApproverEmpId}")
+	@GetMapping("/leave-approvers/first-approver/{firstApproverEmpId}")
 	public ResponseEntity<List<LeaveApproverDTO>> findByFirstApproverEmpId(@PathVariable Long firstApproverEmpId) {
 		List<LeaveApproverDTO> leaveApproverDTOs = leaveApproverService.findByFirstApproverEmpId(firstApproverEmpId);
 
@@ -68,7 +73,8 @@ public class LeaveApproverController {
 		}
 	}
 
-	@GetMapping("/findBySecondApproverEmpId/{secondApproverEmpId}")
+//	@GetMapping("/findBySecondApproverEmpId/{secondApproverEmpId}")
+	@GetMapping("/leave-approvers/second-approver/{secondApproverEmpId}")
 	public ResponseEntity<List<LeaveApproverDTO>> findBySecondApproverEmpId(@PathVariable Long secondApproverEmpId) {
 		List<LeaveApproverDTO> leaveApproverDTOs = leaveApproverService.findBySecondApproverEmpId(secondApproverEmpId);
 
@@ -79,15 +85,16 @@ public class LeaveApproverController {
 		}
 	}
 
-    @GetMapping("/findByApproverEmpId/{approverEmpId}")
-    public ResponseEntity<List<LeaveApproverDTO>> findByApproverEmpId(@PathVariable Long approverEmpId) {
-        List<LeaveApproverDTO> leaveApproverDTOs = leaveApproverService.findByApproverEmpId(approverEmpId);
+//    @GetMapping("/findByApproverEmpId/{approverEmpId}")
+	@GetMapping("/leave-approvers/approver/{approverEmpId}")
+	public ResponseEntity<List<LeaveApproverDTO>> findByApproverEmpId(@PathVariable Long approverEmpId) {
+		List<LeaveApproverDTO> leaveApproverDTOs = leaveApproverService.findByApproverEmpId(approverEmpId);
 
-        if (leaveApproverDTOs.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(leaveApproverDTOs, HttpStatus.OK);
-        }
-    }
-	
+		if (leaveApproverDTOs.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<>(leaveApproverDTOs, HttpStatus.OK);
+		}
+	}
+
 }

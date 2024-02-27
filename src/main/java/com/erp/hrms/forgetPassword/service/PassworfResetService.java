@@ -40,6 +40,7 @@ public class PassworfResetService {
 
 	public void sendotp(String email, int otp) {
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		mailMessage.setTo(email);
 		mailMessage.setSubject("OTP for password reset");
 		mailMessage.setText("OTP is  " + otp + ".OTP will expire in 10 minutes");

@@ -20,7 +20,7 @@ public class WeekOffController {
 	@Autowired
 	private IweekOffService service;
 	
-	@PostMapping("/manager/saveWeekOff")
+	@PostMapping("/weekoff")
 	public ResponseEntity<?> saveWeekOff(@RequestBody WeekOff weekoff){
 		try {
 			return  ResponseEntity.ok(service.changeweekOff(weekoff));
@@ -30,7 +30,7 @@ public class WeekOffController {
 	}
 	
 	//current week-off
-	@GetMapping("/manager/getWeekOff/{empid}")
+	@GetMapping("/weekoff/current/{empid}")
 	public ResponseEntity<?> getWeekOff(@PathVariable long empid ){
 		try {
 			return  ResponseEntity.ok(service.getweekOff(empid));
@@ -40,7 +40,7 @@ public class WeekOffController {
 	}
 	
 	//All week off of Employee
-	@GetMapping("/manager/getAllWeekOff/{empid}")
+	@GetMapping("/Weekoff/{empid}")
 	public ResponseEntity<?> AllWeekOffByEmpId(@PathVariable long empid ){
 		try {
 			return  ResponseEntity.ok(service.getAllWeekOff(empid));

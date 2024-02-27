@@ -146,7 +146,7 @@ public class PersonalInfoController {
 	}
 
 //	@PutMapping("/personal-info/update/email/{email}")
-	@PutMapping("personal-infos/update/email/{email}")
+	@PutMapping("/personal-infos/update/email/{email}")
 	public ResponseEntity<?> updatePersonalInfo(@PathVariable String email,
 			@RequestParam("PersonalInfo") String personalinfo,
 			@RequestParam(value = "passportSizePhoto", required = false) MultipartFile passportSizePhoto,
@@ -224,7 +224,7 @@ public class PersonalInfoController {
 	}
 
 //	@GetMapping("/find-all/personal-info/background-check/pending")
-	@GetMapping("personal-infos/background-check/pending")
+	@GetMapping("/personal-infos/background-check/pending")
 	public ResponseEntity<?> getPersonalInfoWithPendingBackgroundCheck() {
 		try {
 			List<PersonalInfo> personalInfoWithPendingBackgroundCheck = personalInfoService

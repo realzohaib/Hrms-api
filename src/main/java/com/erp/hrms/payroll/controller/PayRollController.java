@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
@@ -16,12 +17,14 @@ import com.erp.hrms.payroll.entity.SalaryCerti;
 import com.erp.hrms.payroll.service.PayRollServiceImpl;
 
 @RestController
+@RequestMapping("/api/v1")
 public class PayRollController {
 
 	@Autowired
 	private PayRollServiceImpl service;
 
-	@GetMapping("/payRoll/{empId}/{year}/{month}")
+//	@GetMapping("/payRoll/{empId}/{year}/{month}")
+	@GetMapping("/payroll/{empId}/{year}/{month}")
 	public ResponseEntity<?> getPayRollByEmpId(@PathVariable long empId, @PathVariable int year,
 			@PathVariable int month) {
 		try {
@@ -31,7 +34,8 @@ public class PayRollController {
 		}
 	}
 
-	@PostMapping("/payRoll")
+//	@PostMapping("/payRoll")
+	@PostMapping("/payroll")
 	public ResponseEntity<?> savePayRoll(@RequestBody PayRoll payroll) {
 		try {
 			service.savePayRoll(payroll);
@@ -41,7 +45,8 @@ public class PayRollController {
 		}
 	}
 
-	@GetMapping("/payRoll-employee-Page/{empId}/{year}/{month}")
+//	@GetMapping("/payRoll-employee-Page/{empId}/{year}/{month}")
+	@GetMapping("/payroll/employee-Page/{empId}/{year}/{month}")
 	public ResponseEntity<?> getPayRollByEmpIdForEmployee(@PathVariable long empId, @PathVariable int year,
 			@PathVariable int month) {
 		try {
@@ -52,7 +57,8 @@ public class PayRollController {
 	}
 	
 	
-	@GetMapping("/request-salary-certi/{empId}/{year}/{month}")
+//	@GetMapping("/request-salary-certi/{empId}/{year}/{month}")
+	@GetMapping("/payroll/request-salary-certi/{empId}/{year}/{month}")
 	public ResponseEntity<?> getsalarycerti(@PathVariable long empId, @PathVariable int year,
 			@PathVariable int month) {
 		try {
@@ -63,7 +69,7 @@ public class PayRollController {
 	}
 	
 	
-	@PutMapping("/request-salary-certi")
+	@PutMapping("/payroll/request-salary-certi")
 	public ResponseEntity<?> updateSalaryCertiStatus(@RequestBody SalaryCerti serti) {
 		try {
 			return ResponseEntity.ok(service.updateSalaryCertiStatus(serti));
@@ -72,7 +78,7 @@ public class PayRollController {
 		}
 	}
 	
-	@GetMapping("/request-salary-certi")
+	@GetMapping("/payroll/request-salary-certi")
 	public ResponseEntity<?> getAllrequest() {
 		try {
 			return ResponseEntity.ok(service.getAllRequest());

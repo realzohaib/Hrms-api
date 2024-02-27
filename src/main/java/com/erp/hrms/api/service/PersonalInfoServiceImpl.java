@@ -516,10 +516,9 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			String otp = String.valueOf(otpNumber);
 
 			user.setOtp(otp);
-
 			PersonalInfo.setUserentity(user);
 			currentDesignationandTask.setEmpId(employeeId);
-			dao.savePersonalInfo(PersonalInfo);
+			dao.savePersonalInfo(PersonalInfo);	
 			currentService.saveCurrent(currentDesignationandTask);
 
 			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp, url);

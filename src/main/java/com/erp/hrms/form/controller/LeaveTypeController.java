@@ -34,7 +34,8 @@ public class LeaveTypeController {
 		}
 	}
 
-	@PostMapping("/leave/type")
+//	@PostMapping("/leave/type")
+	@PostMapping("/leave/types")
 	public ResponseEntity<?> createLeaveType(@RequestParam("leaveType") String leaveType) {
 		try {
 			iLeaveTypeService.createLeaveType(leaveType);
@@ -45,7 +46,8 @@ public class LeaveTypeController {
 		}
 	}
 
-	@GetMapping("/find/all/leave/type")
+//	@GetMapping("/find/all/leave/type")
+	@GetMapping("/leave/types")
 	public ResponseEntity<?> findAllLeaveType() {
 		try {
 			return new ResponseEntity<>(iLeaveTypeService.findAllLeaveType(), HttpStatus.OK);
@@ -54,7 +56,8 @@ public class LeaveTypeController {
 		}
 	}
 
-	@GetMapping("/find/byLeaveId/{leaveTypeId}")
+//	@GetMapping("/find/byLeaveId/{leaveTypeId}")
+	@GetMapping("/leave/types/{leaveTypeId}")
 	public ResponseEntity<?> findByleaveTypeId(@PathVariable Long leaveTypeId) {
 		try {
 			return new ResponseEntity<>(iLeaveTypeService.findByLeaveTypeId(leaveTypeId), HttpStatus.OK);

@@ -1,7 +1,6 @@
 package com.erp.hrms.joblevelanddesignation.service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,8 +12,6 @@ import com.erp.hrms.joblevelanddesignation.dao.joblevelRepo;
 import com.erp.hrms.joblevelanddesignation.entity.Designations;
 import com.erp.hrms.joblevelanddesignation.entity.Duties;
 import com.erp.hrms.joblevelanddesignation.entity.JobLevel;
-import com.erp.hrms.joblevelanddesignation.entity.SubDuties;
-import com.erp.hrms.joblevelanddesignation.entity.Task;
 import com.erp.hrms.joblevelanddesignation.request_responseentity.DesignationRequest;
 import com.erp.hrms.joblevelanddesignation.request_responseentity.DesignationResponse;
 
@@ -113,22 +110,12 @@ public class DesignationServiceImpl implements IDesignationService {
 		Integer designationId = designation.getDesignationId();
 		String designationName = designation.getDesignationName();
 		List<Duties> duties = designation.getDuties();
-		for(Duties duty : duties) {
-			List<SubDuties> subduties = duty.getSubduties();
-			for(SubDuties sb : subduties) {
-				List<Task> task = sb.getTask();
-				for(Task ts : task) {
-					System.out.println(ts.getTaskName());
-				}
-			}
-		}
-
+		
 		response.setJobLevelID(levelId);
 		response.setJobLevel(levelName);
 		response.setDesignationId(designationId);
 		response.setDesignationName(designationName);
 		response.setDuties(duties);
-		
 
 		return response;
 	}
