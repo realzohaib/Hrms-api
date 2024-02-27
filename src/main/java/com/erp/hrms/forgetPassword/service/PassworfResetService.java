@@ -47,7 +47,6 @@ public class PassworfResetService {
 		            "This email is to inform you that a one-time password (OTP) has been generated for the purpose of resetting your password.\n\n" +
 		            "OTP: " + otp + "\n\n" +
 		            "Please use this OTP within the next 10 minutes, as it will expire thereafter.\n\n" +
-		            "If you have any concerns or require assistance, feel free to contact our support team.\n\n" +
 		            "Best regards,\n" +
 		            "SI Global Company");		
 		  javaMailSender.send(mailMessage);
