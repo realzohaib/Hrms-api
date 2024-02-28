@@ -44,6 +44,7 @@ import com.erp.hrms.entity.form.LeaveType;
 import com.erp.hrms.entity.form.MarkedDate;
 import com.erp.hrms.exception.LeaveRequestApprovalException;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
+import com.erp.hrms.exception.MailServerConnectionException;
 import com.erp.hrms.form.repository.ILeaveRepository;
 import com.erp.hrms.form.repository.IleaveApprovalRepo;
 import com.erp.hrms.locationdao.LocationRepository;
@@ -157,8 +158,17 @@ public class LeaveService implements ILeaveService {
 			iLeaveRepository.createLeaveApproval(leaveApprovalJson);
 			return approver;
 		} catch (Exception e) {
-			throw new RuntimeException("An error occurred while sending your request." + e);
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+
 	}
 
 //	This method for find the data of leave by leave request id
@@ -349,8 +359,19 @@ public class LeaveService implements ILeaveService {
 
 			return iLeaveRepository.approvedByManager(leaveRequestId, existingApproval);
 		} catch (Exception e) {
-			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+//		catch (Exception e) {
+//			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
+//		}
 	}
 
 // In this method find approver of employee with the help of location id and level 
@@ -441,8 +462,19 @@ public class LeaveService implements ILeaveService {
 
 			return iLeaveRepository.approvedOrDenyByHR(leaveRequestId, existingApproval);
 		} catch (Exception e) {
-			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+//		catch (Exception e) {
+//			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
+//		}
 	}
 
 //	This method for find all pending leave request 
@@ -780,7 +812,7 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending the mail to the manager.
 	private void sendLeaveRequestEmail(String to, String subject, LeaveApproval leaveApproval, String emailContent) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		
+
 		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
@@ -791,7 +823,7 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is accepted.
 	private void sendLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		
+
 		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
@@ -823,7 +855,7 @@ public class LeaveService implements ILeaveService {
 	private void sendLeaveRequestForwardedToHREmail(String to, String subject, LeaveApproval leaveApproval,
 			String emailContent) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		
+
 		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
@@ -834,7 +866,7 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is accepted by hr.
 	private void sendHRLeaveRequestApprovedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		
+
 		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);
@@ -851,7 +883,7 @@ public class LeaveService implements ILeaveService {
 //	This method is for sending to the employee if his leave request is rejected by hr.
 	private void sendHRLeaveRequestRejectedEmail(String to, String subject, LeaveApproval leaveApproval) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		
+
 		message.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 		message.setTo(to);
 		message.setSubject(subject);

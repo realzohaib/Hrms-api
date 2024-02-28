@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.erp.hrms.api.dao.IPersonalInfoDAO;
 import com.erp.hrms.entity.PersonalInfo;
 import com.erp.hrms.entity.VisaDetail;
+import com.erp.hrms.exception.MailServerConnectionException;
 
 @Component
 public class VisaExpiryNotification {
@@ -93,8 +94,17 @@ public class VisaExpiryNotification {
 			personalInfo.getVisainfo().setVisaEmailSend20and60daysBefore(true);
 			personalInfoDAO.update20and60daysBeforeVisaEmail(email);
 		} catch (Exception e) {
-			throw new Exception(e);
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+
 	}
 
 	private void sendNotificationOfVisitVisaSecond(String email, LocalDate visaExpiryDate, PersonalInfo personalInfo)
@@ -110,8 +120,17 @@ public class VisaExpiryNotification {
 			personalInfo.getVisainfo().setVisaEmailSend10and30daysBefore(true);
 			personalInfoDAO.update10and30daysBeforeVisaEmail(email);
 		} catch (Exception e) {
-			throw new Exception(e);
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+
 	}
 
 	private void sendNotificationOfWorkVisaFirst(String email, LocalDate visaExpiryDate, PersonalInfo personalInfo)
@@ -127,8 +146,17 @@ public class VisaExpiryNotification {
 			personalInfo.getVisainfo().setVisaEmailSend20and60daysBefore(true);
 			personalInfoDAO.update20and60daysBeforeVisaEmail(email);
 		} catch (Exception e) {
-			throw new Exception(e);
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+
 	}
 
 	private void sendNotificationOfWorkVisaSecond(String email, LocalDate visaExpiryDate, PersonalInfo personalInfo)
@@ -144,8 +172,17 @@ public class VisaExpiryNotification {
 			personalInfo.getVisainfo().setVisaEmailSend10and30daysBefore(true);
 			personalInfoDAO.update10and30daysBeforeVisaEmail(email);
 		} catch (Exception e) {
-			throw new Exception(e);
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+
 	}
 
 	private void sendNotificationOfContinuouslyFirstEmail(String email, LocalDate visaExpiryDate,
@@ -161,8 +198,17 @@ public class VisaExpiryNotification {
 			personalInfo.getVisainfo().setVisaEmailSend4daysBefore(true);
 			personalInfoDAO.update4daysBeforeVisaEmailSend(email);
 		} catch (Exception e) {
-			throw new Exception(e);
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+
 	}
 
 	private void sendNotificationOfContinuouslySecondEmail(String email, LocalDate visaExpiryDate,
@@ -178,8 +224,17 @@ public class VisaExpiryNotification {
 			personalInfo.getVisainfo().setVisaEmailSend3daysBefore(true);
 			personalInfoDAO.update3daysBeforeVisaEmailSend(email);
 		} catch (Exception e) {
-			throw new Exception(e);
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+
 	}
 
 	private void sendNotificationOfContinuouslyThirdEmail(String email, LocalDate visaExpiryDate,
@@ -196,8 +251,17 @@ public class VisaExpiryNotification {
 			personalInfo.getVisainfo().setVisaEmailSend2daysBefore(true);
 			personalInfoDAO.update2daysBeforeVisaEmailSend(email);
 		} catch (Exception e) {
-			throw new Exception(e);
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+
 	}
 
 	private void sendNotificationOfContinuouslyFourEmail(String email, LocalDate visaExpiryDate,
@@ -213,13 +277,23 @@ public class VisaExpiryNotification {
 			personalInfo.getVisainfo().setVisaEmailSend1dayBefore(true);
 			personalInfoDAO.update1dayBeforeVisaEmailSend(email);
 		} catch (Exception e) {
-			throw new Exception(e);
+			if (e.getMessage().contains("Mail server connection failed")
+					|| e.getMessage().contains("java.net.UnknownHostException")) {
+				// Mail server connection error here
+				throw new MailServerConnectionException(
+						"Mail server connection failed; please check your network or SMTP configuration.", e);
+			} else {
+				// Re-throw other exceptions
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
+
 	}
 
 	private void sendEmail(String to, String subject, String content) throws Exception {
 		try {
 			SimpleMailMessage mailMessage = new SimpleMailMessage();
+			mailMessage.setFrom("SI Global Company <mfurqan9988@gmail.com>");
 			mailMessage.setTo(to);
 			mailMessage.setSubject(subject);
 			mailMessage.setText(content);
