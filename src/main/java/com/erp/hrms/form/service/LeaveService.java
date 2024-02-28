@@ -42,7 +42,6 @@ import com.erp.hrms.entity.form.LeaveDataDTO;
 import com.erp.hrms.entity.form.LeaveEmployee;
 import com.erp.hrms.entity.form.LeaveType;
 import com.erp.hrms.entity.form.MarkedDate;
-import com.erp.hrms.exception.LeaveRequestApprovalException;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
 import com.erp.hrms.exception.MailServerConnectionException;
 import com.erp.hrms.form.repository.ILeaveRepository;
@@ -369,9 +368,7 @@ public class LeaveService implements ILeaveService {
 				throw new RuntimeException(e.getMessage(), e);
 			}
 		}
-//		catch (Exception e) {
-//			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
-//		}
+
 	}
 
 // In this method find approver of employee with the help of location id and level 
@@ -472,9 +469,7 @@ public class LeaveService implements ILeaveService {
 				throw new RuntimeException(e.getMessage(), e);
 			}
 		}
-//		catch (Exception e) {
-//			throw new LeaveRequestApprovalException(new MessageResponse("Error while approving leave request." + e));
-//		}
+
 	}
 
 //	This method for find all pending leave request 
