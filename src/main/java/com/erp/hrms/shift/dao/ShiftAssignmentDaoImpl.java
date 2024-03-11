@@ -64,12 +64,16 @@ public class ShiftAssignmentDaoImpl implements IShiftAssignmentDao {
 		return repo.findByShift_ShiftNameAndStartDate(date, shiftName);
 	}
 
-
 	@Override
 	public void deleteShiftAllocation(long assignmentId) {
 		ShiftAssignment findByAssignmentId = repo.findByAssignmentId(assignmentId);
 		findByAssignmentId.setDeleted(true);
 		repo.save(findByAssignmentId);
+	}
+
+	@Override
+	public ShiftAssignment getShiftById(Long AssignmentId) {
+		return repo.findByAssignmentId(AssignmentId);
 	}
 
 }

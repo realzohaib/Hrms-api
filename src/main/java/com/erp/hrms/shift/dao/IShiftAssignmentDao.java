@@ -28,6 +28,8 @@ public interface IShiftAssignmentDao {
 	
 	public void deleteShiftAllocation(long assignmentId);
 	
+	public ShiftAssignment getShiftById(Long AssignmentId);
+	
 ;
 
 }
