@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -79,7 +81,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	@Autowired
 	private CurrentServiceImpl currentService;
 
-	
 	@Transactional
 	@Override
 	public void savedata(String personalinfo, String CurrentDesignationandAdditionalTask, String url,
@@ -91,6 +92,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 			MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
 			MultipartFile CertificateUploadedForOutsource, MultipartFile visaDocs, MultipartFile diplomaDocumentScan,
 			MultipartFile declarationRequired, MultipartFile[] achievementsRewardsDocs) throws IOException {
+
+		HashMap<Path, byte[]> map = new HashMap<Path, byte[]>();
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
@@ -128,7 +131,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				String passportoriginalFileName = passportSizePhoto.getOriginalFilename();
 				String passportfileNameWithUniqueIdentifier = employeeId + "-" + passportoriginalFileName;
 				Path passportSizePhotoNameWithPath = Paths.get(uplaodDirectory, passportfileNameWithUniqueIdentifier);
-				Files.write(passportSizePhotoNameWithPath, passportSizePhoto.getBytes());
+				byte[] passportsizebyte = passportSizePhoto.getBytes();
+				map.put(passportSizePhotoNameWithPath, passportsizebyte);
 				PersonalInfo.setPassportSizePhoto(passportfileNameWithUniqueIdentifier);
 			}
 
@@ -137,7 +141,10 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-" + OtherIdProoforiginalFileName;
 				Path OtherIdProofDocNameWithData = Paths.get(uplaodDirectory,
 						OtherIdProofDocfileNameWithUniqueIdentifier);
-				Files.write(OtherIdProofDocNameWithData, OtherIdProofDoc.getBytes());
+
+				byte[] otherIdProofDocbytes = OtherIdProofDoc.getBytes();
+				map.put(OtherIdProofDocNameWithData, otherIdProofDocbytes);
+
 				PersonalInfo.setOtherIdProofDoc(OtherIdProofDocfileNameWithUniqueIdentifier);
 			}
 
@@ -148,7 +155,9 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					String passportScanfileNameWithUniqueIdentifier = employeeId + "-" + passportScanoriginalFileName;
 					Path passportScanNameWithData = Paths.get(uplaodDirectory,
 							passportScanfileNameWithUniqueIdentifier);
-					Files.write(passportScanNameWithData, passportScan.getBytes());
+
+					byte[] PassportScanbytes = passportScan.getBytes();
+					map.put(passportScanNameWithData, PassportScanbytes);
 					passportDetails.setPassportScan(passportScanfileNameWithUniqueIdentifier);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -191,7 +200,9 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						String visaDocsoriginalFileName = visaDocs.getOriginalFilename();
 						String visaDocsfileNameWithUniqueIdentifier = employeeId + "-" + visaDocsoriginalFileName;
 						Path visaDocsNameWithData = Paths.get(uplaodDirectory, visaDocsfileNameWithUniqueIdentifier);
-						Files.write(visaDocsNameWithData, visaDocs.getBytes());
+
+						byte[] visaDocsbytes = visaDocs.getBytes();
+						map.put(visaDocsNameWithData, visaDocsbytes);
 						visaDetail.setVisaDocs(visaDocsfileNameWithUniqueIdentifier);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -205,7 +216,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					String licensecopyoriginalFileName = licensecopy.getOriginalFilename();
 					String licensecopyfileNameWithUniqueIdentifier = employeeId + "-" + licensecopyoriginalFileName;
 					Path licensecopyNameWithData = Paths.get(uplaodDirectory, licensecopyfileNameWithUniqueIdentifier);
-					Files.write(licensecopyNameWithData, licensecopy.getBytes());
+					byte[] licenseCopybytes = licensecopy.getBytes();
+					map.put(licensecopyNameWithData, licenseCopybytes);
 					drivinglicense.setLicensecopy(licensecopyfileNameWithUniqueIdentifier);
 
 				} catch (IOException e) {
@@ -225,7 +237,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					String relativeidoriginalFileName = relativeid.getOriginalFilename();
 					String relativeidfileNameWithUniqueIdentifier = employeeId + "-" + relativeidoriginalFileName;
 					Path relativeidNameWithData = Paths.get(uplaodDirectory, relativeidfileNameWithUniqueIdentifier);
-					Files.write(relativeidNameWithData, relativeid.getBytes());
+					byte[] relativeIdbytes = relativeid.getBytes();
+					map.put(relativeidNameWithData, relativeIdbytes);
 					relative.setRelativeid(relativeidfileNameWithUniqueIdentifier);
 
 				} catch (IOException e) {
@@ -238,7 +251,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 					String raddressprooffileNameWithUniqueIdentifier = employeeId + "-" + raddressprooforiginalFileName;
 					Path raddressproofNameWithData = Paths.get(uplaodDirectory,
 							raddressprooffileNameWithUniqueIdentifier);
-					Files.write(raddressproofNameWithData, raddressproof.getBytes());
+					byte[] raddressProofbytes = raddressproof.getBytes();
+					map.put(raddressproofNameWithData, raddressProofbytes);
 					relative.setRaddressproof(raddressprooffileNameWithUniqueIdentifier);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -266,7 +280,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ secondaryDocumentScanoriginalFileName;
 							Path secondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									secondaryDocumentScanfileNameWithUniqueIdentifier);
-							Files.write(secondaryDocumentScanNameWithData, secondaryDocumentScan.getBytes());
+							byte[] secondaryDocumentScanbytes = secondaryDocumentScan.getBytes();
+							map.put(secondaryDocumentScanNameWithData, secondaryDocumentScanbytes);
 							edc.setSecondaryDocumentScan(secondaryDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -280,8 +295,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ seniorSecondaryDocumentScanoriginalFileName;
 							Path seniorSecondaryDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
-							Files.write(seniorSecondaryDocumentScanNameWithData,
-									seniorSecondaryDocumentScan.getBytes());
+							byte[] seniorSecondaryDocumentScanbytes = seniorSecondaryDocumentScan.getBytes();
+							map.put(seniorSecondaryDocumentScanNameWithData, seniorSecondaryDocumentScanbytes);
 							edc.setSeniorSecondaryDocumentScan(seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -295,7 +310,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ graduationDocumentScanoriginalFileName;
 							Path graduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									graduationDocumentScanfileNameWithUniqueIdentifier);
-							Files.write(graduationDocumentScanNameWithData, graduationDocumentScan.getBytes());
+							byte[] graduationDocumentScanbytes = graduationDocumentScan.getBytes();
+							map.put(graduationDocumentScanNameWithData, graduationDocumentScanbytes);
 							edc.setGraduationDocumentScan(graduationDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -309,7 +325,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ postGraduationDocumentScanoriginalFileName;
 							Path postGraduationDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									postGraduationDocumentScanfileNameWithUniqueIdentifier);
-							Files.write(postGraduationDocumentScanNameWithData, postGraduationDocumentScan.getBytes());
+							byte[] postGraduationDocumentScanbytes = postGraduationDocumentScan.getBytes();
+							map.put(postGraduationDocumentScanNameWithData, postGraduationDocumentScanbytes);
 							edc.setPostGraduationDocumentScan(postGraduationDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -322,7 +339,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ diplomaDocumentScanoriginalFileName;
 							Path diplomaDocumentScanNameWithData = Paths.get(uplaodDirectory,
 									diplomaDocumentScanfileNameWithUniqueIdentifier);
-							Files.write(diplomaDocumentScanNameWithData, diplomaDocumentScan.getBytes());
+							byte[] diplomaDocumentScanbytes = diplomaDocumentScan.getBytes();
+							map.put(diplomaDocumentScanNameWithData, diplomaDocumentScanbytes);
 							edc.setDiplomaDocumentScan(diplomaDocumentScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -345,7 +363,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 										+ othersDocumentScanoriginalFileName;
 								Path othersDocumentScanNameWithData = Paths.get(uplaodDirectory,
 										othersDocumentScanfileNameWithUniqueIdentifier);
-								Files.write(othersDocumentScanNameWithData, file.getBytes());
+								byte[] othersDocumentScanbytes = file.getBytes();
+								map.put(othersDocumentScanNameWithData, othersDocumentScanbytes);
 								newOthersQualification
 										.setOthersDocumentScan(othersDocumentScanfileNameWithUniqueIdentifier);
 
@@ -372,7 +391,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 										+ degreeScanoriginalFileName;
 								Path degreeScanNameWithData = Paths.get(uplaodDirectory,
 										degreeScanfileNameWithUniqueIdentifier);
-								Files.write(degreeScanNameWithData, file.getBytes());
+								byte[] degreeScanbytes = file.getBytes();
+								map.put(degreeScanNameWithData, degreeScanbytes);
 								professionalQualification.setDegreeScan(degreeScanfileNameWithUniqueIdentifier);
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -393,7 +413,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ payslipScanoriginalFileName;
 							Path payslipScanNameWithData = Paths.get(uplaodDirectory,
 									payslipScanfileNameWithUniqueIdentifier);
-							Files.write(payslipScanNameWithData, payslipScan.getBytes());
+							byte[] payslipScanbytes = payslipScan.getBytes();
+							map.put(payslipScanNameWithData, payslipScanbytes);
 							oldemp.setPayslipScan(payslipScanfileNameWithUniqueIdentifier);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -419,7 +440,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 										+ achievementsRewardsDocsoriginalFileName;
 								Path achievementsRewardsDocsNameWithData = Paths.get(uplaodDirectory,
 										achievementsRewardsDocsfileNameWithUniqueIdentifier);
-								Files.write(achievementsRewardsDocsNameWithData, file.getBytes());
+								byte[] achievementsRewardsDocsbytes = file.getBytes();
+								map.put(achievementsRewardsDocsNameWithData, achievementsRewardsDocsbytes);
 								achievement.setAchievementsRewardsDocs(
 										achievementsRewardsDocsfileNameWithUniqueIdentifier);
 							} catch (IOException e) {
@@ -440,7 +462,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 						String recordsheetfileNameWithUniqueIdentifier = employeeId + "-" + recordsheetoriginalFileName;
 						Path recordsheetNameWithData = Paths.get(uplaodDirectory,
 								recordsheetfileNameWithUniqueIdentifier);
-						Files.write(recordsheetNameWithData, recordsheet.getBytes());
+						byte[] recordsheetbytes = recordsheet.getBytes();
+						map.put(recordsheetNameWithData, recordsheetbytes);
 						bgcheck.setRecordsheet(recordsheetfileNameWithUniqueIdentifier);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -453,7 +476,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 								+ declarationRequiredoriginalFileName;
 						Path declarationRequiredNameWithData = Paths.get(uplaodDirectory,
 								declarationRequiredfileNameWithUniqueIdentifier);
-						Files.write(declarationRequiredNameWithData, declarationRequired.getBytes());
+						byte[] declarationRequiredbytes = declarationRequired.getBytes();
+						map.put(declarationRequiredNameWithData, declarationRequiredbytes);
 						bgcheck.setDeclarationRequired(declarationRequiredfileNameWithUniqueIdentifier);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -473,8 +497,9 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ CertificateUploadedForOutsourceoriginalFileName;
 							Path CertificateUploadedForOutsourceNameWithData = Paths.get(uplaodDirectory,
 									CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
-							Files.write(CertificateUploadedForOutsourceNameWithData,
-									CertificateUploadedForOutsource.getBytes());
+
+							byte[] certificateUploadedForOutsourcebytes = CertificateUploadedForOutsource.getBytes();
+							map.put(CertificateUploadedForOutsourceNameWithData, certificateUploadedForOutsourcebytes);
 							train.setCertificateUploadedForOutsource(
 									CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
 						} catch (IOException e) {
@@ -489,7 +514,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 									+ PaidTrainingDocumentProoforiginalFileName;
 							Path PaidTrainingDocumentProofNameWithData = Paths.get(uplaodDirectory,
 									PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
-							Files.write(PaidTrainingDocumentProofNameWithData, PaidTrainingDocumentProof.getBytes());
+							byte[] paidTrainingDocumentProofbytes = PaidTrainingDocumentProof.getBytes();
+							map.put(PaidTrainingDocumentProofNameWithData, paidTrainingDocumentProofbytes);
 							train.setPaidTrainingDocumentProof(PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
 
 						} catch (IOException e) {
@@ -522,6 +548,16 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 
 			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp, url);
 
+			Set<Entry<Path, byte[]>> entrySet = map.entrySet();
+
+			for (Map.Entry<Path, byte[]> entry : entrySet) {
+				Path path = entry.getKey();
+				byte[] value = entry.getValue();
+
+				Files.write(path, value);
+
+			}
+
 		} catch (Exception e) {
 			if (e.getMessage().contains("Mail server connection failed")
 					|| e.getMessage().contains("java.net.UnknownHostException")) {
@@ -529,400 +565,8 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 				throw new MailServerConnectionException(
 						"Mail server connection failed; please check your network or SMTP configuration.", e);
 			} else {
-				// Re-throw other exceptions
+
 				throw new RuntimeException(e.getMessage(), e);
-			}
-		}
-	}
-	
-//	/**
-//	 *
-//	 */
-//	@Transactional
-//	@Override
-//	public void savedata(String personalinfo, String CurrentDesignationandAdditionalTask, String url,
-//			MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc, MultipartFile passportScan,
-//			MultipartFile licensecopy, MultipartFile relativeid, MultipartFile raddressproof,
-//			MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
-//			MultipartFile graduationDocumentScan, MultipartFile postGraduationDocumentScan,
-//			MultipartFile[] othersDocumentScan, MultipartFile[] degreeScan, MultipartFile payslipScan,
-//			MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
-//			MultipartFile CertificateUploadedForOutsource, MultipartFile visaDocs, MultipartFile diplomaDocumentScan,
-//			MultipartFile declarationRequired, MultipartFile[] achievementsRewardsDocs) throws IOException {
-//
-//		ObjectMapper mapper = new ObjectMapper();
-//		PersonalInfo PersonalInfo = mapper.readValue(personalinfo, PersonalInfo.class);
-//		CurrentReq currentDesignationandTask = mapper.readValue(CurrentDesignationandAdditionalTask, CurrentReq.class);
-//
-//		String email = PersonalInfo.getEmail();
-//		if (dao.existsByEmail(email)) {
-//			throw new PersonalEmailExistsException(new MessageResponse("Email ID already exists"));
-//		}
-//
-//		String personalContactNo = PersonalInfo.getPersonalContactNo();
-//		if (dao.existsByPersonalContactNo(personalContactNo)) {
-//			throw new PersonalPhoneNumberExistsException(new MessageResponse("Phone Number already exists"));
-//		}
-//
-//		long employeeId;
-//		try {
-//			Long departmentId = PersonalInfo.getDepartment().getDepartmentId();
-//
-//			// Generate a 4-digit random number
-//			int randomPart = generateRandom4DigitNumber();
-//
-//			employeeId = concatenateIdWithRandomNumber(departmentId, randomPart);
-//			if (!dao.existByID(employeeId)) {
-//				employeeId = employeeId * 10;
-//			}
-//
-//			PersonalInfo.setEmployeeId(employeeId);
-//
-//			PersonalInfo.setFathersFirstName("Mr " + PersonalInfo.getFathersFirstName());
-//			PersonalInfo.setStatus("Active");
-//			PersonalInfo.setEmpStatus("New employee");
-//
-//			if (passportSizePhoto != null && !passportSizePhoto.isEmpty()) {
-//				String passportoriginalFileName = passportSizePhoto.getOriginalFilename();
-//				String passportfileNameWithUniqueIdentifier = employeeId + "-" + passportoriginalFileName;
-//				PersonalInfo.setPassportSizePhoto(passportfileNameWithUniqueIdentifier);
-//			}
-//
-//			if (OtherIdProofDoc != null && !OtherIdProofDoc.isEmpty()) {
-//				String OtherIdProoforiginalFileName = OtherIdProofDoc.getOriginalFilename();
-//				String OtherIdProofDocfileNameWithUniqueIdentifier = employeeId + "-" + OtherIdProoforiginalFileName;
-//				PersonalInfo.setOtherIdProofDoc(OtherIdProofDocfileNameWithUniqueIdentifier);
-//			}
-//
-//			PassportDetails passportDetails = new PassportDetails();
-//			if (passportScan != null && !passportScan.isEmpty()) {
-//				String passportScanoriginalFileName = passportScan.getOriginalFilename();
-//				String passportScanfileNameWithUniqueIdentifier = employeeId + "-" + passportScanoriginalFileName;
-//				passportDetails.setPassportScan(passportScanfileNameWithUniqueIdentifier);
-//			}
-//
-//			if (PersonalInfo.getPsDetail() != null) {
-//				passportDetails.setPassportIssuingCountry(PersonalInfo.getPsDetail().getPassportIssuingCountry());
-//				passportDetails.setPassportExpiryDate(PersonalInfo.getPsDetail().getPassportExpiryDate());
-//				passportDetails.setPassportNumber(PersonalInfo.getPsDetail().getPassportNumber());
-//			}
-//			PersonalInfo.setPsDetail(passportDetails);
-//			VisaDetail visaDetail = new VisaDetail();
-//			if (PersonalInfo.getVisainfo() != null) {
-//				visaDetail.setWorkVisaEmirateId(PersonalInfo.getVisainfo().getWorkVisaEmirateId());
-//				visaDetail.setCategoryOfVisa(PersonalInfo.getVisainfo().getCategoryOfVisa());
-//				visaDetail.setSiGlobalWorkVisaCompany(PersonalInfo.getVisainfo().getSiGlobalWorkVisaCompany());
-//				visaDetail.setVisaIssueyDate(PersonalInfo.getVisainfo().getVisaIssueyDate());
-//				visaDetail.setVisaType(PersonalInfo.getVisainfo().getVisaType());
-//
-//				visaDetail.setVisaEmailSend20and60daysBefore(false);
-//				visaDetail.setVisaEmailSend10and30daysBefore(false);
-//				visaDetail.setVisaEmailSend4daysBefore(false);
-//				visaDetail.setVisaEmailSend3daysBefore(false);
-//				visaDetail.setVisaEmailSend2daysBefore(false);
-//				visaDetail.setVisaEmailSend1dayBefore(false);
-//
-//				visaDetail.setVisaEmailSend20and60daysBefore(false);
-//				visaDetail.setVisaEmailSend10and30daysBefore(false);
-//				visaDetail.setVisaEmailSend4daysBefore(false);
-//				visaDetail.setVisaEmailSend3daysBefore(false);
-//				visaDetail.setVisaEmailSend2daysBefore(false);
-//				visaDetail.setVisaEmailSend1dayBefore(false);
-//
-//				String visaExpiryDateString = PersonalInfo.getVisainfo().getVisaExpiryDate();
-//				visaDetail.setVisaExpiryDate(visaExpiryDateString);
-//
-//				if (visaDocs != null && !visaDocs.isEmpty()) {
-//					String visaDocsoriginalFileName = visaDocs.getOriginalFilename();
-//					String visaDocsfileNameWithUniqueIdentifier = employeeId + "-" + visaDocsoriginalFileName;
-//					visaDetail.setVisaDocs(visaDocsfileNameWithUniqueIdentifier);
-//				}
-//			}
-//			PersonalInfo.setVisainfo(visaDetail);
-//			DrivingLicense drivinglicense = new DrivingLicense();
-//			if (licensecopy != null && !licensecopy.isEmpty()) {
-//				String licensecopyoriginalFileName = licensecopy.getOriginalFilename();
-//				String licensecopyfileNameWithUniqueIdentifier = employeeId + "-" + licensecopyoriginalFileName;
-//				drivinglicense.setLicensecopy(licensecopyfileNameWithUniqueIdentifier);
-//			}
-//
-//			if (PersonalInfo.getLicense() != null) {
-//				drivinglicense.setDrivinglicense(PersonalInfo.getLicense().getDrivinglicense());
-//				drivinglicense.setOwnvehicle(PersonalInfo.getLicense().getOwnvehicle());
-//				drivinglicense.setLicenseType(PersonalInfo.getLicense().getLicenseType());
-//			}
-//			PersonalInfo.setLicense(drivinglicense);
-//			BloodRelative relative = new BloodRelative();
-//			if (relativeid != null && !relativeid.isEmpty()) {
-//				String relativeidoriginalFileName = relativeid.getOriginalFilename();
-//				String relativeidfileNameWithUniqueIdentifier = employeeId + "-" + relativeidoriginalFileName;
-//				relative.setRelativeid(relativeidfileNameWithUniqueIdentifier);
-//			}
-//			if (raddressproof != null && !raddressproof.isEmpty()) {
-//				String raddressprooforiginalFileName = raddressproof.getOriginalFilename();
-//				String raddressprooffileNameWithUniqueIdentifier = employeeId + "-" + raddressprooforiginalFileName;
-//				relative.setRaddressproof(raddressprooffileNameWithUniqueIdentifier);
-//			}
-//
-//			if (PersonalInfo.getRelative() != null) {
-//				relative.setRelativenamePrefix(PersonalInfo.getRelative().getRelativenamePrefix());
-//				relative.setRaddress(PersonalInfo.getRelative().getRaddress());
-//				relative.setRphoneCode(PersonalInfo.getRelative().getRphoneCode());
-//				relative.setRcontactno(PersonalInfo.getRelative().getRcontactno());
-//				relative.setRFirstname(PersonalInfo.getRelative().getRFirstname());
-//				relative.setRmiddlename(PersonalInfo.getRelative().getRmiddlename());
-//				relative.setRlastname(PersonalInfo.getRelative().getRlastname());
-//				relative.setRelationship(PersonalInfo.getRelative().getRelationship());
-//			}
-//			PersonalInfo.setRelative(relative);
-//			List<Education> educations = PersonalInfo.getEducations();
-//			if (educations != null) {
-//				for (Education edc : educations) {
-//					if (secondaryDocumentScan != null && !secondaryDocumentScan.isEmpty()) {
-//						String secondaryDocumentScanoriginalFileName = secondaryDocumentScan.getOriginalFilename();
-//						String secondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-//								+ secondaryDocumentScanoriginalFileName;
-//						edc.setSecondaryDocumentScan(secondaryDocumentScanfileNameWithUniqueIdentifier);
-//
-//					}
-//					if (seniorSecondaryDocumentScan != null && !seniorSecondaryDocumentScan.isEmpty()) {
-//						String seniorSecondaryDocumentScanoriginalFileName = seniorSecondaryDocumentScan
-//								.getOriginalFilename();
-//						String seniorSecondaryDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-//								+ seniorSecondaryDocumentScanoriginalFileName;
-//						edc.setSeniorSecondaryDocumentScan(seniorSecondaryDocumentScanfileNameWithUniqueIdentifier);
-//					}
-//					if (graduationDocumentScan != null && !graduationDocumentScan.isEmpty()) {
-//						String graduationDocumentScanoriginalFileName = graduationDocumentScan.getOriginalFilename();
-//						String graduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-//								+ graduationDocumentScanoriginalFileName;
-//						edc.setGraduationDocumentScan(graduationDocumentScanfileNameWithUniqueIdentifier);
-//					}
-//					if (postGraduationDocumentScan != null && !postGraduationDocumentScan.isEmpty()) {
-//						String postGraduationDocumentScanoriginalFileName = postGraduationDocumentScan
-//								.getOriginalFilename();
-//						String postGraduationDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-//								+ postGraduationDocumentScanoriginalFileName;
-//						edc.setPostGraduationDocumentScan(postGraduationDocumentScanfileNameWithUniqueIdentifier);
-//					}
-//					if (diplomaDocumentScan != null && !diplomaDocumentScan.isEmpty()) {
-//						String diplomaDocumentScanoriginalFileName = diplomaDocumentScan.getOriginalFilename();
-//						String diplomaDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-//								+ diplomaDocumentScanoriginalFileName;
-//						edc.setDiplomaDocumentScan(diplomaDocumentScanfileNameWithUniqueIdentifier);
-//					}
-//					edc.setPersonalinfo(PersonalInfo);
-//				}
-//			}
-//			PersonalInfo.setEducations(educations);
-//			List<OthersQualification> othersQualification = PersonalInfo.getOthersQualifications();
-//			if (othersQualification != null) {
-//				for (int i = 0; i < othersQualification.size(); i++) {
-//					OthersQualification newOthersQualification = othersQualification.get(i);
-//					if (othersDocumentScan != null && i < othersDocumentScan.length) {
-//						MultipartFile file = othersDocumentScan[i];
-//						if (file != null && !file.isEmpty()) {
-//							String othersDocumentScanoriginalFileName = file.getOriginalFilename();
-//							String othersDocumentScanfileNameWithUniqueIdentifier = employeeId + "-"
-//									+ othersDocumentScanoriginalFileName;
-//							newOthersQualification
-//									.setOthersDocumentScan(othersDocumentScanfileNameWithUniqueIdentifier);
-//
-//						}
-//
-//					}
-//					newOthersQualification.setPersonalinfo(PersonalInfo);
-//				}
-//			}
-//			PersonalInfo.setOthersQualifications(othersQualification);
-//			List<ProfessionalQualification> qualifications = PersonalInfo.getProfessionalQualifications();
-//			if (qualifications != null) {
-//				for (int i = 0; i < qualifications.size(); i++) {
-//					ProfessionalQualification professionalQualification = qualifications.get(i);
-//					if (degreeScan != null && i < degreeScan.length) {
-//						MultipartFile file = degreeScan[i];
-//						if (file != null && !file.isEmpty()) {
-//							String degreeScanoriginalFileName = file.getOriginalFilename();
-//							String degreeScanfileNameWithUniqueIdentifier = employeeId + "-"
-//									+ degreeScanoriginalFileName;
-//							professionalQualification.setDegreeScan(degreeScanfileNameWithUniqueIdentifier);
-//
-//						}
-//					}
-//					professionalQualification.setPersonalinfo(PersonalInfo);
-//				}
-//			}
-//			PersonalInfo.setProfessionalQualifications(qualifications);
-//			List<PreviousEmployee> oldEmployee = PersonalInfo.getOldEmployee();
-//			if (oldEmployee != null) {
-//				for (PreviousEmployee oldemp : oldEmployee) {
-//					if (payslipScan != null && !payslipScan.isEmpty()) {
-//
-//						String payslipScanoriginalFileName = payslipScan.getOriginalFilename();
-//						String payslipScanfileNameWithUniqueIdentifier = employeeId + "-" + payslipScanoriginalFileName;
-//						oldemp.setPayslipScan(payslipScanfileNameWithUniqueIdentifier);
-//
-//					}
-//
-//					oldemp.setPersonalinfo(PersonalInfo);
-//
-//				}
-//			}
-//			PersonalInfo.setOldEmployee(oldEmployee);
-//
-//			List<EmpAchievement> empAchievements = PersonalInfo.getEmpAchievements();
-//			if (empAchievements != null) {
-//				for (int i = 0; i < empAchievements.size(); i++) {
-//					EmpAchievement achievement = empAchievements.get(i);
-//					if (achievementsRewardsDocs != null && i < achievementsRewardsDocs.length) {
-//						MultipartFile file = achievementsRewardsDocs[i];
-//						if (file != null && !file.isEmpty()) {
-//
-//							String achievementsRewardsDocsoriginalFileName = file.getOriginalFilename();
-//							String achievementsRewardsDocsfileNameWithUniqueIdentifier = employeeId + "-"
-//									+ achievementsRewardsDocsoriginalFileName;
-//							achievement.setAchievementsRewardsDocs(achievementsRewardsDocsfileNameWithUniqueIdentifier);
-//
-//						}
-//					}
-//					achievement.setPersonalinfo(PersonalInfo);
-//				}
-//			}
-//			PersonalInfo.setEmpAchievements(empAchievements);
-//
-//			BackgroundCheck bgcheck = PersonalInfo.getBgcheck();
-//			if (bgcheck != null) {
-//				if (recordsheet != null && !recordsheet.isEmpty()) {
-//
-//					String recordsheetoriginalFileName = recordsheet.getOriginalFilename();
-//					String recordsheetfileNameWithUniqueIdentifier = employeeId + "-" + recordsheetoriginalFileName;
-//					bgcheck.setRecordsheet(recordsheetfileNameWithUniqueIdentifier);
-//
-//				}
-//				if (declarationRequired != null && !declarationRequired.isEmpty()) {
-//					String declarationRequiredoriginalFileName = declarationRequired.getOriginalFilename();
-//					String declarationRequiredfileNameWithUniqueIdentifier = employeeId + "-"
-//							+ declarationRequiredoriginalFileName;
-//					bgcheck.setDeclarationRequired(declarationRequiredfileNameWithUniqueIdentifier);
-//
-//				}
-//				bgcheck.setPersonalinfo(PersonalInfo);
-//			}
-//			PersonalInfo.setBgcheck(bgcheck);
-//			List<Trainingdetails> training = PersonalInfo.getTraining();
-//			if (training != null) {
-//				for (Trainingdetails train : training) {
-//					if (CertificateUploadedForOutsource != null && !CertificateUploadedForOutsource.isEmpty()) {
-//						String CertificateUploadedForOutsourceoriginalFileName = CertificateUploadedForOutsource
-//								.getOriginalFilename();
-//						String CertificateUploadedForOutsourcefileNameWithUniqueIdentifier = employeeId + "-"
-//								+ CertificateUploadedForOutsourceoriginalFileName;
-//						train.setCertificateUploadedForOutsource(
-//								CertificateUploadedForOutsourcefileNameWithUniqueIdentifier);
-//					}
-//					if (PaidTrainingDocumentProof != null && !PaidTrainingDocumentProof.isEmpty()) {
-//						String PaidTrainingDocumentProoforiginalFileName = PaidTrainingDocumentProof
-//								.getOriginalFilename();
-//						String PaidTrainingDocumentProoffileNameWithUniqueIdentifier = employeeId + "-"
-//								+ PaidTrainingDocumentProoforiginalFileName;
-//
-//						train.setPaidTrainingDocumentProof(PaidTrainingDocumentProoffileNameWithUniqueIdentifier);
-//					}
-//					train.setPersonalinfo(PersonalInfo);
-//				}
-//				PersonalInfo.setTraining(training);
-//			}
-//
-//			UserEntity user = new UserEntity();
-//
-//			user.setEmail(PersonalInfo.getEmail());
-//			user.setUsername(String.valueOf(employeeId));
-//			user.setPersonalinfo(PersonalInfo);
-//			user.setMobileNo(PersonalInfo.getPersonalContactNo());
-//			user.setEnabled(false);
-//
-//			Random random = new Random();
-//			int otpNumber = random.nextInt(900000) + 100000;
-//			String otp = String.valueOf(otpNumber);
-//
-//			user.setOtp(otp);
-//			PersonalInfo.setUserentity(user);
-//			currentDesignationandTask.setEmpId(employeeId);
-//			dao.savePersonalInfo(PersonalInfo);
-//			currentService.saveCurrent(currentDesignationandTask);
-//
-//			sendAccountActivationEmail(PersonalInfo.getEmail(), employeeId, PersonalInfo.getFirstName(), otp, url);
-//
-//			saveFilesToFolder(employeeId, passportSizePhoto, OtherIdProofDoc, passportScan, licensecopy, relativeid,
-//					raddressproof, secondaryDocumentScan, seniorSecondaryDocumentScan, graduationDocumentScan,
-//					postGraduationDocumentScan, othersDocumentScan, degreeScan, payslipScan, recordsheet,
-//					PaidTrainingDocumentProof, CertificateUploadedForOutsource, visaDocs, diplomaDocumentScan,
-//					declarationRequired, achievementsRewardsDocs);
-//
-//		} catch (Exception e) {
-//			if (e.getMessage().contains("Mail server connection failed")
-//					|| e.getMessage().contains("java.net.UnknownHostException")) {
-//				// Mail server connection error here
-//				throw new MailServerConnectionException(
-//						"Mail server connection failed; please check your network or SMTP configuration.", e);
-//			} else {
-//				// Re-throw other exceptions
-//				throw new RuntimeException(e.getMessage(), e);
-//			}
-//		}
-//	}
-
-//	This method is used for save files in folder
-	private void saveFilesToFolder(long employeeId, MultipartFile passportSizePhoto, MultipartFile OtherIdProofDoc,
-			MultipartFile passportScan, MultipartFile licensecopy, MultipartFile relativeid,
-			MultipartFile raddressproof, MultipartFile secondaryDocumentScan, MultipartFile seniorSecondaryDocumentScan,
-			MultipartFile graduationDocumentScan, MultipartFile postGraduationDocumentScan,
-			MultipartFile[] othersDocumentScan, MultipartFile[] degreeScan, MultipartFile payslipScan,
-			MultipartFile recordsheet, MultipartFile PaidTrainingDocumentProof,
-			MultipartFile CertificateUploadedForOutsource, MultipartFile visaDocs, MultipartFile diplomaDocumentScan,
-			MultipartFile declarationRequired, MultipartFile[] achievementsRewardsDocs) throws IOException {
-
-		saveFileToFolder(employeeId, passportSizePhoto, uplaodDirectory);
-		saveFileToFolder(employeeId, OtherIdProofDoc, uplaodDirectory);
-		saveFileToFolder(employeeId, passportScan, uplaodDirectory);
-		saveFileToFolder(employeeId, licensecopy, uplaodDirectory);
-		saveFileToFolder(employeeId, relativeid, uplaodDirectory);
-		saveFileToFolder(employeeId, raddressproof, uplaodDirectory);
-		saveFileToFolder(employeeId, secondaryDocumentScan, uplaodDirectory);
-		saveFileToFolder(employeeId, seniorSecondaryDocumentScan, uplaodDirectory);
-		saveFileToFolder(employeeId, graduationDocumentScan, uplaodDirectory);
-		saveFileToFolder(employeeId, postGraduationDocumentScan, uplaodDirectory);
-		for (MultipartFile file : othersDocumentScan) {
-			saveFileToFolder(employeeId, file, uplaodDirectory);
-		}
-		for (MultipartFile degree : degreeScan) {
-			saveFileToFolder(employeeId, degree, uplaodDirectory);
-		}
-		saveFileToFolder(employeeId, payslipScan, uplaodDirectory);
-		saveFileToFolder(employeeId, recordsheet, uplaodDirectory);
-		saveFileToFolder(employeeId, PaidTrainingDocumentProof, uplaodDirectory);
-		saveFileToFolder(employeeId, CertificateUploadedForOutsource, uplaodDirectory);
-		saveFileToFolder(employeeId, visaDocs, uplaodDirectory);
-		saveFileToFolder(employeeId, diplomaDocumentScan, uplaodDirectory);
-		saveFileToFolder(employeeId, declarationRequired, uplaodDirectory);
-		for (MultipartFile file : achievementsRewardsDocs) {
-			saveFileToFolder(employeeId, file, uplaodDirectory);
-		}
-	}
-
-//	This method is used for save files in folder
-	private void saveFileToFolder(long employeeId, MultipartFile file, String uplaodDirectory) throws IOException {
-		if (file != null && !file.isEmpty()) {
-			String originalFileName = file.getOriginalFilename();
-			String fileNameWithUniqueIdentifier = employeeId + "-" + originalFileName;
-			Path filePath = Paths.get(uplaodDirectory, fileNameWithUniqueIdentifier);
-			try {
-				Files.write(filePath, file.getBytes());
-				System.out.println("File saved successfully: " + filePath.toString());
-			} catch (IOException e) {
-				System.err.println("Error saving file: " + e.getMessage());
-				e.printStackTrace();
-				throw e;
 			}
 		}
 	}

@@ -62,14 +62,14 @@ public class ShiftAssignmentController {
 
 	// method to fetch emp shift data by id
 //	@GetMapping("/get-shift-ById/{id}")
-	@GetMapping("/shift/asign/{id}")
-	public ResponseEntity<?> getAllEmployeeShiftById(@PathVariable long id) {
+	@GetMapping("/shift/asign/{empId}")
+	public ResponseEntity<?> getAllEmployeeShiftById(@PathVariable long empId) {
 
-		if (!repo.existsByEmployeeId(id)) {
+		if (!repo.existsByEmployeeId(empId)) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Please enter valid Employee Id"));
 		}
 		try {
-			List<ShiftAssignment> list = service.getAllEmployeeShiftById(id);
+			List<ShiftAssignment> list = service.getAllEmployeeShiftById(empId);
 			if (list.isEmpty()) {
 				return ResponseEntity.noContent().build();
 			}
@@ -82,13 +82,13 @@ public class ShiftAssignmentController {
 
 	// method to get emp current shift through emp id
 //	@GetMapping("/current-shift-ById /{id}")
-	@GetMapping("/shift/asign/current/{id}")
-	public ResponseEntity<?> currenthftById(@PathVariable long id) {
-		if (!repo.existsByEmployeeId(id)) {
+	@GetMapping("/shift/asign/current/{empId}")
+	public ResponseEntity<?> currenthftById(@PathVariable long empId) {
+		if (!repo.existsByEmployeeId(empId)) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Please enter valid Employee Id"));
 		}
 		try {
-			return ResponseEntity.ok(service.currentShftById(id));
+			return ResponseEntity.ok(service.currentShftById(empId));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(new MessageResponse("failed to fetch data shift" + e.getMessage()));
 		}
@@ -125,14 +125,14 @@ public class ShiftAssignmentController {
 
 	// gives emp shift details by shift start date for single emp
 //	@GetMapping("/shift-byDateandId/{id}/{startDate}")
-	@GetMapping("/shift/asign/date-Id/{id}/{startDate}")
-	public ResponseEntity<?> shiftByDateandempid(@PathVariable long id, @PathVariable String startDate) {
-		if (!repo.existsByEmployeeId(id)) {
+	@GetMapping("/shift/asign/date-Id/{empId}/{startDate}")
+	public ResponseEntity<?> shiftByDateandempid(@PathVariable long empId, @PathVariable String startDate) {
+		if (!repo.existsByEmployeeId(empId)) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Please enter valid Employee Id"));
 		}
 		try {
 			LocalDate localDate = LocalDate.parse(startDate);
-			List<ShiftAssignment> date = service.findshiftById(id, localDate);
+			List<ShiftAssignment> date = service.findshiftById(empId, localDate);
 			if (date.isEmpty()) {
 				return ResponseEntity.noContent().build();
 			}
