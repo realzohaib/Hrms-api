@@ -69,8 +69,7 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 			throw new PersonalInfoNotFoundException(
 					new MessageResponse("No personal information found for this email ID: " + email));
 		} catch (Exception ex) {
-			throw new RuntimeException("An error occurred while retrieving personal information for email: " + email,
-					ex);
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -85,8 +84,7 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 			throw new PersonalInfoNotFoundException(new MessageResponse(
 					"No personal information found for this email ID: " + email + " or this eamil is inactived."));
 		} catch (Exception ex) {
-			throw new RuntimeException("An error occurred while retrieving personal information for email: " + email,
-					ex);
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -100,8 +98,7 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 			throw new PersonalInfoNotFoundException(
 					new MessageResponse("No personal information found for employee ID: " + employeeId + " or " + ex));
 		} catch (Exception ex) {
-			throw new RuntimeException(
-					"An error occurred while retrieving personal information for employee ID: " + employeeId, ex);
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -130,7 +127,6 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 		try {
 			personalInfo.setEmail(email);
 			entityManager.merge(personalInfo);
-//			entityManager.persist(personalInfo);
 			return personalInfo;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
