@@ -96,7 +96,7 @@ public class PersonalInfoDAO implements IPersonalInfoDAO {
 			return (PersonalInfo) query.getSingleResult();
 		} catch (NoResultException ex) {
 			throw new PersonalInfoNotFoundException(
-					new MessageResponse("No personal information found for employee ID: " + employeeId + " or " + ex));
+					new MessageResponse("No personal information found for employee ID: " + employeeId));
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
