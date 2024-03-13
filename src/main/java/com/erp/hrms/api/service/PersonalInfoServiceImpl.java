@@ -997,7 +997,6 @@ public class PersonalInfoServiceImpl implements IPersonalInfoService {
 	@Override
 	public PersonalInfo getPersonalInfoByEmployeeId(Long employeeId) throws IOException {
 
-//		PersonalInfo personalInfoByEmployeeId = dao.loadPersonalInfoByEmployeeId(employeeId);
 		PersonalInfo personalInfoByEmployeeId = dao.getPersonalInfoByEmployeeId(employeeId);
 		if (personalInfoByEmployeeId == null) {
 			throw new PersonalInfoNotFoundException(

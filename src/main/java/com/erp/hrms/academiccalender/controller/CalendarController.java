@@ -44,7 +44,6 @@ public class CalendarController {
 		}
 	}
 
-//	@PostMapping("/add-holiday")
 	@PostMapping("/holidays")
 	public ResponseEntity<?> addHoliday(@RequestBody AcademicCalendar academicCalendar) {
 		try {
@@ -59,7 +58,6 @@ public class CalendarController {
 		}
 	}
 
-//	@GetMapping("/getholidays/{countryName}")
 	@GetMapping("/holidays/country/{countryName}")
 	public ResponseEntity<?> getAllHolidaysWithCountry(@PathVariable("countryName") String countryName) {
 		try {
@@ -78,7 +76,6 @@ public class CalendarController {
 		}
 	}
 
-//	@PutMapping("/update/holiday/{holidayId}")
 	@PutMapping("/holidays/{holidayId}")
 	public ResponseEntity<?> updateHoliday(@PathVariable Long holidayId,
 			@RequestBody AcademicCalendar academicCalendar) {
@@ -99,7 +96,6 @@ public class CalendarController {
 		}
 	}
 
-//	@GetMapping("/getholidays/{year}/{countryName}")
 	@GetMapping("/holidays/year/{year}/country/{countryName}")
 	public ResponseEntity<?> getAllHolidaysWithYearAndCountry(@PathVariable("year") int year,
 			@PathVariable("countryName") String countryName) {
@@ -119,7 +115,6 @@ public class CalendarController {
 		}
 	}
 
-//	@GetMapping("/getholiday/{holidayId}")
 	@GetMapping("/holidays/{holidayId}")
 	public ResponseEntity<?> getHolidayWithHolidayId(@PathVariable("holidayId") Long holidayId) {
 		try {
@@ -138,7 +133,6 @@ public class CalendarController {
 		}
 	}
 
-//	@GetMapping("/total-holidays-in-month/{countryName}/{year}/{month}")
 	@GetMapping("/holidays/monthly/{countryName}/{year}/{month}")
 	public int getAllHolidaysWithYearAndMonthAndCountryName(@PathVariable int year, @PathVariable String countryName,
 			@PathVariable int month) {

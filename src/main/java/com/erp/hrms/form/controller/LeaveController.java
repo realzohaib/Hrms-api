@@ -34,7 +34,6 @@ public class LeaveController {
 	private ILeaveService iLeaveService;
 
 //	This method for send the leave request to manager
-//	@PostMapping("/leave/request")
 	@PostMapping("/leave/requests")
 	public ResponseEntity<?> createLeaveApproval(@RequestParam("leaveApproval") String leaveApproval,
 			@RequestParam(value = "medicalDocumentsName", required = false) MultipartFile medicalDocumentsName)
@@ -50,7 +49,6 @@ public class LeaveController {
 	}
 
 //	This method for get the leave request by LeaveRequestId
-//	@GetMapping("/leave/request/{leaveRequestId}")
 	@GetMapping("/leave/requests/{leaveRequestId}")
 	public ResponseEntity<?> getleaveRequestById(@PathVariable Long leaveRequestId) throws IOException {
 		try {
@@ -64,7 +62,6 @@ public class LeaveController {
 	}
 
 //	This method for find all the Leave Request by employeeId
-//	@GetMapping("/findall/leave/request/with/employeeId/{employeeId}")
 	@GetMapping("/leave/requests/employee/{employeeId}")
 	public ResponseEntity<?> getLeaveRequestByEmployeeId(@PathVariable Long employeeId) throws IOException {
 		try {
@@ -77,7 +74,6 @@ public class LeaveController {
 	}
 
 //	This method for find all leave request
-//	@GetMapping("/findAll/leaverequest")
 	@GetMapping("/leave/requests/all")
 	public ResponseEntity<?> findAllLeaveApproval() {
 		try {
@@ -88,7 +84,6 @@ public class LeaveController {
 	}
 
 //	This method for update the leave request by the manager Accepted or Rejected with the help of leaveRequestId
-//	@PutMapping("/leave/request/approvedByManager/{leaveRequestId}")
 	@PutMapping("/leave/requests/approved/manager/{leaveRequestId}")
 	public ResponseEntity<?> approvedByManager(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
@@ -105,7 +100,6 @@ public class LeaveController {
 	}
 
 //	This method for update the leave request by the hr Accepted or Rejected with the help of leaveRequestId
-//	@PutMapping("/leave/request/approvedByhr/{leaveRequestId}")
 	@PutMapping("/leave/requests/approved/hr/{leaveRequestId}")
 	public ResponseEntity<?> approvedOrDenyByHR(@PathVariable Long leaveRequestId,
 			@RequestParam("leaveApproval") String leaveApproval,
@@ -121,7 +115,6 @@ public class LeaveController {
 	}
 
 //	This method for find all pending request
-//	@GetMapping("/leave/request/findall/pending")
 	@GetMapping("/leave/requests/pending")
 	public ResponseEntity<?> findAllLeaveApprovalPending() {
 		try {
@@ -133,7 +126,6 @@ public class LeaveController {
 	}
 
 //	This method for find all accepted request
-//	@GetMapping("/leave/request/findall/accepted")
 	@GetMapping("/leave/requests/accepted")
 	public ResponseEntity<?> findAllLeaveApprovalAccepted() {
 		try {
@@ -144,7 +136,6 @@ public class LeaveController {
 	}
 
 //	This method for find all rejected request
-//	@GetMapping("/leave/request/findall/rejected")
 	@GetMapping("/leave/requests/rejected")
 	public ResponseEntity<?> findAllLeaveApprovalRejected() {
 		try {
@@ -153,29 +144,6 @@ public class LeaveController {
 			return new ResponseEntity<>(new MessageResponse("No leave request rejected "), HttpStatus.NOT_FOUND);
 		}
 	}
-
-//	@GetMapping("/calculateTotalLeaveDays/{employeeId}")
-//	public ResponseEntity<?> calculateTotalLeaveDays(@PathVariable Long employeeId) {
-//		try {
-//			return new ResponseEntity<>(iLeaveService.calculateTotalNumberOfDaysRequestedByEmployee(employeeId),
-//					HttpStatus.OK);
-//		} catch (Exception e) {
-//			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
-//		}
-//	}
-
-////	This method for calculate total number of leave days with employee id and leave name
-//	@GetMapping("/calculateTotalLeaveDays/{employeeId}/leaveName/{leaveName}")
-//	public ResponseEntity<?> calculateTotalSpecificLeaveDays(@PathVariable Long employeeId,
-//			@PathVariable String leaveName) {
-//		try {
-//			return new ResponseEntity<>(
-//					iLeaveService.calculateTotalSpecificNumberOfDaysRequestedByEmployee(employeeId, leaveName),
-//					HttpStatus.OK);
-//		} catch (Exception e) {
-//			return new ResponseEntity<>(new MessageResponse("No data available now"), HttpStatus.NOT_FOUND);
-//		}
-//	}
 
 //	This method is to calculate how many employees are on leave in a day.
 	@GetMapping("/leave-calendar")
@@ -186,7 +154,6 @@ public class LeaveController {
 	}
 
 //	This method is to mark the date on which more than 20% leave occurred and or will occur on the following day
-//	@GetMapping("/marked-calendar-dates")
 	@GetMapping("/marked-calendar-dates")
 	public ResponseEntity<?> getMarkedCalendarDates() {
 		try {
@@ -199,7 +166,6 @@ public class LeaveController {
 		}
 	}
 
-//	@GetMapping("/calculateTotalDays/{employeeId}/{year}/{month}")
 	@GetMapping("/calculate-total-days/{employeeId}/{year}/{month}")
 	public ResponseEntity<BigDecimal> calculateTotalNumberOfDaysRequestedByEmployeeInMonthAndStatus(
 			@PathVariable Long employeeId, @PathVariable int year, @PathVariable int month) {
@@ -223,7 +189,6 @@ public class LeaveController {
 	}
 
 //	This method give the total count of employee on leave on a particular date and also give the list of employee
-//	@GetMapping("/by-date/{date}")
 	@GetMapping("/leave-by-date/{date}")
 	public ResponseEntity<LeaveDataDTO> getLeaveDataByDate(@PathVariable String date) {
 		try {
