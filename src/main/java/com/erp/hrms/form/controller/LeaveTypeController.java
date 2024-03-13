@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.hrms.api.security.response.MessageResponse;
+import com.erp.hrms.exception.LeaveRequestNotFoundException;
+import com.erp.hrms.exception.LeaveTypeNotFoundException;
 import com.erp.hrms.form.service.ILeaveTypeService;
 
 @RestController
@@ -58,9 +60,11 @@ public class LeaveTypeController {
 	public ResponseEntity<?> findByleaveTypeId(@PathVariable Long leaveTypeId) {
 		try {
 			return new ResponseEntity<>(iLeaveTypeService.findByLeaveTypeId(leaveTypeId), HttpStatus.OK);
+		} catch (LeaveTypeNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new MessageResponse("Error occurred: " + e.getMessage()));
 		} catch (Exception e) {
-			return new ResponseEntity<>(new MessageResponse("Leave Request with ID: " + leaveTypeId + " not found "),
-					HttpStatus.NOT_FOUND);
+			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
 		}
 	}
 
