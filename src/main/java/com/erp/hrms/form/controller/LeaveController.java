@@ -24,6 +24,7 @@ import com.erp.hrms.entity.form.LeaveCountDTO;
 import com.erp.hrms.entity.form.LeaveDataDTO;
 import com.erp.hrms.entity.form.MarkedDate;
 import com.erp.hrms.exception.LeaveRequestNotFoundException;
+import com.erp.hrms.exception.PersonalInfoNotFoundException;
 import com.erp.hrms.form.service.ILeaveService;
 
 @RestController
@@ -55,7 +56,8 @@ public class LeaveController {
 			LeaveApproval getleaveRequestById = iLeaveService.getleaveRequestById(leaveRequestId);
 			return ResponseEntity.ok(getleaveRequestById);
 		} catch (LeaveRequestNotFoundException e) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new MessageResponse("Error occurred: " + e.getMessage()));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Error occurred: " + e.getMessage()));
 		}
@@ -66,10 +68,14 @@ public class LeaveController {
 	public ResponseEntity<?> getLeaveRequestByEmployeeId(@PathVariable Long employeeId) throws IOException {
 		try {
 			return new ResponseEntity<>(iLeaveService.getLeaveRequestByEmployeeId(employeeId), HttpStatus.OK);
+		}
+
+		catch (LeaveRequestNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new MessageResponse("Error occurred: " + e.getMessage()));
 		} catch (Exception e) {
-			return new ResponseEntity<>(
-					new MessageResponse("leave request with employee ID: " + employeeId + " not found"),
-					HttpStatus.NOT_FOUND);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new MessageResponse("Error occurred: " + e.getMessage()));
 		}
 	}
 

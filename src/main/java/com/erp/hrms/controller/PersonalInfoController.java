@@ -104,7 +104,7 @@ public class PersonalInfoController {
 			return ResponseEntity.ok(personalInfo);
 		} catch (PersonalInfoNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(new MessageResponse("Personal information not found: " + e.getMessage()));
+					.body(new MessageResponse("Error occurred: " + e.getMessage()));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new MessageResponse("Error occurred: " + e.getMessage()));
@@ -118,7 +118,7 @@ public class PersonalInfoController {
 			return ResponseEntity.ok(personalInfo);
 		} catch (PersonalInfoNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(new MessageResponse("Personal information not found: " + e.getMessage()));
+					.body(new MessageResponse("Error occurred: " + e.getMessage()));
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

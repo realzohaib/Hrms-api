@@ -173,24 +173,20 @@ public class LeaveService implements ILeaveService {
 //	This method for find the data of leave by leave request id
 	@Override
 	public LeaveApproval getleaveRequestById(Long leaveRequestId) throws IOException {
-		try {
-			LeaveApproval leaveApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
-			if (leaveApproval == null) {
-				throw new LeaveRequestNotFoundException(
-						new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
-			}
-			String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
-			if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
-				byte[] fileData = fileService.getFileData(medicalDocumentsName);
-				if (fileData != null) {
-					leaveApproval.setMedicalDocumentData(fileData);
-				}
-			}
-			return leaveApproval;
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"An error occurred while retrieving leave approval for leave request Id: " + leaveRequestId);
+		LeaveApproval leaveApproval = iLeaveRepository.getleaveRequestById(leaveRequestId);
+		if (leaveApproval == null) {
+			throw new LeaveRequestNotFoundException(
+					new MessageResponse("Leave request with ID " + leaveRequestId + " not found."));
 		}
+		String medicalDocumentsName = leaveApproval.getMedicalDocumentsName();
+		if (medicalDocumentsName != null && !medicalDocumentsName.isEmpty()) {
+			byte[] fileData = fileService.getFileData(medicalDocumentsName);
+			if (fileData != null) {
+				leaveApproval.setMedicalDocumentData(fileData);
+			}
+		}
+		return leaveApproval;
+
 	}
 
 //	This method for find all the Leave Request by employeeId
