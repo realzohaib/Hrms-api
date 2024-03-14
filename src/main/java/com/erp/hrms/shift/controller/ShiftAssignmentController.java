@@ -170,5 +170,19 @@ public class ShiftAssignmentController {
 			return ResponseEntity.badRequest()
 					.body(e.getMessage());		}
 	}
+	
+	@GetMapping("/shift/asign/assignmentId/{assignmentId}")
+	public ResponseEntity<?> getShiftShftByAssignmentId(@PathVariable long assignmentId) {
+		try {
+			ShiftAssignment shiftById = service.getShiftById(assignmentId);
+			if(shiftById == null) {
+				return ResponseEntity.ok("NO Record Found");
+			}
+			return ResponseEntity.ok(shiftById);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("failed to fetch data shift" + e.getMessage()));
+		}
+		
+	}
 
 }
